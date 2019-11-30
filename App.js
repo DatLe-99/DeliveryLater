@@ -21,7 +21,7 @@ export default class App extends Component {
   render() {
     return (
       <View>
-        <Text>This is main page</Text>
+        <Text>This is main page. All of Component will be implemented in Component folder</Text>
       </View>
     );
   }
