@@ -16,7 +16,6 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
-
 export default class App extends Component {
   render() {
     return (
