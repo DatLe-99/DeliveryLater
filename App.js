@@ -20,7 +20,7 @@ export default class App extends Component {
   render() {
     return (
       <View>
-        <Text>This is main page</Text>
+        <Text>This is main page. hhhhh</Text>
       </View>
     );
   }
