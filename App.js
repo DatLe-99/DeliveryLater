@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Login from './Component/Login';
 import {
   SafeAreaView,
   StyleSheet,
@@ -20,7 +21,7 @@ export default class App extends Component {
   render() {
     return (
       <View>
-        <Text>This is main page. hhhhh</Text>
+        <Login></Login>
       </View>
     );
   }
