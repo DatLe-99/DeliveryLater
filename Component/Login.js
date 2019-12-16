@@ -9,9 +9,9 @@ export default class Login extends Component{
         return(
             <View>
                 <ImageBackground
-                    source={require('../SourceImage/LoginBackground.jpg')} style={{ flex: 1, width: Dimensions.get('window').width, height: Dimensions.get('window').height }}>
-                    <View>
-                        <Header></Header>
+                    source={require('../SourceImage/LoginBackground.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height }}>
+                    <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', margin: 50}}>
+                        <Header ></Header>
                         <BoxLogin></BoxLogin>
                         <LoginButton></LoginButton>
                         <ForgotPassword></ForgotPassword>
@@ -25,7 +25,7 @@ export default class Login extends Component{
 class Header extends Component{
     render(){
         return(
-            <View style ={{width:313, height: 35, position: 'absolute'}}>
+            <View style ={styles.header}>
                 <Text style = {styles.header}>
                     Đăng Nhập hoặc Đăng Ký
                 </Text>
@@ -37,10 +37,10 @@ class Header extends Component{
 class BoxLogin extends Component{
     render(){
         return (
-          <View>
-            <BoxUsername>Số Điện Thoại</BoxUsername>
-            <BoxPassword>Mật khẩu</BoxPassword>
-            <LoginwithEmail></LoginwithEmail>
+          <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', margin:20}}>
+            <BoxUsername/>
+            <BoxPassword></BoxPassword>
+            <LoginwithEmail/>
           </View>
         );
     }
@@ -49,8 +49,8 @@ class BoxLogin extends Component{
 class BoxUsername extends Component{
     render(){
         return(
-            <View style ={{position: "absolute", width: 367, height: 42, backgroundColor: '#21B341', borderRadius: 30}}>
-                <TextInput style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}>
+            <View style ={{width: 367, height: 42, backgroundColor: '#21B341', borderRadius: 13}}>
+                <TextInput placeholder= "Số điện thoại" style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}>
                 </TextInput>
             </View>
         );
@@ -62,14 +62,12 @@ class BoxPassword extends Component{
         return (
           <View
             style={{
-              position: 'absolute',
               width: 367,
               height: 42,
               backgroundColor: '#AA9B15',
               borderRadius: 13,
             }}>
-            <PasswordInputText style={(styles.text, {color: 'rgba(233,218,218,0.5)'})}>
-            </PasswordInputText>
+            <TextInput placeholder= "Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
           </View>
         );
     }
@@ -79,9 +77,7 @@ class LoginwithEmail extends Component{
     render(){
         return(
             <View style={{width: 208, height: 42}}>
-                <Text style={styles.text, { width: 208, height: 42, color: '#C22828', textDecorationLine: 'underline', textAlign: "right", fontStyle: 'italic', fontWeight: 'bold'}}>
-                    Đăng nhập bằng email
-                </Text>
+                <Text style={styles.text, {width: 208, height: 42, color: '#C22828', textDecorationLine: 'underline', textAlign: "right", fontStyle: 'italic', fontWeight: 'bold'}}>Đăng nhập bằng email</Text>
             </View>
         );
     }
@@ -90,8 +86,8 @@ class LoginwithEmail extends Component{
 class LoginButton extends Component{
     render(){
         return(
-            <View style={{position:"absolute", width: 200, heigth:42, backgroundColor: '#D54646', borderColor: 1, borderRadius: 21}}>
-                <Text style={styles.text, {color: '#FFFFFF'}}>Đăng Nhập</Text>
+            <View style={{width: 200, heigth: 42, backgroundColor: '#D54646', borderColor: 1, borderRadius: 21}}>
+                <Text style={styles.text, {textAlign: 'center', color: '#FFFFFF'}}>Đăng Nhập</Text>
             </View>
         );
     }
@@ -100,8 +96,8 @@ class LoginButton extends Component{
 class ForgotPassword extends Component{
     render(){
         return(
-            <View style ={{wdith: 208, height: 42, position: "absolute"}}>
-                <Text style={styles.text, {color: '#FFFFFF', fontSize: 12, lineHeight: 14, textDecorationLine: 'underline'}}>Quên mật khẩu</Text>
+            <View style ={{width: 208, height: 42}}>
+                <Text style={styles.text, {color: '#FFFFFF', fontSize: 12, lineHeight: 14, textDecorationLine: 'underline', textAlign: 'center'}}>Quên mật khẩu</Text>
             </View>
         );
     }
@@ -111,39 +107,35 @@ class ForgotPassword extends Component{
 class NotHaveAccount extends Component{
     render() {
         return (
-            <View style={{ position: "absolute", width: 367, heigth: 42, backgroundColor: '#0B76C5', borderRadius: 13 }}>
-                <Text style={styles.text, { color: '#FFFFFF', width: 358, height: 42, fontSize: 14 }}>Bạn chưa có tài khoản. Đăng ký</Text>
+            <View style={{width: 367, heigth: 42, backgroundColor: '#0B76C5', borderRadius: 13}}>
+                <Text style={styles.text, { color: '#FFFFFF', width: 358, height: 42, fontSize: 14, textAlignVertical: "center",textAlign: "center"}}>Bạn chưa có tài khoản. Đăng ký</Text>
             </View>
         );
     }
 }
 
-const styles = StyleSheet.create(
-    {
-        header:{
-            fontFamily: 'Verdana',
-            fontSize: 21,
-            fontStyle: 'normal',
-            width: 305,
-            height: 35,
-            color: '#FFFFFF',
-            fontWeight: 'bold',
-            // position: "absolute",
-            alignItems: 'center',
-            textAlign: 'center',
-            display: 'flex'
-        },
-        text: {
-            fontFamily: 'Verdana', 
-            fontStyle: "normal", 
-            fontWeight: "normal", 
-            fontSize: 15, 
-            lineHeight: 18, 
-            display: "flex", 
-            alignItems: "center", 
-            textAlign: "center", 
-        }
-    }
-    
-);
+const styles = StyleSheet.create({
+  header: {
+    fontFamily: 'Verdana',
+    fontSize: 21,
+    fontStyle: 'normal',
+    width: 305,
+    height: 35,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  text: {
+    justifyContent: 'center',
+    fontFamily: 'Verdana',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: 15,
+    lineHeight: 18,
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+});
 

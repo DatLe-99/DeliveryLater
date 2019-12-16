@@ -7,6 +7,7 @@ import {
   View,
   Text,
   StatusBar,
+  Button,
 } from 'react-native';
 
 import {
@@ -16,13 +17,31 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
 
-export default class App extends Component {
+class HomeScreen extends React.Component {
   render() {
+    const {navigate} = this.props.navigation;
     return (
-      <View>
-        <Login></Login>
-      </View>
+      <Button
+        title="Go to Login"
+        onPress={() => navigate('Login')}
+      />
     );
   }
 }
+
+const MainNavigator = createStackNavigator({
+  Home: {screen: HomeScreen},
+  Login: {screen: Login},
+});
+
+const App = createAppContainer(MainNavigator);
+
+export default App;
+
+
+
+
+
