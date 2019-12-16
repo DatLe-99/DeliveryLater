@@ -10,7 +10,7 @@ export default class Login extends Component{
             <View>
                 <ImageBackground
                     source={require('../SourceImage/LoginBackground.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height }}>
-                    <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', margin: 50}}>
+                    <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop: 50}}>
                         <Header ></Header>
                         <BoxLogin></BoxLogin>
                         <LoginButton></LoginButton>
@@ -37,10 +37,10 @@ class Header extends Component{
 class BoxLogin extends Component{
     render(){
         return (
-          <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', margin:20}}>
-            <BoxUsername/>
-            <BoxPassword></BoxPassword>
-            <LoginwithEmail/>
+          <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop:20}}>
+                <BoxUsername ></BoxUsername>
+                <BoxPassword></BoxPassword>
+                <LoginwithEmail/>
           </View>
         );
     }
@@ -66,6 +66,7 @@ class BoxPassword extends Component{
               height: 42,
               backgroundColor: '#AA9B15',
               borderRadius: 13,
+              marginTop: 20
             }}>
             <TextInput placeholder= "Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
           </View>
@@ -76,8 +77,8 @@ class BoxPassword extends Component{
 class LoginwithEmail extends Component{
     render(){
         return(
-            <View style={{width: 208, height: 42}}>
-                <Text style={styles.text, {width: 208, height: 42, color: '#C22828', textDecorationLine: 'underline', textAlign: "right", fontStyle: 'italic', fontWeight: 'bold'}}>Đăng nhập bằng email</Text>
+            <View style={{width: 208, height: 42, marginTop: 20, alignSelf: 'flex-end'}}>
+                <Text style={styles.text, {width: 208, height: 42, color: '#C22828', textDecorationLine: 'underline', textAlign: "center", fontStyle: 'italic', fontWeight: 'bold'}}>Đăng nhập bằng email</Text>
             </View>
         );
     }
@@ -96,7 +97,7 @@ class LoginButton extends Component{
 class ForgotPassword extends Component{
     render(){
         return(
-            <View style ={{width: 208, height: 42}}>
+            <View style ={{width: 208, height: 42, marginTop: 10}}>
                 <Text style={styles.text, {color: '#FFFFFF', fontSize: 12, lineHeight: 14, textDecorationLine: 'underline', textAlign: 'center'}}>Quên mật khẩu</Text>
             </View>
         );
@@ -108,7 +109,11 @@ class NotHaveAccount extends Component{
     render() {
         return (
             <View style={{width: 367, heigth: 42, backgroundColor: '#0B76C5', borderRadius: 13}}>
-                <Text style={styles.text, { color: '#FFFFFF', width: 358, height: 42, fontSize: 14, textAlignVertical: "center",textAlign: "center"}}>Bạn chưa có tài khoản. Đăng ký</Text>
+                <Text style={styles.text, {color: '#FFFFFF', width: 358, height: 42, fontSize: 14, textAlignVertical: "center",textAlign: "center"}}>
+                    Bạn chưa có tài khoản. 
+                        <Text style={{fontWeight: "bold", textDecorationLine: 'underline', lineHeight: 14}}>Đăng ký</Text>
+                </Text>
+                
             </View>
         );
     }
