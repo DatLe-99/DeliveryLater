@@ -85,9 +85,9 @@ class LoginwithEmail extends Component{
 
 class LoginButton extends Component{
     render(){
-        return(
-            <View style={{width: 200, heigth: 42, backgroundColor: '#D54646', borderColor: 1, borderRadius: 21}}>
-                <Text style={styles.text, {textAlign: 'center', color: '#FFFFFF'}}>Đăng Nhập</Text>
+        return (
+            <View style={{width: 208, heigth: 42, backgroundColor: '#D54646', borderRadius: 21}}>
+                <Text style={styles.text, { color: '#FFFFFF', fontWeight: "bold", width: 208, height: 42, fontSize: 16, textAlignVertical: "center",textAlign: "center"}}>Đăng nhập</Text>
             </View>
         );
     }
