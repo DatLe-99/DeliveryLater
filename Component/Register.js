@@ -5,19 +5,173 @@ var deviceWidth = Dimensions.get("window").width;
 var deviceHeight = Dimensions.get("window").height;
 // ToastAndroid.show(String(deviceWidth),ToastAndroid.LONG)
 export default class Login extends Component{
+    constructor(props) {
+        super(props);
+        this.state = ({
+            username: '',
+            password: '',
+            isLoading: true
+        })
+    }
     render(){
-        return(
-            <View>
-                <ImageBackground
-                    source={require('../SourceImage/LoginBackground.jpg')} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height }}>
-                    <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop: 50}}>
-                        <Header ></Header>
-                        <BoxRegister></BoxRegister>
-                        <RegisterButton></RegisterButton>
-                        <NotHaveAccount></NotHaveAccount>
-                    </View>
-                </ImageBackground>
-            </View>
+        return (
+          <View>
+            <ImageBackground
+              source={require('../SourceImage/LoginBackground.jpg')}
+              style={{
+                width: Dimensions.get('window').width,
+                height: Dimensions.get('window').height,
+              }}>
+              <View
+                style={{
+                  alignContents: 'center',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  marginTop: 50,
+                }}>
+                <Header></Header>
+                <View
+                  style={{
+                    alignContents: 'center',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    marginTop: 20,
+                  }}>
+                  <View
+                    style={{
+                      width: 367,
+                      height: 42,
+                      backgroundColor: '#21B341',
+                      borderRadius: 13,
+                    }}>
+                    <TextInput
+                      placeholder="Số điện thoại"
+                      style={{
+                        fontFamily: 'Verdana',
+                        fontStyle: 'normal',
+                        fontWeight: 'normal',
+                        fontSize: 15,
+                        lineHeight: 18,
+                        display: 'flex',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        color: 'rgba(233,218,218,0.5)',
+                      }}
+                      onChangeText={username =>
+                        this.setState({username: username})
+                      }
+                      value={this.state.username}></TextInput>
+                  </View>
+
+                  <View
+                    style={{
+                      width: 367,
+                      height: 42,
+                      backgroundColor: '#AA9B15',
+                      borderRadius: 13,
+                      marginTop: 20,
+                    }}>
+                    <TextInput
+                      placeholder="Mật khẩu"
+                      secureTextEntry={true}
+                      style={{
+                        fontFamily: 'Verdana',
+                        fontStyle: 'normal',
+                        fontWeight: 'normal',
+                        fontSize: 15,
+                        lineHeight: 18,
+                        display: 'flex',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        color: 'rgba(233,218,218,0.5)',
+                      }}
+                      
+                      
+                      ></TextInput>
+                  </View>
+
+                  <View
+                    style={{
+                      width: 367,
+                      height: 42,
+                      backgroundColor: '#AA9B15',
+                      borderRadius: 13,
+                      marginTop: 20,
+                    }}>
+                    <TextInput
+                      placeholder="Xac Nhan Mật khẩu"
+                      secureTextEntry={true}
+                      style={{
+                        fontFamily: 'Verdana',
+                        fontStyle: 'normal',
+                        fontWeight: 'normal',
+                        fontSize: 15,
+                        lineHeight: 18,
+                        display: 'flex',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        color: 'rgba(233,218,218,0.5)',
+                      }}></TextInput>
+                  </View>
+
+                  <View
+                    style={{
+                      width: 367,
+                      height: 42,
+                      backgroundColor: '#AA9B15',
+                      borderRadius: 13,
+                      marginTop: 20,
+                    }}>
+                    <TextInput
+                      placeholder="Email"
+                      secureTextEntry={true}
+                      style={{
+                        fontFamily: 'Verdana',
+                        fontStyle: 'normal',
+                        fontWeight: 'normal',
+                        fontSize: 15,
+                        lineHeight: 18,
+                        display: 'flex',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        color: 'rgba(233,218,218,0.5)',
+                      }}></TextInput>
+                  </View>
+
+                  <View
+                    style={{
+                      width: 208,
+                      height: 42,
+                      marginTop: 20,
+                      alignSelf: 'flex-end',
+                    }}>
+                    <Text
+                      style={
+                        (styles.text,
+                        {
+                          width: 208,
+                          height: 42,
+                          color: '#C22828',
+                          textDecorationLine: 'underline',
+                          textAlign: 'center',
+                          fontStyle: 'italic',
+                          fontWeight: 'bold',
+                        })
+                      }>
+                      Đăng Ký bằng email
+                    </Text>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    ToastAndroid.show(this.state.username, ToastAndroid.SHORT);
+                  }}>
+                  <RegisterButton></RegisterButton>
+                </TouchableOpacity>
+                <NotHaveAccount></NotHaveAccount>
+              </View>
+            </ImageBackground>
+          </View>
         );
     }
 }
@@ -33,89 +187,6 @@ class Header extends Component{
     }
 }
 
-class BoxRegister extends Component{
-    render(){
-        return (
-          <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop:20}}>
-                <BoxUsername ></BoxUsername>
-                <BoxPassword></BoxPassword>
-                <BoxConfirmPassword></BoxConfirmPassword>
-                <BoxEmail></BoxEmail>
-                <RegisterwithEmail/>
-          </View>
-        );
-    }
-}
-
-class BoxUsername extends Component{
-    render(){
-        return(
-            <View style ={{width: 367, height: 42, backgroundColor: '#21B341', borderRadius: 13}}>
-                <TextInput placeholder= "Số điện thoại" style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}>
-                </TextInput>
-            </View>
-        );
-    }
-}
-
-class BoxPassword extends Component{
-    render(){
-        return (
-          <View
-            style={{
-              width: 367,
-              height: 42,
-              backgroundColor: '#AA9B15',
-              borderRadius: 13,
-              marginTop: 20
-            }}>
-            <TextInput placeholder= "Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
-          </View>
-        );
-    }
-}
-class BoxConfirmPassword extends Component{
-    render(){
-        return (
-          <View
-            style={{
-              width: 367,
-              height: 42,
-              backgroundColor: '#AA9B15',
-              borderRadius: 13,
-              marginTop: 20
-            }}>
-            <TextInput placeholder= "Xac Nhan Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
-          </View>
-        );
-    }
-}
-class BoxEmail extends Component{
-    render(){
-        return (
-          <View
-            style={{
-              width: 367,
-              height: 42,
-              backgroundColor: '#AA9B15',
-              borderRadius: 13,
-              marginTop: 20
-            }}>
-            <TextInput placeholder= "Email" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
-          </View>
-        );
-    }
-}
-
-class RegisterwithEmail extends Component{
-    render(){
-        return(
-            <View style={{width: 208, height: 42, marginTop: 20, alignSelf: 'flex-end'}}>
-                <Text style={styles.text, {width: 208, height: 42, color: '#C22828', textDecorationLine: 'underline', textAlign: "center", fontStyle: 'italic', fontWeight: 'bold'}}>Đăng Ký bằng email</Text>
-            </View>
-        );
-    }
-}
 
 class RegisterButton extends Component{
     render(){

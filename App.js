@@ -26,10 +26,10 @@ class HomeScreen extends React.Component {
     const {navigate} = this.props.navigation;
     return (
       <View>
-        <Button
+        {/* <Button
          title="Go to Login"
           onPress={() => navigate('Login')}
-        />
+        /> */}
         <Button
           title="Go to Register"
           onPress={() => navigate('Register')}
