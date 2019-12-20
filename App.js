@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Login from './Component/Login';
+import Register from './Component/Register';
 import {
   SafeAreaView,
   StyleSheet,
@@ -24,10 +25,16 @@ class HomeScreen extends React.Component {
   render() {
     const {navigate} = this.props.navigation;
     return (
-      <Button
-        title="Go to Login"
-        onPress={() => navigate('Login')}
-      />
+      <View>
+        <Button
+         title="Go to Login"
+          onPress={() => navigate('Login')}
+        />
+        <Button
+          title="Go to Register"
+          onPress={() => navigate('Register')}
+        />
+      </View>
     );
   }
 }
@@ -35,6 +42,7 @@ class HomeScreen extends React.Component {
 const MainNavigator = createStackNavigator({
   Home: {screen: HomeScreen},
   Login: {screen: Login},
+  Register: {screen: Register}
 });
 
 const App = createAppContainer(MainNavigator);
