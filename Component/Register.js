@@ -40,6 +40,7 @@ class BoxRegister extends Component{
                 <BoxUsername ></BoxUsername>
                 <BoxPassword></BoxPassword>
                 <BoxConfirmPassword></BoxConfirmPassword>
+                <BoxEmail></BoxEmail>
                 <RegisterwithEmail/>
           </View>
         );
@@ -85,6 +86,22 @@ class BoxConfirmPassword extends Component{
               marginTop: 20
             }}>
             <TextInput placeholder= "Xac Nhan Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
+          </View>
+        );
+    }
+}
+class BoxEmail extends Component{
+    render(){
+        return (
+          <View
+            style={{
+              width: 367,
+              height: 42,
+              backgroundColor: '#AA9B15',
+              borderRadius: 13,
+              marginTop: 20
+            }}>
+            <TextInput placeholder= "Email" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
           </View>
         );
     }
