@@ -85,7 +85,7 @@ class BoxConfirmPassword extends Component{
               borderRadius: 13,
               marginTop: 20
             }}>
-            <TextInput placeholder= "Xac Nhan Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
+            <TextInput placeholder= "Xác Nhận Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
           </View>
         );
     }
