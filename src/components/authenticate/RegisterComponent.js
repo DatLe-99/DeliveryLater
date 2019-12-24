@@ -48,7 +48,7 @@ class RegisterComponent extends Component {
         })
         .then(() => {
           this.setState({isLoading: false});
-          if ((this.props.signUpData.status == true)) {
+          if (this.props.signUpData.success) {
             this.setState({isLoading: false});
             this.props.navigation.navigate('Home');
           } else {
