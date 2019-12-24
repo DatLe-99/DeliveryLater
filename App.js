@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
 import Login from './Component/Login';
+import Register from './Component/Register';
+import { Provider } from 'react-redux';
+import MasterNavigator from './src/navigations';
+import configureStore from './src/redux';
 import {
   SafeAreaView,
   StyleSheet,
@@ -20,26 +24,41 @@ import {
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
-class HomeScreen extends React.Component {
+// class HomeScreen extends React.Component {
+//   render() {
+//     const {navigate} = this.props.navigation;
+//     return (
+//       <View>
+//         <Button
+//          title="Go to Login"
+//           onPress={() => navigate('Login')}
+//         />
+//         <Button
+//           title="Go to Register"
+//           onPress={() => navigate('Register')}
+//         />
+//       </View>
+//     );
+//   }
+// }
+
+// const MainNavigator = createStackNavigator({
+//   Home: {screen: HomeScreen},
+//   Login: {screen: Login},
+//   Register: {screen: Register}
+// });
+
+// const App = createAppContainer(MainNavigator);
+
+export default class App extends Component {
   render() {
-    const {navigate} = this.props.navigation;
     return (
-      <Button
-        title="Go to Login"
-        onPress={() => navigate('Login')}
-      />
+      <Provider store={configureStore}>
+        <MasterNavigator />
+      </Provider>
     );
   }
 }
-
-const MainNavigator = createStackNavigator({
-  Home: {screen: HomeScreen},
-  Login: {screen: Login},
-});
-
-const App = createAppContainer(MainNavigator);
-
-export default App;
 
 
 
