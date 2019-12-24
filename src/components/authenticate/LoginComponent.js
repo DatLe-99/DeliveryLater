@@ -32,7 +32,6 @@ class LoginComponent extends Component {
     };
   }
 
-<<<<<<< HEAD
   onSignIn = () => {
     if (!this.state.isLoading) {
       this.setState({isLoading: true});
@@ -42,36 +41,15 @@ class LoginComponent extends Component {
           password: this.state.password,
         })
         .then(() => {
-          console.log(this.props.signInData.dataRes.status);
-          this.setState({isLoading: false});
-          if (this.props.signInData.dataRes.status === true) {
+          this.setState({isLoad: false});
+          if (this.props.signInData.success) {
             this.setState({isLoading: false});
-            console.log('khoadfasdf');
             this.props.navigation.navigate('Home');
           } else {
             this.setState({isLoading: false});
             this.alertMessage(this.props.signInData.errorMessage);
           }
         });
-=======
-    onSignIn = () => {
-        if (!this.state.isLoading) {
-            this.setState({ isLoading: true })
-            this.props.signInAction({
-                phone: this.state.username,
-                password: this.state.password
-            }).then(() => {
-                this.setState({ isLoad: false })
-                if (this.props.signInData.success ) {
-                    this.setState({ isLoading: false })
-                    this.props.navigation.navigate("Home")
-                } else {
-                    this.setState({ isLoading: false })
-                    this.alertMessage(this.props.signInData.errorMessage)
-                }
-            })
-        }
->>>>>>> 3883da4d958ffc3b099141ebe4e62a6ba612d7d2
     }
   };
 
