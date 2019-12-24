@@ -11,7 +11,8 @@ import {
     ActivityIndicator,
     Keyboard,
     BackHandler,
-    TextInput
+    TextInput,
+    ToastAndroid
 } from 'react-native';
 
 import { WINDOW_SIZE } from '../../utils/scale';
@@ -29,7 +30,7 @@ class HomeComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchQuery: '',
+      searchQuery: 'con cu',
       isLoading: false,
     };
   }
@@ -39,25 +40,23 @@ class HomeComponent extends Component {
   };
 
   pressReturnSearchKey = () => {
-      if (e.nativeEvent.key == 'Enter') {
-        if (!this.state.isLoading) {
-          this.setState({isLoading: true});
-          this.props
-            .searchAction({
-              searchQuery: this.state.searchQuery,
-            })
-            .then(() => {
-              this.setState({isLoading: false});
-              if (this.props.searchData.success) {
-                this.setState({isLoading: false});
-                this.props.navigation.navigate('Search');
-              } else {
-                this.setState({isLoading: false});
-                this.alertMessage(this.props.searchData.errorMessage);
-              }
-            });
-        }
-      }
+    if (!this.state.isLoading) {
+      this.setState({isLoading: true});
+      this.props
+        .searchAction({
+          name: this.state.searchQuery,
+        })
+        .then(() => {
+          this.setState({isLoading: false});
+          if (this.props.searchData.success) {
+            this.setState({isLoading: false});
+            this.props.navigation.navigate('Search');
+          } else {
+            this.setState({isLoading: false});
+            this.alertMessage(this.props.searchData.errorMessage);
+          }
+        });
+    }
   }
 
   alertMessage = title => {
@@ -84,11 +83,24 @@ class HomeComponent extends Component {
         <View
           style={{alignContents: 'center', flexDirection: 'column', flex: 1}}>
           <SearchBox
-            onPressNoti={() => this.onPressNoti()}
-            pressReturnSearchKey = {() => this.pressReturnSearchKey()}
-            onChangeSearchQuery={text => {
-              this.setState({searchQuery: text});
+            onSubmitEditing = { () =>{
+              this.pressReturnSearchKey()
             }}
+            // pressReturnSearchKey={(event) => {
+            //   if (event.nativeEvent.key == "Submit") {
+            //     ToastAndroid.show("PASS",ToastAndroid.SHORT)
+            //     this.pressReturnSearchKey()
+            //   }
+            //   else {
+            //     ToastAndroid.show("FAIL", ToastAndroid.SHORT)
+            //     this.alertMessage = 'FALSE'
+            //   }
+            // }}
+            onChangeSearchQuery={text => {
+              this.setState({ searchQuery: text });
+            }}
+
+            onPressNoti={() => this.onPressNoti()}
           />
           <AddressBox />
         </View>
@@ -132,7 +144,8 @@ class SearchBox extends Component {
                   color: 'rgba(233,218,218,0.5)',
                 }}
                 onChangeText={this.props.onChangeSearchQuery}
-                onKeyPress = {this.props.pressReturnSearchKey}
+                onSubmitEditing={this.props.onSubmitEditing}
+                // onKeyPress = {this.props.pressReturnSearchKey}
               />
             </View>
             <TouchableOpacity
