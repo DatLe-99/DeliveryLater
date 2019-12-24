@@ -39,8 +39,8 @@ class LoginComponent extends Component {
                 phone: this.state.username,
                 password: this.state.password
             }).then(() => {
-                this.setState({ isLoad: false })
-                if (this.props.signInData.status = true) {
+                this.setState({ isLoading: false })
+                if (this.props.signInData.status === true) {
                     this.setState({ isLoading: false })
                     this.props.navigation.navigate("Home")
                 } else {

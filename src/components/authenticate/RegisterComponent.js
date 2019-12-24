@@ -22,46 +22,96 @@ import LoginBackground from 'images/LoginBackground.jpg';
 
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { signInAction } from '../../redux/action';
+import {signUpAction} from '../../redux/action';
 
-class RegisterComponent extends Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            phone: "",
-            password: "",
-            passwordConfirm: "",
-            email:"",
-            isLoading: false,
-        }
-    }
+class RegisterComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      phone: '',
+      password: '',
+      passwordConfirm: '',
+      email: '',
+      isLoading: false,
+    };
+  }
 
-    render(){
-        return(
-            <View>
-                <ImageBackground
-                    source={LoginBackground} style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height }}>
-                    <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop: 50}}>
-                        <Header ></Header>
-                        <BoxRegister
-                         onChangePhone={text => {
-                            this.setState({ phone: text })
-                        }}
-                        onChangePassword={text => {
-                            this.setState({ password: text })
-                        }}
-                        onChangePasswordConfirm={text => {
-                            this.setState({ passwordConfirm: text })
-                        }}
-                        onChangeEmail={text => {
-                            this.setState({ email: text })
-                        }}/>
-                        <RegisterButton onPressRegister={() => this.onSignUp()}/>
-                    </View>
-                </ImageBackground>
-            </View>
-        );
+  onSignUp = () => {
+    if (!this.state.isLoading) {
+      this.setState({isLoading: true});
+      this.props
+        .signUpAction({
+          phone: this.state.username,
+          password: this.state.password,
+          passwordConfirm: this.state.passwordConfirm,
+          email: this.state.email,
+        })
+        .then(() => {
+          this.setState({isLoading: false});
+          if ((this.props.signUpData.status == true)) {
+            this.setState({isLoading: false});
+            this.props.navigation.navigate('Home');
+          } else {
+            this.setState({isLoading: false});
+            this.alertMessage(this.props.signUpData.errorMessage);
+          }
+        });
     }
+  };
+
+  alertMessage = title => {
+    Alert.alert(
+      '',
+      title,
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            return;
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  render() {
+    return (
+      <View>
+        <ImageBackground
+          source={LoginBackground}
+          style={{
+            width: Dimensions.get('window').width,
+            height: Dimensions.get('window').height,
+          }}>
+          <View
+            style={{
+              alignContents: 'center',
+              flexDirection: 'column',
+              alignItems: 'center',
+              marginTop: 50,
+            }}>
+            <Header></Header>
+            <BoxRegister
+              onChangePhone={text => {
+                this.setState({phone: text});
+              }}
+              onChangePassword={text => {
+                this.setState({password: text});
+              }}
+              onChangePasswordConfirm={text => {
+                this.setState({passwordConfirm: text});
+              }}
+              onChangeEmail={text => {
+                this.setState({email: text});
+              }}
+            />
+            <RegisterButton onPressRegister={() => this.onSignUp()} />
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  }
 }
 class Header extends Component{
     render(){
@@ -156,7 +206,6 @@ class BoxEmail extends Component{
             <TextInput 
             onChangeText={this.props.onChangeEmail}
             placeholder= "Email" 
-            secureTextEntry={true} 
             style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
           </View>
         );
@@ -180,13 +229,6 @@ class RegisterButton extends Component{
                 <Text style={styles.text, { color: '#FFFFFF', fontWeight: "bold", width: 208, height: 42, fontSize: 16, textAlignVertical: "center",textAlign: "center"}}>Đăng Ký</Text>
             </TouchableOpacity>
         );
-    }
-}
-
-
-function mapStateToProps(state) {
-    return {
-
     }
 }
 
@@ -216,10 +258,15 @@ const styles = StyleSheet.create({
   });
   
   
+function mapStateToProps(state) {
+  return {
+    signUpData: state.SignUpReducer,
+  };
+}
 
 function dispatchToProps(dispatch) {
     return bindActionCreators({
-      
+        signUpAction,
     }, dispatch);
 }
 
