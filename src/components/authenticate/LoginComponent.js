@@ -40,7 +40,7 @@ class LoginComponent extends Component {
                 password: this.state.password
             }).then(() => {
                 this.setState({ isLoad: false })
-                if (this.props.signInData.status = true) {
+                if (this.props.signInData.success ) {
                     this.setState({ isLoading: false })
                     this.props.navigation.navigate("Home")
                 } else {

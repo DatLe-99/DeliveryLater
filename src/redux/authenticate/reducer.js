@@ -21,7 +21,7 @@ export default (state = initialState, action) => {
         case SIGN_IN_SUCCESS:
             return {
                 error: false,
-                success: action.dataResult.success,
+                success: action.dataResult.status,
                 dataRes: action.dataResult.data,
                 errorMessage: action.dataResult.message,
             };
