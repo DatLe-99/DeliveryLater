@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Login from './Component/Login';
 import Register from './Component/Register';
-import { Provider } from 'react-redux';
+import {Provider} from 'react-redux';
 import MasterNavigator from './src/navigations';
 import configureStore from './src/redux';
 import {
@@ -59,8 +59,3 @@ export default class App extends Component {
     );
   }
 }
-
-
-
-
-

@@ -45,4 +45,4 @@ const signUpAction = (params) => {
     }
 }
 
-export default signUPAction;
+export default signUpAction;
