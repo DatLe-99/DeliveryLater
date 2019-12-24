@@ -19,7 +19,6 @@ import {FONT_SIZE} from '../../utils/fontsize';
 import LoginBackground from 'images/LoginBackground.jpg';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import BackButton from 'react-navigation-stack/lib/typescript/views/Header/BackButtonWeb';
 
 class HomeComponent extends Component {
   constructor(props) {
