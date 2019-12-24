@@ -41,7 +41,7 @@ class RegisterComponent extends Component {
       this.setState({isLoading: true});
       this.props
         .signUpAction({
-          phone: this.state.username,
+          phone: this.state.phone,
           password: this.state.password,
           passwordConfirm: this.state.passwordConfirm,
           email: this.state.email,
@@ -129,7 +129,7 @@ class BoxRegister extends Component{
     render(){
         return (
           <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop:20}}>
-                <BoxUsername onChangeUsername={this.props.onChangeUsername} ></BoxUsername>
+                <BoxUsername onChangePhone={this.props.onChangePhone} ></BoxUsername>
                 <BoxPassword onChangePassword={this.props.onChangePassword}></BoxPassword>
                 <BoxConfirmPassword onChangePasswordConfirm={this.props.onChangePasswordConfirm}></BoxConfirmPassword>
                 <BoxEmail onChangeEmail={this.props.onChangeEmail}></BoxEmail>
@@ -144,7 +144,7 @@ class BoxUsername extends Component{
         return(
             <View style ={{width: 367, height: 42, backgroundColor: '#21B341', borderRadius: 13}}>
                 <TextInput 
-                onChangeText={this.props.onChangeUsername}
+                onChangeText={this.props.onChangePhone}
                 placeholder= "Số điện thoại" 
                 style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}/>
             </View>
