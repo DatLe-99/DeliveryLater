@@ -129,6 +129,7 @@ class BoxPassword extends Component {
     );
   }
 }
+<<<<<<< HEAD
 class BoxConfirmPassword extends Component {
   render() {
     return (
@@ -157,6 +158,23 @@ class BoxConfirmPassword extends Component {
       </View>
     );
   }
+=======
+class BoxConfirmPassword extends Component{
+    render(){
+        return (
+          <View
+            style={{
+              width: 367,
+              height: 42,
+              backgroundColor: '#AA9B15',
+              borderRadius: 13,
+              marginTop: 20
+            }}>
+            <TextInput placeholder= "Xác Nhận Mật khẩu" secureTextEntry={true} style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
+          </View>
+        );
+    }
+>>>>>>> 5c93ba65a5d8131335eda3d513d2af2f6f412ff5
 }
 class BoxEmail extends Component {
   render() {
