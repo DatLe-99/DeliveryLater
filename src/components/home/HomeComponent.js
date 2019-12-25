@@ -30,7 +30,7 @@ class HomeComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      searchQuery: 'con cu',
+      searchQuery: '',
       isLoading: false,
     };
   }
@@ -50,7 +50,12 @@ class HomeComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.searchData.success) {
             this.setState({isLoading: false});
-            this.props.navigation.navigate('Search');
+            this.alertMessage(this.props.searchData.dataRes[0].name);
+            this.props.navigation.navigate('Search',
+              {
+                listRestaurant: this.props.searchData.dataRes
+              }
+            );
           } else {
             this.setState({isLoading: false});
             this.alertMessage(this.props.searchData.errorMessage);
