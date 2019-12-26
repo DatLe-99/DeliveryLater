@@ -50,7 +50,6 @@ class HomeComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.searchData.success) {
             this.setState({isLoading: false});
-            this.alertMessage(this.props.searchData.dataRes[0].name);
             this.props.navigation.navigate('Search',
               {
                 listRestaurant: this.props.searchData.dataRes
@@ -121,10 +120,13 @@ class SearchBox extends Component {
             style={{
               marginTop: 20,
               flexDirection: 'row',
-              flex: 0.05,
+              flex: 0.06,
               backgroundColor: '#FFFFFF',
             }}>
-            <View style={{flex: 0.1}} />
+            <TouchableOpacity
+              style={{ flex: 0.1, alignSelf: 'center'}}>
+              <Icon name="left" size={30} color="#000000" />
+            </TouchableOpacity>
             <View
               style={{
                 flex: 0.8,
@@ -146,7 +148,7 @@ class SearchBox extends Component {
                   display: 'flex',
                   alignItems: 'center',
                   textAlign: 'center',
-                  color: 'rgba(233,218,218,0.5)',
+                  color: 'rgba(233,218,218,1)',
                 }}
                 onChangeText={this.props.onChangeSearchQuery}
                 onSubmitEditing={this.props.onSubmitEditing}
@@ -155,7 +157,7 @@ class SearchBox extends Component {
             </View>
             <TouchableOpacity
               onPress={this.props.onPressNoti}
-              style={{flex: 0.1}}>
+              style={{ flex: 0.1, alignSelf: 'center'}}>
               <Icon name="bells" size={30} color="#900" />
             </TouchableOpacity>
           </View>
