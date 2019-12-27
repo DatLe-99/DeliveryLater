@@ -18,7 +18,7 @@ export default (state = initialState, action) => {
         return {
           error: false,
           success: action.dataResult.status,
-          dataRes: action.dataResult.store,
+          dataRes: action.dataResult,
           errorMessage: action.dataResult.message,
         };
       case SEARCH_FAILURE:

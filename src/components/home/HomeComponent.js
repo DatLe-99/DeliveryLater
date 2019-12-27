@@ -12,7 +12,8 @@ import {
     Keyboard,
     BackHandler,
     TextInput,
-    ToastAndroid
+    ToastAndroid,
+    PermissionsAndroid
 } from 'react-native';
 
 import { WINDOW_SIZE } from '../../utils/scale';
@@ -20,20 +21,63 @@ import { FONT_SIZE } from '../../utils/fontsize';
 import LoginBackground from 'images/LoginBackground.jpg';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Geolocation from 'react-native-geolocation-service'
 
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import {searchAction} from '../../redux/action';
 
-
+export async function request_device_location_runtime_permission(){
+  try{
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        'title': 'ReactNativeCode Location Permission',
+        'message': 'ReactNativeCode App needs access to your location'
+      }
+    )
+    if(granted != PermissionsAndroid.RESULTS.GRANTED){
+      Alert.alert("Location Permission Not Granted");
+    }
+  }catch(err){
+    console.warn(err)
+  }
+}
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
       searchQuery: '',
       isLoading: false,
+      latitude: null,
+      longitude: null,
+      error: null
     };
   }
+
+  async componentDidMount() {
+    if (Platform.OS === 'android') {
+      await request_device_location_runtime_permission();
+    }
+    this.getLongLat = Geolocation.watchPosition(
+      (position) => {
+        console.log(position)
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 2000, maximumAge: 100, distanceFilter: 10 },
+    );
+
+  }
+
+  componentWillUnmount(){
+    Geolocation.clearWatch(this.getLongLat);
+  }
+  
 
   onPressNoti = () => {
     this.alertMessage('Da nhan notification');
@@ -52,7 +96,7 @@ class HomeComponent extends Component {
             this.setState({isLoading: false});
             this.props.navigation.navigate('Search',
               {
-                listRestaurant: this.props.searchData.dataRes
+                listRestaurant: this.props.searchData.dataRes.store
               }
             );
           } else {
@@ -107,6 +151,7 @@ class HomeComponent extends Component {
             onPressNoti={() => this.onPressNoti()}
           />
           <AddressBox />
+          <Text>{this.state.longitude}</Text>
         </View>
       </ImageBackground>
     );

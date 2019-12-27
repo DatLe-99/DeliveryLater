@@ -5,6 +5,7 @@ import LoginComponent from '../components/authenticate/LoginComponent';
 import HomeComponent from '../components/home/HomeComponent';
 import RegisterComponent from '../components/authenticate/RegisterComponent';
 import SearchComponent from '../components/search/SearchComponent';
+import RestaurantComponent from '../components/restaurant/RestaurantComponent'
 
 
 const RootNavigator = createStackNavigator(
@@ -29,6 +30,12 @@ const RootNavigator = createStackNavigator(
     },
     Search: {
       screen: SearchComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+    Restaurant: {
+      screen: RestaurantComponent,
       navigationOptions: {
         gesturesEnabled: false,
       },
