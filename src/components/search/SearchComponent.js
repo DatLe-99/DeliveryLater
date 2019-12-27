@@ -171,7 +171,7 @@ class SearchComponent extends Component {
                     onChangeSearchQuery={text => {
                         this.setState({ searchQuery: text });
                     }}
-                    onPress={() => this.props.navigation.navigate("Home")}
+                    onBack={() => this.props.navigation.navigate("Home")}
             ></SearchBox>
             <View style={{ flex: 1, marginTop: 10}}>
                 <FlatList
@@ -215,7 +215,7 @@ class SearchBox extends Component {
                     backgroundColor: '#FFFFFF',
                 }}>
                 <TouchableOpacity
-                    onPressBack = {this.props.onPressBack}
+                    onPress = {this.props.onBack}
                     style={{ flex: 0.1, alignSelf: 'center' }}>
                     <Icon name="left" size={30} color="#000000" />
                 </TouchableOpacity>
@@ -240,7 +240,7 @@ class SearchBox extends Component {
                             display: 'flex',
                             alignItems: 'center',
                             textAlign: 'center',
-                            color: 'rgba(233,218,218,1)',
+                            color: '#000000',
                         }}
                         onChangeText={this.props.onChangeSearchQuery}
                         onSubmitEditing={this.props.onSubmitEditing}

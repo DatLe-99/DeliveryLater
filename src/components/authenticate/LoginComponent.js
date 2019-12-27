@@ -118,7 +118,7 @@ class BoxUsername extends Component {
             <View style={{ width: 367, height: 42, backgroundColor: '#21B341', borderRadius: 13 }}>
                 <TextInput
                     placeholder="Số điện thoại"
-                    style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)' }}
+                    style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF' }}
                     onChangeText={this.props.onChangeUsername}
                 />
             </View>
@@ -139,7 +139,7 @@ class BoxPassword extends Component {
                 }}>
                 <TextInput placeholder="Mật khẩu"
                     secureTextEntry={true}
-                    style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)' }}
+                    style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF' }}
                     onChangeText={this.props.onChangePassword}
                 />
             </View>

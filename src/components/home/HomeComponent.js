@@ -13,7 +13,7 @@ import {
     BackHandler,
     TextInput,
     ToastAndroid,
-    PermissionsAndroid
+    PermissionsAndroid,
 } from 'react-native';
 
 import { WINDOW_SIZE } from '../../utils/scale';
@@ -123,6 +123,28 @@ class HomeComponent extends Component {
     );
   };
 
+  exitApp = () =>{
+    Alert.alert(
+      '',
+      "Bạn có muốn thoát khỏi ứng dụng",
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            BackHandler.exitApp()
+          },
+        },
+        {
+          text: 'Không',
+          onPress: () => {
+            return;
+          }
+        }
+      ],
+      { cancelable: false },
+    );
+  }
+
   render() {
     return (
       <ImageBackground
@@ -149,6 +171,8 @@ class HomeComponent extends Component {
             }}
 
             onPressNoti={() => this.onPressNoti()}
+
+            onBack = {() => this.exitApp()}
           />
           <AddressBox />
           <Text>{this.state.longitude}</Text>
@@ -169,6 +193,7 @@ class SearchBox extends Component {
               backgroundColor: '#FFFFFF',
             }}>
             <TouchableOpacity
+              onPress = {this.props.onBack}
               style={{ flex: 0.1, alignSelf: 'center'}}>
               <Icon name="left" size={30} color="#000000" />
             </TouchableOpacity>
@@ -193,7 +218,7 @@ class SearchBox extends Component {
                   display: 'flex',
                   alignItems: 'center',
                   textAlign: 'center',
-                  color: 'rgba(233,218,218,1)',
+                  color: '#000000',
                 }}
                 onChangeText={this.props.onChangeSearchQuery}
                 onSubmitEditing={this.props.onSubmitEditing}
