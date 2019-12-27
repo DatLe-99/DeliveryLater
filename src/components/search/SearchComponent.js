@@ -179,10 +179,11 @@ class SearchComponent extends Component {
                     listKey={(item, index) => 'D' + index.toString()}
                     renderItem={({ item }) => 
                         <TouchableOpacity
-                            onPress = {() => this.props.navigation.navigate("Restaurant", {
+                            onPress = {() => this.props.navigation.navigate("Restaurant", 
+                            {
                                 listMenu: {item}
                             })}
-                        >
+                            >
                             <RestaurantItem
                                 res={item}
                             />

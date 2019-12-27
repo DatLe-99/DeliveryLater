@@ -24,7 +24,8 @@ export default class RestaurantComponent extends Component{
     render(){
         return(
             <View>
-                <Text>{this.data.Categories[0]}</Text>
+                <Text>{this.data.Categories[0].Items[0].name}</Text>
+                {/* Can not get this data */}
             </View>
         );
     }
