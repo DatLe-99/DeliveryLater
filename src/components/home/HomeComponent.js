@@ -28,6 +28,7 @@ import {searchAction} from '../../redux/action';
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       searchQuery: '',
       isLoading: false,

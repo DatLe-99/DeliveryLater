@@ -32,24 +32,24 @@ class LoginComponent extends Component {
     };
   }
 
-    onSignIn = () => {
-        if (!this.state.isLoading) {
-            this.setState({ isLoading: true })
-            this.props.signInAction({
-                phone: this.state.username,
-                password: this.state.password
-            }).then(() => {
-                this.setState({ isLoading: false })
-                if (this.props.signInData.success) {
-                    this.setState({ isLoading: false })
-                    this.props.navigation.navigate("Home")
-                } else {
-                    this.setState({ isLoading: false })
-                    this.alertMessage(this.props.signInData.errorMessage)
-                }
-            })
-        }
-
+  onSignIn = () => {
+    if (!this.state.isLoading) {
+      this.setState({isLoading: true});
+      this.props
+        .signInAction({
+          phone: this.state.username,
+          password: this.state.password,
+        })
+        .then(() => {
+          this.setState({isLoading: false});
+          if (this.props.signInData.success) {
+            this.setState({isLoading: false});
+            this.props.navigation.navigate('Home');
+          } else {
+            this.setState({isLoading: false});
+            this.alertMessage(this.props.signInData.errorMessage);
+          }
+        });
     }
   };
 
