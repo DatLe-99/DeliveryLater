@@ -1,60 +1,117 @@
 import React, {Component} from 'react';
 import {
-  Dimensions,
-  Text,
   View,
-  Image,
-  TextInput,
+  Text,
   StyleSheet,
-  TouchableOpacity,
-  FlatList,
-  ToastAndroid,
   ImageBackground,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  ActivityIndicator,
+  Keyboard,
+  BackHandler,
+  TextInput,
 } from 'react-native';
-import PasswordInputText from 'react-native-hide-show-password-input';
-var deviceWidth = Dimensions.get('window').width;
-var deviceHeight = Dimensions.get('window').height;
-// ToastAndroid.show(String(deviceWidth),ToastAndroid.LONG)
 
-export default class Login extends Component {
-  render() {
-    return (
-      <View>
-        <ImageBackground
-          source={require('../SourceImage/LoginBackground.jpg')}
-          style={{
-            width: Dimensions.get('window').width,
-            height: Dimensions.get('window').height,
-          }}>
-          <View
-            style={{
-              alignContents: 'center',
-              flexDirection: 'column',
-              alignItems: 'center',
-              marginTop: 50,
-            }}>
-            <Header></Header>
-            <BoxRegister></BoxRegister>
-            <RegisterButton></RegisterButton>
-            <NotHaveAccount></NotHaveAccount>
-          </View>
-        </ImageBackground>
-      </View>
-    );
+import {WINDOW_SIZE} from '../../utils/scale';
+import {FONT_SIZE} from '../../utils/fontsize';
+import LoginBackground from 'images/LoginBackground.jpg';
+
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {signInAction} from '../../redux/action';
+
+class LoginComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '0356222105',
+      password: 'abc',
+      isLoading: false,
+    };
   }
 
+  onSignIn = () => {
+    if (!this.state.isLoading) {
+      this.setState({isLoading: true});
+      this.props
+        .signInAction({
+          phone: this.state.username,
+          password: this.state.password,
+        })
+        .then(() => {
+          this.setState({isLoading: false});
+          if (this.props.signInData.success) {
+            this.setState({isLoading: false});
+            this.props.navigation.navigate('Home');
+          } else {
+            this.setState({isLoading: false});
+            this.alertMessage(this.props.signInData.errorMessage);
+          }
+        });
+    }
+  };
+
+  alertMessage = title => {
+    Alert.alert(
+      '',
+      title,
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            return;
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+
+  render() {
+    return (
+      <ImageBackground
+        source={LoginBackground}
+        style={{width: WINDOW_SIZE.WIDTH, height: WINDOW_SIZE.HEIGHT}}>
+        <View
+          style={{
+            alignContents: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+            marginTop: 50,
+          }}>
+          <Header></Header>
+          <BoxLogin
+            onChangeUsername={text => {
+              this.setState({username: text});
+            }}
+            onChangePassword={text => {
+              this.setState({password: text});
+            }}></BoxLogin>
+          <LoginButton onPress={() => this.onSignIn()}></LoginButton>
+          <ForgotPassword></ForgotPassword>
+          <NotHaveAccount
+            onPressRegister={() =>
+              this.props.navigation.navigate('Register')
+            }></NotHaveAccount>
+        </View>
+      </ImageBackground>
+    );
+  }
 }
+
 class Header extends Component {
   render() {
     return (
       <View style={styles.header}>
-        <Text style={styles.header}>Đăng Ký</Text>
+        <Text style={styles.header}>Đăng Nhập hoặc Đăng Ký</Text>
       </View>
     );
   }
 }
 
-class BoxRegister extends Component {
+class BoxLogin extends Component {
   render() {
     return (
       <View
@@ -64,11 +121,11 @@ class BoxRegister extends Component {
           alignItems: 'center',
           marginTop: 20,
         }}>
-        <BoxUsername></BoxUsername>
-        <BoxPassword></BoxPassword>
-        <BoxConfirmPassword></BoxConfirmPassword>
-        <BoxEmail></BoxEmail>
-        <RegisterwithEmail />
+        <BoxUsername
+          onChangeUsername={this.props.onChangeUsername}></BoxUsername>
+        <BoxPassword
+          onChangePassword={this.props.onChangePassword}></BoxPassword>
+        <LoginwithEmail />
       </View>
     );
   }
@@ -96,7 +153,9 @@ class BoxUsername extends Component {
             alignItems: 'center',
             textAlign: 'center',
             color: 'rgba(233,218,218,0.5)',
-          }}></TextInput>
+          }}
+          onChangeText={this.props.onChangeUsername}
+        />
       </View>
     );
   }
@@ -126,72 +185,15 @@ class BoxPassword extends Component {
             alignItems: 'center',
             textAlign: 'center',
             color: 'rgba(233,218,218,0.5)',
-          }}></TextInput>
+          }}
+          onChangeText={this.props.onChangePassword}
+        />
       </View>
     );
   }
 }
 
-class BoxConfirmPassword extends Component {
-  render() {
-    return (
-      <View
-        style={{
-          width: 367,
-          height: 42,
-          backgroundColor: '#AA9B15',
-          borderRadius: 13,
-          marginTop: 20,
-        }}>
-        <TextInput
-          placeholder="Xác Nhận Mật khẩu"
-          secureTextEntry={true}
-          style={{
-            fontFamily: 'Verdana',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            fontSize: 15,
-            lineHeight: 18,
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            color: 'rgba(233,218,218,0.5)',
-          }}></TextInput>
-      </View>
-    );
-  }
-}
-class BoxEmail extends Component {
-  render() {
-    return (
-      <View
-        style={{
-          width: 367,
-          height: 42,
-          backgroundColor: '#AA9B15',
-          borderRadius: 13,
-          marginTop: 20,
-        }}>
-        <TextInput
-          placeholder="Email"
-          secureTextEntry={true}
-          style={{
-            fontFamily: 'Verdana',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            fontSize: 15,
-            lineHeight: 18,
-            display: 'flex',
-            alignItems: 'center',
-            textAlign: 'center',
-            color: 'rgba(233,218,218,0.5)',
-          }}></TextInput>
-      </View>
-    );
-  }
-}
-
-class RegisterwithEmail extends Component {
+class LoginwithEmail extends Component {
   render() {
     return (
       <View
@@ -209,17 +211,18 @@ class RegisterwithEmail extends Component {
               fontWeight: 'bold',
             })
           }>
-          Đăng Ký bằng email
+          Đăng nhập bằng email
         </Text>
       </View>
     );
   }
 }
 
-class RegisterButton extends Component {
+class LoginButton extends Component {
   render() {
     return (
-      <View
+      <TouchableOpacity
+        onPress={this.props.onPress}
         style={{
           width: 208,
           heigth: 42,
@@ -239,7 +242,29 @@ class RegisterButton extends Component {
               textAlign: 'center',
             })
           }>
-          Đăng Ký
+          Đăng nhập
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+}
+
+class ForgotPassword extends Component {
+  render() {
+    return (
+      <View style={{width: 208, height: 42, marginTop: 10}}>
+        <Text
+          style={
+            (styles.text,
+            {
+              color: '#FFFFFF',
+              fontSize: 12,
+              lineHeight: 14,
+              textDecorationLine: 'underline',
+              textAlign: 'center',
+            })
+          }>
+          Quên mật khẩu
         </Text>
       </View>
     );
@@ -249,7 +274,8 @@ class RegisterButton extends Component {
 class NotHaveAccount extends Component {
   render() {
     return (
-      <View
+      <TouchableOpacity
+        onPress={this.props.onPressRegister}
         style={{
           width: 367,
           heigth: 42,
@@ -268,17 +294,17 @@ class NotHaveAccount extends Component {
               textAlign: 'center',
             })
           }>
-          Bạn da có tài khoản.
+          Bạn chưa có tài khoản.
           <Text
             style={{
               fontWeight: 'bold',
               textDecorationLine: 'underline',
               lineHeight: 14,
             }}>
-            Đăng nhap
+            Đăng ký
           </Text>
         </Text>
-      </View>
+      </TouchableOpacity>
     );
   }
 }
@@ -307,3 +333,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+function mapStateToProps(state) {
+  return {
+    signInData: state.SignInReducer,
+  };
+}
+
+function dispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      signInAction,
+    },
+    dispatch,
+  );
+}
+
+export default connect(mapStateToProps, dispatchToProps)(LoginComponent);

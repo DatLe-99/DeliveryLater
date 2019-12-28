@@ -33,6 +33,7 @@ export default class RegisterProfile extends Component{
           </View>
       );
   }
+}
 
   class Header extends Component{
     render(){
