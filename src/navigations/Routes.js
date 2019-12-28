@@ -1,10 +1,12 @@
-import { createStackNavigator } from 'react-navigation-stack';
-import getSlideFromRightTransitionConfig from '../utils/transitionConfig'; 
+import {createStackNavigator} from 'react-navigation-stack';
+import getSlideFromRightTransitionConfig from '../utils/transitionConfig';
 
 import LoginComponent from '../components/authenticate/LoginComponent';
 import HomeComponent from '../components/home/HomeComponent';
 import RegisterComponent from '../components/authenticate/RegisterComponent';
 import SearchComponent from '../components/search/SearchComponent';
+import RestaurantComponent from '../components/restaurant/RestaurantComponent'
+import CalendarComponent from '../components/order/CalendarComponent';
 
 
 const RootNavigator = createStackNavigator(
@@ -29,6 +31,19 @@ const RootNavigator = createStackNavigator(
     },
     Search: {
       screen: SearchComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+    Restaurant: {
+      screen: RestaurantComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+
+    Calendar: {
+      screen: CalendarComponent,
       navigationOptions: {
         gesturesEnabled: false,
       },

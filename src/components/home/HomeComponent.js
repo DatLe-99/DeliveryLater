@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     View,
     Image,
@@ -13,12 +13,13 @@ import {
     Keyboard,
     BackHandler,
     TextInput,
+    Dimensions,
     ToastAndroid,
-    Dimensions
+    PermissionsAndroid,
 } from 'react-native';
 
-import { WINDOW_SIZE } from '../../utils/scale';
-import { FONT_SIZE } from '../../utils/fontsize';
+import {WINDOW_SIZE} from '../../utils/scale';
+import {FONT_SIZE} from '../../utils/fontsize';
 import LoginBackground from 'images/LoginBackground.jpg';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -27,19 +28,44 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 //import IconEntypo from 'react-native-vector-icons/Entypo';
 //import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import Geolocation from 'react-native-geolocation-service'
 
-import {searchAction} from '../../redux/action';
+
+import {searchAction, addressAction, updateAction} from '../../redux/action';
 import IconAwesome from 'react-native-vector-icons/FontAwesome'
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import TabNavigator from 'react-native-tab-navigator';
+import RNGooglePlaces from 'react-native-google-places';
 
+// export async function request_device_location_runtime_permission(){
+//   try{
+//     const granted = await PermissionsAndroid.request(
+//       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+//       {
+//         'title': 'ReactNativeCode Location Permission',
+//         'message': 'ReactNativeCode App needs access to your location'
+//       }
+//     )
+//     if(granted != PermissionsAndroid.RESULTS.GRANTED){
+//       Alert.alert("Location Permission Not Granted");
+//     }
+//   }catch(err){
+//     console.warn(err)
+//   }
+// }
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       searchQuery: '',
       isLoading: false,
+      latitude: null,
+      longitude: null,
+      error: null,
+      address: '',
+      accountData: this.props.navigation.getParam('accountData'),
     };
   }
 
@@ -60,16 +86,17 @@ class HomeComponent extends Component {
             this.setState({isLoading: false});
             this.props.navigation.navigate('Search',
               {
-                listRestaurant: this.props.searchData.dataRes
+                listRestaurant: this.props.searchData.dataRes.store
               }
             );
+
           } else {
             this.setState({isLoading: false});
             this.alertMessage(this.props.searchData.errorMessage);
           }
         });
     }
-  }
+  };
 
   alertMessage = title => {
     Alert.alert(
@@ -87,6 +114,65 @@ class HomeComponent extends Component {
     );
   };
 
+  exitApp = () =>{
+    Alert.alert(
+      '',
+      "Bạn có muốn thoát khỏi ứng dụng",
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            BackHandler.exitApp()
+          },
+        },
+        {
+          text: 'Không',
+          onPress: () => {
+            return;
+          }
+        }
+      ],
+      { cancelable: false },
+    );
+  }
+
+
+
+  openSearchModal() {
+    RNGooglePlaces.openAutocompleteModal()
+      .then(place => {
+        console.log(place);
+        this.setState({
+          latitude: place.location.latitude,
+          longitude: place.location.longitude,
+          address: place.location.address,
+        })
+        // place represents user's selection from the
+        // suggestions and it is a simplified Google Place object.
+        if (!this.state.isLoading) {
+        this.setState({isLoading: true});
+        this.props
+          .updateAction({
+            ID: this.state.accountData.ID,
+            lat : place.location.latitude,
+            lng: place.location.longitude,
+          })
+          .then(() => {
+            this.setState({isLoading: false});
+            if (this.props.updatedData.success) {
+              this.setState({isLoading: false});
+              console.log(this.props.updatedData.dataRes)
+            } else {
+              this.setState({isLoading: false});
+              this.alertMessage(this.props.updatedData.errorMessage);
+            }
+          });
+        }
+
+      })
+      .catch(error => console.log(error.message));
+  }
+
   render() {
     return (
       // <ImageBackground
@@ -95,24 +181,18 @@ class HomeComponent extends Component {
         <View
           style={{alignContents: 'center', flexDirection: 'column', flex: 1}}>
           <SearchBox
-            onSubmitEditing = { () =>{
-              this.pressReturnSearchKey()
+            onSubmitEditing={() => {
+              this.pressReturnSearchKey();
             }}
-            // pressReturnSearchKey={(event) => {
-            //   if (event.nativeEvent.key == "Submit") {
-            //     ToastAndroid.show("PASS",ToastAndroid.SHORT)
-            //     this.pressReturnSearchKey()
-            //   }
-            //   else {
-            //     ToastAndroid.show("FAIL", ToastAndroid.SHORT)
-            //     this.alertMessage = 'FALSE'
-            //   }
-            // }}
             onChangeSearchQuery={text => {
-              this.setState({ searchQuery: text });
+              this.setState({searchQuery: text});
             }}
-
             onPressNoti={() => this.onPressNoti()}
+
+            onBack = {() => this.exitApp()}
+          />
+          <AddressBox
+            openSearchModal = {() => this.openSearchModal()}
           />
           <AddressBox />
 
@@ -121,7 +201,7 @@ class HomeComponent extends Component {
           <FoodRecommendBar />
           {/* <TabbarView /> */}
           <TabDemo />
-        
+
         </View>
       // </ImageBackground>
     );
@@ -129,94 +209,101 @@ class HomeComponent extends Component {
 }
 
 class SearchBox extends Component {
-    render(){
-        return (
-          <View
+  render() {
+    return (
+      <View
+        style={{
+          marginTop: 20,
+          flexDirection: 'row',
+          flex: 0.06,
+          backgroundColor: '#FFFFFF',
+        }}>
+        <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
+          <Icon
+          onPress = {this.props.onBack}
+          name="left" size={30} color="#000000" />
+        </TouchableOpacity>
+        <View
+          style={{
+            flex: 0.8,
+            borderRadius: 20,
+            borderColor: '#000000',
+            shadowColor: 'rgba(0,0,0,0.25)',
+            borderWidth: 1,
+            alignSelf: 'center',
+            justifyContent: 'center',
+          }}>
+          <TextInput
+            placeholder="Tìm kiếm nhà hàng món ăn"
             style={{
-              marginTop: 20,
-              flexDirection: 'row',
-              flex: 0.06,
-              backgroundColor: '#FFFFFF',
-            }}>
-            <TouchableOpacity
-              style={{ flex: 0.1, alignSelf: 'center'}}>
-              <IconAntDesign name="left" size={30} color="#000000" />
-            </TouchableOpacity>
-            <View
-              style={{
-                flex: 0.8,
-                borderRadius: 20,
-                borderColor: '#000000',
-                shadowColor: 'rgba(0,0,0,0.25)',
-                borderWidth: 1,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}>
-              <TextInput
-                placeholder="Tìm kiếm nhà hàng món ăn"
-                style={{
-                  fontFamily: 'Verdana',
-                  fontStyle: 'normal',
-                  fontWeight: 'normal',
-                  fontSize: 15,
-                  lineHeight: 18,
-                  display: 'flex',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                  color: 'rgba(233,218,218,1)',
-                }}
-                onChangeText={this.props.onChangeSearchQuery}
-                onSubmitEditing={this.props.onSubmitEditing}
-                // onKeyPress = {this.props.pressReturnSearchKey}
-              />
-            </View>
-            <TouchableOpacity
-              onPress={this.props.onPressNoti}
-              style={{ flex: 0.1, alignSelf: 'center'}}>
-              <IconAntDesign name="bells" size={30} color="#900" />
-            </TouchableOpacity>
-          </View>
-        );
-    }
+
+              fontFamily: 'Verdana',
+              fontStyle: 'normal',
+              fontWeight: 'normal',
+              fontSize: 15,
+              lineHeight: 18,
+              display: 'flex',
+              alignItems: 'center',
+              textAlign: 'center',
+              color: '#000000',
+            }}
+            onChangeText={this.props.onChangeSearchQuery}
+            onSubmitEditing={this.props.onSubmitEditing}
+            // onKeyPress = {this.props.pressReturnSearchKey}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={this.props.onPressNoti}
+          style={{flex: 0.1, alignSelf: 'center'}}>
+          <Icon name="bells" size={30} color="#900" />
+        </TouchableOpacity>
+      </View>
+    );
+  }
 }
 
 class AddressBox extends Component {
-    render() {
-        return (
-          <View
-            style={{
-              marginTop: 12,
-              flexDirection: 'row',
-              flex: 0.05,
-              backgroundColor: '#FFFF',
-            }}>
-            <View style={{flex: 0.1}} />
+  render() {
+    return (
+      <View
+        style={{
+          marginTop: 12,
+          flexDirection: 'row',
+          flex: 0.05,
+          backgroundColor: '#FFFF',
+        }}>
+        <View style={{flex: 0.1}} />
 
-            <View
-              style={{
-                flex: 0.8,
-                borderRadius: 20,
-                borderColor: '#000',
-                shadowColor: 'rgba(0,0,0,0.25)',
-                borderWidth: 1,
-                alignSelf: 'center',
-                justifyContent: 'center',
-              }}>
+        <View
+          style={{
+            flex: 0.8,
+            borderRadius: 20,
+            borderColor: '#000',
+            shadowColor: 'rgba(0,0,0,0.25)',
+            borderWidth: 1,
+            alignSelf: 'center',
+            justifyContent: 'center',
+          }}>
+          <View>
+            <TouchableOpacity onPress={this.props.openSearchModal}>
               <Text
                 style={{
                   fontFamily: 'Times New Roman',
                   fontStyle: 'italic',
-                  fontWeight: 'bold',
+                  fontWeight: 'normal',
                   lineHeight: 41,
                   alignSelf: 'center',
                   justifyContent: 'center',
-                }}>
-                {'227 Nguyen Van Cu, Q5, TP.HCM'}
+                }}
+                >
+                {'Chọn địa chỉ nhận hàng'}
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
-        );
-    }
+        </View>
+      </View>
+    );
+  }
 }
 
 class BannerImageView extends Component {
@@ -228,15 +315,15 @@ class BannerImageView extends Component {
           flexDirection: 'row',
           flex: 0.3,
         }} >
-        
-        <Image 
+
+        <Image
             style={{
               flex: 1,
-              width: undefined, 
+              width: undefined,
               height: undefined,
               borderWidth: 1,
               borderRadius: 20,
-            }}  
+            }}
             source={SaleOff50}
             />
       </View>
@@ -350,7 +437,7 @@ class FoodRecommendBar extends Component {
 
   render() {
       return (
-          <View 
+          <View
             style = { {
               marginTop: 12
           }
@@ -378,7 +465,7 @@ class TabDemo extends Component {
 
   render() {
     return (
-      <TabNavigator 
+      <TabNavigator
         style={styles.container} >
         <TabNavigator.Item
           selected={this.state.selectedTab === 'home'}
@@ -471,6 +558,8 @@ const styles = StyleSheet.create({
 function mapStateToProps(state) {
   return {
     searchData: state.SearchReducer,
+    locationData: state.AddressReducer,
+    updatedData: state.UpdateReducer,
   };
 }
 
@@ -478,6 +567,8 @@ function dispatchToProps(dispatch) {
   return bindActionCreators(
     {
       searchAction,
+      addressAction,
+      updateAction,
     },
     dispatch,
   );

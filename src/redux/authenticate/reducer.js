@@ -22,7 +22,7 @@ export default (state = initialState, action) => {
             return {
                 error: false,
                 success: action.dataResult.status,
-                dataRes: action.dataResult.data,
+                dataRes: action.dataResult.account,
                 errorMessage: action.dataResult.message,
             };
         case SIGN_IN_FAILURE:
