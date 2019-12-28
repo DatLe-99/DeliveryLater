@@ -53,6 +53,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 export default class App extends Component {
   render() {
     return (
+
       <Provider store={configureStore}>
         <MasterNavigator />
       </Provider>

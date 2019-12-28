@@ -15,6 +15,7 @@ import PasswordInputText from 'react-native-hide-show-password-input';
 var deviceWidth = Dimensions.get('window').width;
 var deviceHeight = Dimensions.get('window').height;
 // ToastAndroid.show(String(deviceWidth),ToastAndroid.LONG)
+
 export default class Login extends Component {
   render() {
     return (
@@ -41,6 +42,7 @@ export default class Login extends Component {
       </View>
     );
   }
+
 }
 class Header extends Component {
   render() {
