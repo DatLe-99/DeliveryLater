@@ -11,8 +11,11 @@
   },
   "dependencies": {
     "axios": "^0.19.0",
+    "moment": "^2.24.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
+    "react-native-calendars": "^1.220.0",
+    "react-native-geocoding": "^0.4.0",
     "react-native-geolocation-service": "^3.1.0",
     "react-native-gesture-handler": "^1.5.2",
     "react-native-google-places": "^3.1.2",
