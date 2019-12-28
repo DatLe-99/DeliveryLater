@@ -28,22 +28,22 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import {searchAction} from '../../redux/action';
 import RNGooglePlaces from 'react-native-google-places';
 
-export async function request_device_location_runtime_permission(){
-  try{
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      {
-        'title': 'ReactNativeCode Location Permission',
-        'message': 'ReactNativeCode App needs access to your location'
-      }
-    )
-    if(granted != PermissionsAndroid.RESULTS.GRANTED){
-      Alert.alert("Location Permission Not Granted");
-    }
-  }catch(err){
-    console.warn(err)
-  }
-}
+// export async function request_device_location_runtime_permission(){
+//   try{
+//     const granted = await PermissionsAndroid.request(
+//       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+//       {
+//         'title': 'ReactNativeCode Location Permission',
+//         'message': 'ReactNativeCode App needs access to your location'
+//       }
+//     )
+//     if(granted != PermissionsAndroid.RESULTS.GRANTED){
+//       Alert.alert("Location Permission Not Granted");
+//     }
+//   }catch(err){
+//     console.warn(err)
+//   }
+// }
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
@@ -56,28 +56,28 @@ class HomeComponent extends Component {
     };
   }
 
-  async componentDidMount() {
-    if (Platform.OS === 'android') {
-      await request_device_location_runtime_permission();
-    }
-    this.getLongLat = Geolocation.watchPosition(
-      (position) => {
-        console.log(position)
-        this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          error: null,
-        });
-      },
-      (error) => this.setState({ error: error.message }),
-      { enableHighAccuracy: true, timeout: 2000, maximumAge: 100, distanceFilter: 10 },
-    );
+  // async componentDidMount() {
+  //   if (Platform.OS === 'android') {
+  //     await request_device_location_runtime_permission();
+  //   }
+  //   this.getLongLat = Geolocation.watchPosition(
+  //     (position) => {
+  //       console.log(position)
+  //       this.setState({
+  //         latitude: position.coords.latitude,
+  //         longitude: position.coords.longitude,
+  //         error: null,
+  //       });
+  //     },
+  //     (error) => this.setState({ error: error.message }),
+  //     { enableHighAccuracy: true, timeout: 2000, maximumAge: 100, distanceFilter: 10 },
+  //   );
 
-  }
+  // }
 
-  componentWillUnmount(){
-    Geolocation.clearWatch(this.getLongLat);
-  }
+  // componentWillUnmount(){
+  //   Geolocation.clearWatch(this.getLongLat);
+  // }
   
 
   onPressNoti = () => {
@@ -147,13 +147,9 @@ class HomeComponent extends Component {
   }
 
   openSearchModal() {
-    RNGooglePlaces.openAutocompleteModal()
-      .then((place) => {
-        console.log(place);
-        // place represents user's selection from the
-        // suggestions and it is a simplified Google Place object.
-      })
-      .catch(error => console.log(error.message));  // error is a Javascript Error object
+    RNGooglePlaces.getCurrentPlace(['placeID', 'location', 'name', 'address'])
+      .then((results) => console.log(results))
+      .catch((error) => console.log(error.message));
   }
 
   render() {
