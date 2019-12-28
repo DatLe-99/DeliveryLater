@@ -50,7 +50,8 @@ class RegisterComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.signUpData.success) {
             this.setState({isLoading: false});
-            this.props.navigation.navigate('Home');
+            console.log(this.props.signUpData.dataRes.phone);
+            this.props.navigation.navigate('SignIn');
           } else {
             this.setState({isLoading: false});
             this.alertMessage(this.props.signUpData.errorMessage);

@@ -74,6 +74,7 @@ export default class RestaurantComponent extends Component{
                 <OrderedBar
                     totalprice = {this.state.totalprice}
                     totalitem = {this.state.totalitem}
+                    Setschedule = {() => this.props.navigation.navigate("Calendar")}
                 ></OrderedBar>
             </View>
         );
@@ -132,7 +133,9 @@ class OrderedBar extends Component{
                 <TouchableOpacity style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}>
                     <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Đặt ngay</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
+                <TouchableOpacity 
+                    onPress = {this.props.Setschedule}
+                    style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
                     <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Lên lịch</Text>
                 </TouchableOpacity>
             </View>

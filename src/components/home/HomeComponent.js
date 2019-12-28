@@ -26,7 +26,7 @@ import Geolocation from 'react-native-geolocation-service'
 
 import Icon from 'react-native-vector-icons/AntDesign';
 
-import {searchAction} from '../../redux/action';
+import {searchAction, addressAction, updateAction} from '../../redux/action';
 import RNGooglePlaces from 'react-native-google-places';
 
 // export async function request_device_location_runtime_permission(){
@@ -54,33 +54,11 @@ class HomeComponent extends Component {
       isLoading: false,
       latitude: null,
       longitude: null,
-      error: null
+      error: null,
+      address: '',
+      accountData: this.props.navigation.getParam('accountData'),
     };
   }
-
-  // async componentDidMount() {
-  //   if (Platform.OS === 'android') {
-  //     await request_device_location_runtime_permission();
-  //   }
-  //   this.getLongLat = Geolocation.watchPosition(
-  //     (position) => {
-  //       console.log(position)
-  //       this.setState({
-  //         latitude: position.coords.latitude,
-  //         longitude: position.coords.longitude,
-  //         error: null,
-  //       });
-  //     },
-  //     (error) => this.setState({ error: error.message }),
-  //     { enableHighAccuracy: true, timeout: 2000, maximumAge: 100, distanceFilter: 10 },
-  //   );
-
-  // }
-
-  // componentWillUnmount(){
-  //   Geolocation.clearWatch(this.getLongLat);
-  // }
-  
 
   onPressNoti = () => {
     this.alertMessage('Da nhan notification');
@@ -149,10 +127,41 @@ class HomeComponent extends Component {
     );
   }
 
+
+
   openSearchModal() {
-    RNGooglePlaces.getCurrentPlace(['placeID', 'location', 'name', 'address'])
-      .then((results) => console.log(results))
-      .catch((error) => console.log(error.message));
+    RNGooglePlaces.openAutocompleteModal()
+      .then(place => {
+        console.log(place);
+        this.setState({
+          latitude: place.location.latitude,
+          longitude: place.location.longitude,
+          address: place.location.address,
+        })
+        // place represents user's selection from the
+        // suggestions and it is a simplified Google Place object.
+        if (!this.state.isLoading) {
+        this.setState({isLoading: true});
+        this.props
+          .updateAction({
+            ID: this.state.accountData.ID,
+            lat : place.location.latitude,
+            lng: place.location.longitude,
+          })
+          .then(() => {
+            this.setState({isLoading: false});
+            if (this.props.updatedData.success) {
+              this.setState({isLoading: false});
+              console.log(this.props.updatedData.dataRes)
+            } else {
+              this.setState({isLoading: false});
+              this.alertMessage(this.props.updatedData.errorMessage);
+            }
+          });
+        }
+        
+      })
+      .catch(error => console.log(error.message));
   }
 
   render() {
@@ -173,14 +182,9 @@ class HomeComponent extends Component {
 
             onBack = {() => this.exitApp()}
           />
-          <AddressBox />
-          <View >
-            <TouchableOpacity
-              onPress={() => this.openSearchModal()}
-            >
-              <Text>Pick a Place</Text>
-            </TouchableOpacity>
-          </View>
+          <AddressBox 
+            openSearchModal = {() => this.openSearchModal()}
+          />
         </View>
       </ImageBackground>
     );
@@ -198,7 +202,9 @@ class SearchBox extends Component {
           backgroundColor: '#FFFFFF',
         }}>
         <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
-          <Icon name="left" size={30} color="#000000" />
+          <Icon 
+          onPress = {this.props.onBack}
+          name="left" size={30} color="#000000" />
         </TouchableOpacity>
         <View
           style={{
@@ -222,7 +228,7 @@ class SearchBox extends Component {
               display: 'flex',
               alignItems: 'center',
               textAlign: 'center',
-              color: 'rgba(233,218,218,1)',
+              color: '#000000',
             }}
             onChangeText={this.props.onChangeSearchQuery}
             onSubmitEditing={this.props.onSubmitEditing}
@@ -261,17 +267,22 @@ class AddressBox extends Component {
             alignSelf: 'center',
             justifyContent: 'center',
           }}>
-          <Text
-            style={{
-              fontFamily: 'Times New Roman',
-              fontStyle: 'italic',
-              fontWeight: 'bold',
-              lineHeight: 41,
-              alignSelf: 'center',
-              justifyContent: 'center',
-            }}>
-            {'227 Nguyen Van Cu, Q5, TP.HCM'}
-          </Text>
+          <View>
+            <TouchableOpacity onPress={this.props.openSearchModal}>
+              <Text
+                style={{
+                  fontFamily: 'Times New Roman',
+                  fontStyle: 'italic',
+                  fontWeight: 'normal',
+                  lineHeight: 41,
+                  alignSelf: 'center',
+                  justifyContent: 'center',
+                }}
+                >
+                {'Chọn địa chỉ nhận hàng'}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     );
@@ -281,6 +292,8 @@ class AddressBox extends Component {
 function mapStateToProps(state) {
   return {
     searchData: state.SearchReducer,
+    locationData: state.AddressReducer,
+    updatedData: state.UpdateReducer,
   };
 }
 
@@ -288,6 +301,8 @@ function dispatchToProps(dispatch) {
   return bindActionCreators(
     {
       searchAction,
+      addressAction,
+      updateAction,
     },
     dispatch,
   );
