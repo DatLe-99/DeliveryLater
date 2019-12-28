@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import moment from 'moment';
-import {View, Arrow} from 'react-native';
+import {View, Arrow, TouchableOpacity, Text, StyleSheet} from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
 import {FONT_SIZE} from '../../utils/fontsize';
@@ -24,7 +24,6 @@ export default class CalendarComponent extends Component {
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
-    console.log(this.state.markdate);
     let marked = true;
     if (this.state.markdate[selectedDay]) {
       marked = !this.state.markdate[selectedDay].marked;
@@ -35,6 +34,17 @@ export default class CalendarComponent extends Component {
     };
     this.setState({markdate: updateMarkdate});
   };
+
+  orders() {
+    var Order = [];
+    for (let key in this.state.markdate) {
+      if (this.state.markdate[key].marked) {
+        Order.push(key);
+      }
+    }
+    console.log(Order);
+  }
+
   render() {
     return (
       <View>
@@ -81,7 +91,7 @@ export default class CalendarComponent extends Component {
           onPressArrowRight={addMonth => addMonth()}
           markedDates={this.state.markdate}
         />
-        <OrderList />
+        <OrderList onPress={() => this.orders()} />
       </View>
     );
   }
@@ -90,37 +100,62 @@ export default class CalendarComponent extends Component {
 class OrderList extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      lis,
-    };
+    this.state = {};
   }
 
   render() {
     return (
-      <TouchableOpacity
-        onPress={this.props.onPress}
-        style={{
-          width: 208,
-          heigth: 42,
-          backgroundColor: '#D54646',
-          borderRadius: 21,
-        }}>
-        <Text
-          style={
-            (styles.text,
-            {
-              color: '#FFFFFF',
-              fontWeight: 'bold',
-              width: 208,
-              height: 42,
-              fontSize: 16,
-              textAlignVertical: 'center',
-              textAlign: 'center',
-            })
-          }>
-          Chon Nhung Ngay Nay
-        </Text>
-      </TouchableOpacity>
+      <View>
+        <TouchableOpacity
+          onPress={this.props.onPress}
+          style={{
+            width: 208,
+            heigth: 42,
+            backgroundColor: '#D54646',
+            borderRadius: 21,
+          }}>
+          <Text
+            style={
+              (styles.text,
+              {
+                color: '#FFFFFF',
+                fontWeight: 'bold',
+                width: 208,
+                height: 42,
+                fontSize: 16,
+                textAlignVertical: 'center',
+                textAlign: 'center',
+              })
+            }>
+            Chon Nhung Ngay Nay
+          </Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  header: {
+    fontFamily: 'Verdana',
+    fontSize: 21,
+    fontStyle: 'normal',
+    width: 305,
+    height: 35,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+  text: {
+    justifyContent: 'center',
+    fontFamily: 'Verdana',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: 15,
+    lineHeight: 18,
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+});

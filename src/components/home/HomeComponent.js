@@ -215,51 +215,26 @@ class SearchBox extends Component {
           <TextInput
             placeholder="Tìm kiếm nhà hàng món ăn"
             style={{
-              marginTop: 20,
-              flexDirection: 'row',
-              flex: 0.06,
-              backgroundColor: '#FFFFFF',
+              fontFamily: 'Verdana',
+              fontStyle: 'normal',
+              fontWeight: 'normal',
+              fontSize: 15,
+              lineHeight: 18,
+              display: 'flex',
+              alignItems: 'center',
+              textAlign: 'center',
+              color: 'rgba(233,218,218,1)',
             }}
+            onChangeText={this.props.onChangeSearchQuery}
+            onSubmitEditing={this.props.onSubmitEditing}
+            // onKeyPress = {this.props.pressReturnSearchKey}
           />
-          <TouchableOpacity
-            onPress={this.props.onBack}
-            style={{flex: 0.1, alignSelf: 'center'}}>
-            <Icon name="left" size={30} color="#000000" />
-          </TouchableOpacity>
-          <View
-            style={{
-              flex: 0.8,
-              borderRadius: 20,
-              borderColor: '#000000',
-              shadowColor: 'rgba(0,0,0,0.25)',
-              borderWidth: 1,
-              alignSelf: 'center',
-              justifyContent: 'center',
-            }}>
-            <TextInput
-              placeholder="Tìm kiếm nhà hàng món ăn"
-              style={{
-                fontFamily: 'Verdana',
-                fontStyle: 'normal',
-                fontWeight: 'normal',
-                fontSize: 15,
-                lineHeight: 18,
-                display: 'flex',
-                alignItems: 'center',
-                textAlign: 'center',
-                color: '#000000',
-              }}
-              onChangeText={this.props.onChangeSearchQuery}
-              onSubmitEditing={this.props.onSubmitEditing}
-              // onKeyPress = {this.props.pressReturnSearchKey}
-            />
-          </View>
-          <TouchableOpacity
-            onPress={this.props.onPressNoti}
-            style={{flex: 0.1, alignSelf: 'center'}}>
-            <Icon name="bells" size={30} color="#900" />
-          </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          onPress={this.props.onPressNoti}
+          style={{flex: 0.1, alignSelf: 'center'}}>
+          <Icon name="bells" size={30} color="#900" />
+        </TouchableOpacity>
       </View>
     );
   }
