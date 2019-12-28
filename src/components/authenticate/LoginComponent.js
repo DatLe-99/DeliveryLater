@@ -152,7 +152,7 @@ class BoxUsername extends Component {
             display: 'flex',
             alignItems: 'center',
             textAlign: 'center',
-            color: 'rgba(233,218,218,0.5)',
+            color: '#FFFFFF',
           }}
           onChangeText={this.props.onChangeUsername}
         />
@@ -184,7 +184,7 @@ class BoxPassword extends Component {
             display: 'flex',
             alignItems: 'center',
             textAlign: 'center',
-            color: 'rgba(233,218,218,0.5)',
+            color: '#FFFFFF',
           }}
           onChangeText={this.props.onChangePassword}
         />

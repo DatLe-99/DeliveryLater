@@ -7,6 +7,8 @@ import RegisterComponent from '../components/authenticate/RegisterComponent';
 import SearchComponent from '../components/search/SearchComponent';
 import CalendarComponent from '../components/order/CalendarComponent';
 
+import RestaurantComponent from '../components/restaurant/RestaurantComponent';
+
 const RootNavigator = createStackNavigator(
   {
     SignIn: {
@@ -35,6 +37,13 @@ const RootNavigator = createStackNavigator(
     },
     Calendar: {
       screen: CalendarComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+
+    Restaurant: {
+      screen: RestaurantComponent,
       navigationOptions: {
         gesturesEnabled: false,
       },
