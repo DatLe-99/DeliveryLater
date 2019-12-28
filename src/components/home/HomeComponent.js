@@ -26,6 +26,7 @@ import Geolocation from 'react-native-geolocation-service'
 import Icon from 'react-native-vector-icons/AntDesign';
 
 import {searchAction} from '../../redux/action';
+import RNGooglePlaces from 'react-native-google-places';
 
 export async function request_device_location_runtime_permission(){
   try{
@@ -145,6 +146,16 @@ class HomeComponent extends Component {
     );
   }
 
+  openSearchModal() {
+    RNGooglePlaces.openAutocompleteModal()
+      .then((place) => {
+        console.log(place);
+        // place represents user's selection from the
+        // suggestions and it is a simplified Google Place object.
+      })
+      .catch(error => console.log(error.message));  // error is a Javascript Error object
+  }
+
   render() {
     return (
       <ImageBackground
@@ -156,16 +167,6 @@ class HomeComponent extends Component {
             onSubmitEditing = { () =>{
               this.pressReturnSearchKey()
             }}
-            // pressReturnSearchKey={(event) => {
-            //   if (event.nativeEvent.key == "Submit") {
-            //     ToastAndroid.show("PASS",ToastAndroid.SHORT)
-            //     this.pressReturnSearchKey()
-            //   }
-            //   else {
-            //     ToastAndroid.show("FAIL", ToastAndroid.SHORT)
-            //     this.alertMessage = 'FALSE'
-            //   }
-            // }}
             onChangeSearchQuery={text => {
               this.setState({ searchQuery: text });
             }}
@@ -175,7 +176,13 @@ class HomeComponent extends Component {
             onBack = {() => this.exitApp()}
           />
           <AddressBox />
-          <Text>{this.state.longitude}</Text>
+          <View >
+            <TouchableOpacity
+              onPress={() => this.openSearchModal()}
+            >
+              <Text>Pick a Place</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ImageBackground>
     );
