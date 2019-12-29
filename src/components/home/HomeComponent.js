@@ -87,7 +87,8 @@ class HomeComponent extends Component {
   }
 
   onPressNoti = () => {
-    this.alertMessage('Da nhan notification');
+    // this.alertMessage('Da nhan notification');
+    this.props.navigation.navigate('Calendar');
   };
 
   pressReturnSearchKey = () => {

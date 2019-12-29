@@ -1,6 +1,14 @@
 import React, {Component} from 'react';
 import moment from 'moment';
-import {View, Arrow, TouchableOpacity, Text, StyleSheet} from 'react-native';
+import {
+  View,
+  Arrow,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Image,
+  Icon,
+} from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
 import {FONT_SIZE} from '../../utils/fontsize';
@@ -8,6 +16,7 @@ import LoginBackground from 'images/LoginBackground.jpg';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Calendar} from 'react-native-calendars';
+import {FlatList} from 'react-native-gesture-handler';
 const format = 'YYYY-MM-DD';
 const today = moment().format(format);
 const maxDate = moment()
@@ -19,30 +28,17 @@ export default class CalendarComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      markdate: this.initialState,
+      order: this.initialState,
     };
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
-    let marked = true;
-    if (this.state.markdate[selectedDay]) {
-      marked = !this.state.markdate[selectedDay].marked;
-    }
-    const updateMarkdate = {
-      ...this.state.markdate,
-      ...{[selectedDay]: {marked, dotColor: 'red'}},
-    };
-    this.setState({markdate: updateMarkdate});
+    select = {date: selectedDay, time: '07:00'};
+    this.state.order.push(selectedDay);
   };
 
   orders() {
-    var Order = [];
-    for (let key in this.state.markdate) {
-      if (this.state.markdate[key].marked) {
-        Order.push(key);
-      }
-    }
-    console.log(Order);
+    console.log(this.state.order);
   }
 
   render() {
@@ -105,20 +101,43 @@ class OrderList extends Component {
 
   render() {
     return (
-      <View>
+      <View style={{flexDirection: 'column'}}>
+        <Text
+          style={{
+            fontFamily: 'Verdana',
+            fontSize: 15,
+            lineHeight: 17,
+            alignItems: 'center',
+            alignContent: 'center',
+            color: '#000000',
+          }}>
+          {'Date:'}
+        </Text>
+        <Text
+          style={{
+            fontFamily: 'Verdana',
+            fontSize: 15,
+            lineHeight: 17,
+            alignItems: 'center',
+            alignContent: 'center',
+            color: '#000000',
+          }}>
+          {'Time'}
+        </Text>
+
         <TouchableOpacity
           onPress={this.props.onPress}
           style={{
             width: 208,
             heigth: 42,
-            backgroundColor: '#D54646',
+            backgroundColor: '#F34F08',
             borderRadius: 21,
           }}>
           <Text
             style={
               (styles.text,
               {
-                color: '#FFFFFF',
+                color: '#000000',
                 fontWeight: 'bold',
                 width: 208,
                 height: 42,
@@ -127,7 +146,7 @@ class OrderList extends Component {
                 textAlign: 'center',
               })
             }>
-            Chon Nhung Ngay Nay
+            Order
           </Text>
         </TouchableOpacity>
       </View>
