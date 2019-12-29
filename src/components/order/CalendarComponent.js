@@ -17,6 +17,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Calendar} from 'react-native-calendars';
 import {FlatList} from 'react-native-gesture-handler';
+import {TextInput} from 'react-native-paper';
 const format = 'YYYY-MM-DD';
 const today = moment().format(format);
 const maxDate = moment()
@@ -33,12 +34,16 @@ export default class CalendarComponent extends Component {
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
-    select = {date: selectedDay, time: '07:00'};
-    this.state.order.push(selectedDay);
+    var select = {date: selectedDay};
+    this.setState({order: select});
   };
 
   orders() {
     console.log(this.state.order);
+  }
+  changetime(time) {
+    var selected = {date: this.state.order.date, time: time};
+    this.setState({order: selected});
   }
 
   render() {
@@ -87,7 +92,11 @@ export default class CalendarComponent extends Component {
           onPressArrowRight={addMonth => addMonth()}
           markedDates={this.state.markdate}
         />
-        <OrderList onPress={() => this.orders()} />
+        <OrderList
+          onPress={() => this.orders()}
+          order={this.state.order}
+          onChangeTime={text => this.changetime(text)}
+        />
       </View>
     );
   }
@@ -96,35 +105,59 @@ export default class CalendarComponent extends Component {
 class OrderList extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      order: this.props.order,
+    };
   }
 
   render() {
     return (
-      <View style={{flexDirection: 'column'}}>
+      <View style={{flexDirection: 'column', backgroundColor: '#c4c4c4'}}>
         <Text
           style={{
             fontFamily: 'Verdana',
-            fontSize: 15,
-            lineHeight: 17,
+            fontSize: 20,
+            lineHeight: 30,
             alignItems: 'center',
             alignContent: 'center',
             color: '#000000',
           }}>
-          {'Date:'}
+          {'Date:' + this.state.order.date}
         </Text>
-        <Text
+        <View
           style={{
-            fontFamily: 'Verdana',
-            fontSize: 15,
-            lineHeight: 17,
-            alignItems: 'center',
-            alignContent: 'center',
-            color: '#000000',
+            width: 367,
+            height: 30,
+            borderRadius: 0,
+            flexDirection: 'row',
           }}>
-          {'Time'}
-        </Text>
-
+          <Text
+            style={{
+              fontFamily: 'Verdana',
+              fontSize: 20,
+              lineHeight: 30,
+              alignItems: 'center',
+              alignContent: 'center',
+              color: '#000000',
+            }}>
+            {'Time'}
+          </Text>
+          <TextInput
+            placeholder="07:00"
+            style={{
+              fontFamily: 'Verdana',
+              fontStyle: 'normal',
+              fontWeight: 'normal',
+              fontSize: 15,
+              lineHeight: 18,
+              display: 'flex',
+              alignItems: 'center',
+              textAlign: 'center',
+              color: '#000000',
+            }}
+            onChangeText={this.props.onChangeTime}
+          />
+        </View>
         <TouchableOpacity
           onPress={this.props.onPress}
           style={{

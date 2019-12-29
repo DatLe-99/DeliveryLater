@@ -1,10 +1,6 @@
 import {HttpClient} from '../../services/index';
 
-import {
-  UPDATE_REQUEST,
-  UPDATE_SUCCESS,
-  UPDATE_FAILURE,
-} from './actionTypes.js';
+import {UPDATE_REQUEST, UPDATE_SUCCESS, UPDATE_FAILURE} from './actionTypes.js';
 
 import {UPDATE} from '../../utils/api';
 

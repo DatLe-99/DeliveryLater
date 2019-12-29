@@ -1,29 +1,17 @@
 import signInAction from './authenticate/action';
 import signUpAction from './register/action';
 import searchAction from './search/action';
-import addressAction from './address/action'
-import updateAction from './update/action'
-import recommendAction from './recommend/action'
+import addressAction from './address/action';
+import updateAction from './update/action';
+import recommendAction from './recommend/action';
 
-export {
-    signInAction,
-}
-export  {
-    signUpAction,
-}
+export {signInAction};
+export {signUpAction};
 
-export {
-    searchAction,
-}
+export {searchAction};
 
-export {
-    addressAction
-}
+export {addressAction};
 
-export {
-    updateAction
-}
+export {updateAction};
 
-export{
-    recommendAction
-}
+export {recommendAction};
