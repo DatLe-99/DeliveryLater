@@ -132,32 +132,33 @@ class HomeComponent extends Component {
   openSearchModal() {
     RNGooglePlaces.openAutocompleteModal()
       .then(place => {
-        console.log(place);
         this.setState({
           latitude: place.location.latitude,
           longitude: place.location.longitude,
-          address: place.location.address,
+          address: place.address,
         })
         // place represents user's selection from the
         // suggestions and it is a simplified Google Place object.
         if (!this.state.isLoading) {
-        this.setState({isLoading: true});
-        this.props
-          .updateAction({
-            ID: this.state.accountData.ID,
-            lat : place.location.latitude,
-            lng: place.location.longitude,
-          })
-          .then(() => {
-            this.setState({isLoading: false});
-            if (this.props.updatedData.success) {
+          this.setState({isLoading: true});
+          console.log(place)
+          this.props
+            .updateAction({
+              ID: this.state.accountData.ID,
+              lat : this.state.latitude,
+              lng: this.state.longitude,
+              address: this.state.address,
+            })
+            .then(() => {
               this.setState({isLoading: false});
-              console.log(this.props.updatedData.dataRes)
-            } else {
-              this.setState({isLoading: false});
-              this.alertMessage(this.props.updatedData.errorMessage);
-            }
-          });
+              if (this.props.updatedData.success) {
+                this.setState({isLoading: false});
+                // console.log(this.props.updatedData.dataRes)
+              } else {
+                this.setState({isLoading: false});
+                this.alertMessage(this.props.updatedData.errorMessage);
+              }
+            });
         }
         
       })
