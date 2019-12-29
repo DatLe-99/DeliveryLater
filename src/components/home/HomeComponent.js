@@ -16,6 +16,7 @@ import {
     Dimensions,
     ToastAndroid,
     PermissionsAndroid,
+    FlatList,
 } from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
@@ -47,7 +48,10 @@ import RNGooglePlaces from 'react-native-google-places';
 //         'message': 'ReactNativeCode App needs access to your location'
 //       }
 //     )
-//     if(granted != PermissionsAndroid.RESULTS.GRANTED){
+//     if(granted === PermissionsAndroid.RESULTS.GRANTED){
+//       Alert.alert("Location Permission Granted");
+//     }
+//     else {
 //       Alert.alert("Location Permission Not Granted");
 //     }
 //   }catch(err){
@@ -66,10 +70,14 @@ class HomeComponent extends Component {
       error: null,
       address: '',
       accountData: this.props.navigation.getParam('accountData'),
+      currentData: [],
     };
   }
 
-  componentDidMount = () => {
+  async componentDidMount () {
+    // if(Platform.OS === 'android'){
+    //   request_device_location_runtime_permission()
+    // }
     RNGooglePlaces.getCurrentPlace()
       .then((results) => {
         console.log(results)
@@ -80,7 +88,7 @@ class HomeComponent extends Component {
         })
       })
       .catch((error) => console.log(error.message));
-  }
+  } 
 
   onPressNoti = () => {
     this.alertMessage('Da nhan notification');
@@ -198,8 +206,12 @@ class HomeComponent extends Component {
         .then(() => {
           this.setState({ isLoading: false });
           if (this.props.locationData.success) {
-            this.setState({ isLoading: false });
+            this.setState({ 
+              isLoading: false,
+              currentData: this.props.locationData.dataRes
+            });
             console.log(this.props.locationData.dataRes)
+
           } else {
             this.setState({ isLoading: false });
             this.alertMessage(this.props.locationData.errorMessage);
@@ -210,9 +222,6 @@ class HomeComponent extends Component {
 
   render() {
     return (
-      // <ImageBackground
-      //   source={LoginBackground}
-      //   style={{width: WINDOW_SIZE.WIDTH, height: WINDOW_SIZE.HEIGHT}}>
         <View
           style={{alignContents: 'center', flexDirection: 'column', flex: 1}}>
           <SearchBox
@@ -232,15 +241,31 @@ class HomeComponent extends Component {
           />
 
           <BannerImageView />
-
+          
           <FoodRecommendBar 
             NearMe = {() => this.NearMe()}
           />
-          {/* <TabbarView /> */}
-          <TabDemo />
-
+        <View style={{ flex: 1, marginTop: 10 }}>
+          <FlatList
+            data={this.state.currentData}
+            listKey={(item, index) => 'D' + index.toString()}
+            renderItem={({ item }) =>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("Restaurant",
+                  {
+                    listMenu: { item }
+                  })}
+              >
+                <RestaurantItem
+                  res={item}
+                />
+              </TouchableOpacity>
+            }
+            keyExtractor={item => item.id}
+          />
         </View>
-      // </ImageBackground>
+          <TabDemo />
+        </View>
     );
   }
 }
@@ -369,95 +394,6 @@ class BannerImageView extends Component {
   }
 }
 
-// class TabbarView extends Component {
-//   render() {
-//     return (
-//         <TabBar
-//           // style = {styles.container}>
-//           >
-//           <TabBar.Item
-//               icon={require('../../media/images/meal.png')}
-//               selectedIcon={require('../../media/images/meal.png')}
-//               title="Home"
-//               //screenBackgroundColor={{ backgroundColor: '#008' }}
-//           >
-//              <View style={styles.textContent}>
-//                   <Text style={{fontSize: 18}}>Home</Text>
-//               </View>
-//           </TabBar.Item>
-
-//           <TabBar.Item
-//               icon={require('../../media/images/history.jpg')}
-//               selectedIcon={require('../../media/images/history.jpg')}
-//               title="History Order"
-//               //screenBackgroundColor={{ backgroundColor: '#F08080' }}
-//           >
-//               <View style={styles.textContent}>
-//                   <Text style={{fontSize: 18}}>History</Text>
-//               </View>
-//           </TabBar.Item>
-
-//           <TabBar.Item
-//               icon={require('../../media/images/schedule.png')}
-//               selectedIcon={require('../../media/images/schedule.png')}
-//               title="Schedule"
-//               //screenBackgroundColor={{ backgroundColor: '#485d72' }}
-//           >
-//             <View style={styles.textContent}>
-//                   <Text style={{fontSize: 18}}>Schedule</Text>
-//               </View>
-//           </TabBar.Item>
-
-//           {/* <TabBar.Item
-//               icon={require('../../media/images/My.png')}
-//               selectedIcon={require('../../media/images/My.png')}
-//               title="Profile"
-//               //screenBackgroundColor={{ backgroundColor: '#485d72' }}
-//           >
-//             <View style={styles.textContent}>
-//                   <Text style={{fontSize: 18}}>Profile</Text>
-//               </View>
-//           </TabBar.Item> */}
-//         </TabBar>
-//     );
-//   }
-// }
-
-// class HomeBottomTabbar extends Component {
-//   constructor(){
-//     super()
-//     this.state = {
-//       selectedIndex: 0,
-//     };
-//   }
-
-//   handleIndexChange = (index) => {
-//     this.setState({
-//       ...this.state,
-//       selectedIndex: index,
-//     });
-//   }
-
-//   render() {
-//       return (
-//           <View style = {{
-//             // width: '100%',
-//             // position: 'absolute',
-//             // bottom: 0
-//             flex: 1,
-//             justifyContent: 'flex-end'
-//           }}>
-//               <SegmentedControlTab
-//                    values={['one', 'two']}
-//                   selectedIndex={this.state.selectedIndex}
-//                   onTabPress={this.handleIndexChange}
-//                   tabsContainerStyle={{height: 200, backgroundColor: '#000' }}
-//                   />
-//           </View>
-//       );
-//   }
-// }
-
 class FoodRecommendBar extends Component {
   constructor(){
     super()
@@ -473,7 +409,7 @@ class FoodRecommendBar extends Component {
     });
     if(index == 1){
       this.props.NearMe()
-      ToastAndroid.show("Index 1", ToastAndroid.SHORT)
+      ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)
     }
   }
 
@@ -556,6 +492,40 @@ class TabDemo extends Component {
   }
 }
 
+function RestaurantItem({ res }) {
+  return (
+    <View style={{ flexDirection: "column", flex: 1 }}>
+      <View style={{ flexDirection: "row", flex: 1 }}>
+        <Image
+          style={{ flex: 0.25, width: 100, height: 100, margin: 10, borderRadius: 10 }}
+          source={require('../../media/images/test.jpg')}
+        />
+        <View style={{ flex: 0.6 }}>
+          <View style={{ flexDirection: 'column', flex: 1, margin: 5 }}>
+            <View style={{ flex: 0.1 }} />
+            <Text style={{ flex: 0.3, fontFamily: 'Verdana', fontSize: 15, lineHeight: 17, alignItems: 'center', alignContent: "center", color: '#000000' }}>{res.name}</Text>
+            <Text style={{ flex: 0.3, fontFamily: 'Verdana', fontWeight: 'normal', fontSize: 12, lineHeight: 14, alignItems: 'center', alignContent: "center", color: 'rgba(0,0,0,0.7)' }}>{res.store_location.address + ", " + res.city + ", " + res.province}</Text>
+            <Text style={{ flex: 0.3, fontFamily: 'Verdana', fontWeight: 'normal', fontSize: 12, lineHeight: 14, alignItems: 'center', alignContent: "center", color: '#000000' }}>Giá: ~50k</Text>
+          </View>
+        </View>
+        <View style={{ flex: 0.15 }}>
+          <View style={{ flexDirection: 'column', flex: 1, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ flex: 0.6 }}></View>
+            <Text style={{ flex: 0.2, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>2.5 km</Text>
+            <View style={{ flex: 0.2, alignSelf: "center" }}>
+              <View style={{ flexDirection: 'row', flex: 1, alignContent: "center", justifyContent: "center" }}>
+                <Text style={{ marginRight: 5, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>30p</Text>
+                <Icon name="clockcircle" size={12} color="#F34F08" />
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+      <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1 }} />
+    </View>
+  );
+}
+
 const deviceW = Dimensions.get('window').width
 
 const basePx = 375
@@ -563,20 +533,6 @@ const basePx = 375
 function px2dp(px) {
   return px *  deviceW / basePx
 }
-// const styles = StyleSheet.create({
-//   container: {
-//       flex: 1,
-//       flexDirection:"row",
-//       justifyContent:"flex-end",
-//       alignItems: 'center',
-//       backgroundColor: "#000",
-//   },
-//   textContent: {
-//       flex: 1,
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//   }
-// });
 
 const styles = StyleSheet.create({
   container: {
