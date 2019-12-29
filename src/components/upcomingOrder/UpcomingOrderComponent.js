@@ -24,6 +24,7 @@ import {bindActionCreators} from 'redux';
 import {signInAction} from '../../redux/action';
 import BottomBarComponent from '../bottomBar/BottomBarComponent';
 
+
 export default class HistoryComponent extends Component {
     render(){
         return(
@@ -33,16 +34,15 @@ export default class HistoryComponent extends Component {
                 }}>
 
                 <BottomBarComponent 
-                    selectedTab = 'cart'
+                    selectedTab = 'upcomingOrder'
                     onPressHome = {() => this.props.navigation.navigate('Home')}
+                    onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
                     onPressHistory = {() => this.props.navigation.navigate('History')}
-                    onPressCart = {() => this.props.navigation.navigate('Cart')}
                     onPressProfile = {() => this.props.navigation.navigate('Profile')}
                 />
 
-                <Text>Cart</Text>
-            </View>
-            
+                <Text>UpComingOrder</Text>
+            </View>  
         );
     }
 }

@@ -42,7 +42,7 @@ export default class BottomBarComponent extends Component {
     state = {
             homeIconColor: '#000',
             historyIconColor: '#000',
-            cartIconColor: '#000',
+            upcomingOrderIconColor: '#000',
             profileIconColor: '#000',
         }
 
@@ -95,6 +95,24 @@ export default class BottomBarComponent extends Component {
           <View
             style={{flex: 0.25}}
            >
+            <TouchableOpacity 
+                style = {styles.bottomBarItem}
+                onPress = {this.props.onPressUpcomingOrder} >
+              <IconAntDesign name="menu-unfold" size={px2dp(22)} color={this.state.upcomingOrderIconColor}/>
+  
+              <Text
+                style={{
+                  flex: 0.5,
+                  color: this.state.upcomingOrderIconColor,
+                }}>
+                Sắp đến
+              </Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View
+            style={{flex: 0.25}}
+           >
             <TouchableOpacity style = {styles.bottomBarItem}
               onPress = {this.props.onPressHistory}>
               <IconAwesome name="history" size={px2dp(22)} color={this.state.historyIconColor}/>
@@ -108,25 +126,7 @@ export default class BottomBarComponent extends Component {
               </Text>
             </TouchableOpacity>
           </View>
-  
-          <View
-            style={{flex: 0.25}}
-           >
-            <TouchableOpacity 
-                style = {styles.bottomBarItem}
-                onPress = {this.props.onPressCart} >
-              <IconMaterialCommunity name="cart" size={px2dp(22)} color={this.state.cartIconColor}/>
-  
-              <Text
-                style={{
-                  flex: 0.5,
-                  color: this.state.cartIconColor,
-                }}>
-                Giỏ hàng
-              </Text>
-            </TouchableOpacity>
-          </View>
-  
+
           <View
             style = {{flex: 0.25}}>
             <TouchableOpacity 
