@@ -29,7 +29,7 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 //import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from 'react-native-geolocation-service'
-
+import Icon from 'react-native-vector-icons/AntDesign';
 
 import {searchAction, addressAction, updateAction} from '../../redux/action';
 import IconAwesome from 'react-native-vector-icons/FontAwesome'
@@ -67,6 +67,19 @@ class HomeComponent extends Component {
       address: '',
       accountData: this.props.navigation.getParam('accountData'),
     };
+  }
+
+  componentDidMount = () => {
+    RNGooglePlaces.getCurrentPlace()
+      .then((results) => {
+        console.log(results)
+        this.setState({
+          latitude: results[0].location.latitude,
+          longitude: results[0].location.longitude,
+          address: results[0].address
+        })
+      })
+      .catch((error) => console.log(error.message));
   }
 
   onPressNoti = () => {
@@ -174,6 +187,27 @@ class HomeComponent extends Component {
       .catch(error => console.log(error.message));
   }
 
+  NearMe = () => {
+    if (!this.state.isLoading) {
+      this.setState({ isLoading: true });
+      this.props
+        .addressAction({
+          lat: this.state.latitude,
+          lng: this.state.longitude,
+        })
+        .then(() => {
+          this.setState({ isLoading: false });
+          if (this.props.locationData.success) {
+            this.setState({ isLoading: false });
+            console.log(this.props.locationData.dataRes)
+          } else {
+            this.setState({ isLoading: false });
+            this.alertMessage(this.props.locationData.errorMessage);
+          }
+        });
+    }
+  }
+
   render() {
     return (
       // <ImageBackground
@@ -194,12 +228,14 @@ class HomeComponent extends Component {
           />
           <AddressBox
             openSearchModal = {() => this.openSearchModal()}
+            currentAddress = {this.state.address}
           />
-          <AddressBox />
 
           <BannerImageView />
 
-          <FoodRecommendBar />
+          <FoodRecommendBar 
+            NearMe = {() => this.NearMe()}
+          />
           {/* <TabbarView /> */}
           <TabDemo />
 
@@ -216,7 +252,7 @@ class SearchBox extends Component {
         style={{
           marginTop: 20,
           flexDirection: 'row',
-          flex: 0.06,
+          height: WINDOW_SIZE.HEIGHT/18,
           backgroundColor: '#FFFFFF',
         }}>
         <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
@@ -250,7 +286,6 @@ class SearchBox extends Component {
             }}
             onChangeText={this.props.onChangeSearchQuery}
             onSubmitEditing={this.props.onSubmitEditing}
-            // onKeyPress = {this.props.pressReturnSearchKey}
           />
         </View>
         <TouchableOpacity
@@ -270,7 +305,7 @@ class AddressBox extends Component {
         style={{
           marginTop: 12,
           flexDirection: 'row',
-          flex: 0.05,
+          height: WINDOW_SIZE.HEIGHT / 20,
           backgroundColor: '#FFFF',
         }}>
         <View style={{flex: 0.1}} />
@@ -285,19 +320,21 @@ class AddressBox extends Component {
             alignSelf: 'center',
             justifyContent: 'center',
           }}>
-          <View>
+          <View style = {{alignSelf: 'flex-start', justifyContent: 'center'}}>
             <TouchableOpacity onPress={this.props.openSearchModal}>
               <Text
+                numberOfLines = {1}
                 style={{
                   fontFamily: 'Times New Roman',
                   fontStyle: 'italic',
-                  fontWeight: 'normal',
-                  lineHeight: 41,
+                  fontWeight: 'bold',
                   alignSelf: 'center',
                   justifyContent: 'center',
+                  padding: 10,
+                  color: "rgba(0, 0, 0, 0.7)"
                 }}
                 >
-                {'Chọn địa chỉ nhận hàng'}
+                {this.props.currentAddress}
               </Text>
             </TouchableOpacity>
           </View>
@@ -434,6 +471,10 @@ class FoodRecommendBar extends Component {
       ...this.state,
       selectedIndex: index,
     });
+    if(index == 1){
+      this.props.NearMe()
+      ToastAndroid.show("Index 1", ToastAndroid.SHORT)
+    }
   }
 
   render() {
