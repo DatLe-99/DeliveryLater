@@ -17,6 +17,7 @@ import {
     ToastAndroid,
     PermissionsAndroid,
     FlatList,
+    RefreshControl,
 } from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
@@ -32,7 +33,7 @@ import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIc
 import Geolocation from 'react-native-geolocation-service'
 import Icon from 'react-native-vector-icons/AntDesign';
 
-import {searchAction, addressAction, updateAction} from '../../redux/action';
+import {searchAction, addressAction, updateAction, recommendAction} from '../../redux/action';
 import IconAwesome from 'react-native-vector-icons/FontAwesome'
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
@@ -71,13 +72,14 @@ class HomeComponent extends Component {
       address: '',
       accountData: this.props.navigation.getParam('accountData'),
       currentData: [],
+      refreshing: false,
+      tabindex: 0 //[Goi y, Gan toi, Vua dat, Moi]
     };
+    //this.index = 0
   }
 
+
   async componentDidMount () {
-    // if(Platform.OS === 'android'){
-    //   request_device_location_runtime_permission()
-    // }
     RNGooglePlaces.getCurrentPlace()
       .then((results) => {
         console.log(results)
@@ -88,6 +90,7 @@ class HomeComponent extends Component {
         })
       })
       .catch((error) => console.log(error.message));
+    this.recommendStore()
   } 
 
   onPressNoti = () => {
@@ -156,9 +159,6 @@ class HomeComponent extends Component {
       { cancelable: false },
     );
   }
-
-
-
   openSearchModal() {
     RNGooglePlaces.openAutocompleteModal()
       .then(place => {
@@ -175,15 +175,24 @@ class HomeComponent extends Component {
           this.props
             .updateAction({
               ID: this.state.accountData.ID,
-              lat : this.state.latitude,
-              lng: this.state.longitude,
-              address: this.state.address,
+              account_location: {
+                account_id: this.state.accountData.ID,
+                address: this.state.address,
+                lat : this.state.latitude,
+                lng: this.state.longitude,
+              }
             })
             .then(() => {
               this.setState({isLoading: false});
               if (this.props.updatedData.success) {
-                this.setState({isLoading: false});
-                // console.log(this.props.updatedData.dataRes)
+                this.setState({isLoading: false });
+                if(this.state.tabindex== 0){
+                  this.recommendStore()
+                }
+                else if (this.state.tabindex == 1){
+                  this.NearMe()
+                }
+                console.log(this.props.updatedData.dataRes)
               } else {
                 this.setState({isLoading: false});
                 this.alertMessage(this.props.updatedData.errorMessage);
@@ -205,21 +214,51 @@ class HomeComponent extends Component {
         })
         .then(() => {
           this.setState({ isLoading: false });
-          if (this.props.locationData.success) {
+          if (this.props.nearStoreData.success) {
             this.setState({ 
               isLoading: false,
-              currentData: this.props.locationData.dataRes
+              currentData: this.props.nearStoreData.dataRes
             });
-            console.log(this.props.locationData.dataRes)
+            console.log(this.props.nearStoreData.dataRes)
 
           } else {
             this.setState({ isLoading: false });
-            this.alertMessage(this.props.locationData.errorMessage);
+            this.alertMessage(this.props.nearStoreData.errorMessage);
+          }
+        });
+    }
+  }
+  
+  recommendStore = () => {
+    if (!this.state.isLoading) {
+      this.setState({ isLoading: true });
+      this.props
+        .recommendAction({
+          lat: this.state.latitude,
+          lng: this.state.longitude,
+        })
+        .then(() => {
+          this.setState({ isLoading: false });
+          if (this.props.recommendData.success) {
+            this.setState({
+              isLoading: false,
+              currentData: this.props.recommendData.dataRes
+            });
+            console.log(this.props.recommendData.dataRes)
+
+          } else {
+            this.setState({ isLoading: false });
+            this.alertMessage(this.props.recommendData.errorMessage);
           }
         });
     }
   }
 
+  parentCallbackIndex = (index) =>{
+    this.setState({
+      tabindex: index
+    })
+  }
   render() {
     return (
         <View
@@ -244,8 +283,10 @@ class HomeComponent extends Component {
           
           <FoodRecommendBar 
             NearMe = {() => this.NearMe()}
+            recommendStore = {() => this.recommendStore()}
+            parentCallbackIndex={this.parentCallbackIndex}
           />
-        <View style={{ flex: 1, marginTop: 10 }}>
+        <View style={{ flex: 5, marginTop: 10 }}>
           <FlatList
             data={this.state.currentData}
             listKey={(item, index) => 'D' + index.toString()}
@@ -262,6 +303,12 @@ class HomeComponent extends Component {
               </TouchableOpacity>
             }
             keyExtractor={item => item.id}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.props.onRefresh}
+              />
+            }
           />
         </View>
           <TabDemo />
@@ -401,15 +448,21 @@ class FoodRecommendBar extends Component {
       selectedIndex: 0,
     };
   }
-
+  
   handleIndexChange = (index) => {
     this.setState({
       ...this.state,
       selectedIndex: index,
     });
+
+    this.props.parentCallbackIndex(index)
     if(index == 1){
       this.props.NearMe()
       ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)
+    }
+    else if(index == 0){
+      this.props.recommendStore()
+      ToastAndroid.show("Quán được đề xuất", ToastAndroid.SHORT)
     }
   }
 
@@ -453,7 +506,7 @@ class TabDemo extends Component {
           renderSelectedIcon={() => <IconMaterialCommunity name="food-fork-drink" size={px2dp(22)} color="#DF0029"/>}
           //badgeText="1"
           onPress={() => this.setState({selectedTab: 'home'})} >
-          <Text>Home</Text>
+          <Text></Text>
         </TabNavigator.Item>
 
         <TabNavigator.Item
@@ -463,7 +516,7 @@ class TabDemo extends Component {
           renderIcon={() => <IconAwesome name="history" size={px2dp(22)} color="#666"/>}
           renderSelectedIcon={() => <IconAwesome name="history" size={px2dp(22)} color="#DF0029"/>}
           onPress={() => this.setState({selectedTab: 'history'})}>
-          <Text>History</Text>
+          <Text></Text>
         </TabNavigator.Item>
 
         <TabNavigator.Item
@@ -474,7 +527,7 @@ class TabDemo extends Component {
           renderSelectedIcon={() => <IconMaterialCommunity name="cart" size={px2dp(22)} color="#DF0029"/>}
           //badgeText="1"
           onPress={() => this.setState({selectedTab: 'cart'})}>
-          <Text>Cart</Text>
+          <Text></Text>
         </TabNavigator.Item>
 
         <TabNavigator.Item
@@ -484,7 +537,7 @@ class TabDemo extends Component {
           renderIcon={() => <IconAwesome name="user" size={px2dp(22)} color="#666"/>}
           renderSelectedIcon={() => <IconAwesome name="user" size={px2dp(22)} color="#DF0029"/>}
           onPress={() => this.setState({selectedTab: 'profile'})}>
-          <Text>Profile</Text>
+          <Text></Text>
 
         </TabNavigator.Item>
       </TabNavigator>
@@ -511,7 +564,9 @@ function RestaurantItem({ res }) {
         <View style={{ flex: 0.15 }}>
           <View style={{ flexDirection: 'column', flex: 1, alignItems: "center", justifyContent: "center" }}>
             <View style={{ flex: 0.6 }}></View>
-            <Text style={{ flex: 0.2, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>2.5 km</Text>
+            <Text 
+              numberOfLines = {1}
+              style={{ flex: 0.2, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>{res.distance.toFixed(2)} km</Text>
             <View style={{ flex: 0.2, alignSelf: "center" }}>
               <View style={{ flexDirection: 'row', flex: 1, alignContent: "center", justifyContent: "center" }}>
                 <Text style={{ marginRight: 5, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>30p</Text>
@@ -556,8 +611,9 @@ const styles = StyleSheet.create({
 function mapStateToProps(state) {
   return {
     searchData: state.SearchReducer,
-    locationData: state.AddressReducer,
+    nearStoreData: state.AddressReducer,
     updatedData: state.UpdateReducer,
+    recommendData: state.RecommendReducer,
   };
 }
 
@@ -567,6 +623,7 @@ function dispatchToProps(dispatch) {
       searchAction,
       addressAction,
       updateAction,
+      recommendAction,
     },
     dispatch,
   );

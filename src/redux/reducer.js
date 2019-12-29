@@ -5,6 +5,7 @@ import SignUpReducer from './register/reducer';
 import SearchReducer from './search/reducer';
 import AddressReducer from './address/reducer'
 import UpdateReducer from './update/reducer'
+import RecommendReducer from './recommend/reducer'
 
 export default combineReducers({
   form: reduxFormReducer,
@@ -13,4 +14,5 @@ export default combineReducers({
   SearchReducer,
   AddressReducer,
   UpdateReducer,
+  RecommendReducer,
 });
