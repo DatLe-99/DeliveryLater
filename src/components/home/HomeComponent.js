@@ -69,6 +69,19 @@ class HomeComponent extends Component {
     };
   }
 
+  componentDidMount = () => {
+    RNGooglePlaces.getCurrentPlace()
+      .then((results) => {
+        console.log(results)
+        this.setState({
+          latitude: results[0].location.latitude,
+          longitude: results[0].location.longitude,
+          address: results[0].address
+        })
+      })
+      .catch((error) => console.log(error.message));
+  }
+
   onPressNoti = () => {
     this.alertMessage('Da nhan notification');
   };
@@ -141,36 +154,58 @@ class HomeComponent extends Component {
   openSearchModal() {
     RNGooglePlaces.openAutocompleteModal()
       .then(place => {
-        console.log(place);
         this.setState({
           latitude: place.location.latitude,
           longitude: place.location.longitude,
-          address: place.location.address,
+          address: place.address,
         })
         // place represents user's selection from the
         // suggestions and it is a simplified Google Place object.
         if (!this.state.isLoading) {
-        this.setState({isLoading: true});
-        this.props
-          .updateAction({
-            ID: this.state.accountData.ID,
-            lat : place.location.latitude,
-            lng: place.location.longitude,
-          })
-          .then(() => {
-            this.setState({isLoading: false});
-            if (this.props.updatedData.success) {
+          this.setState({isLoading: true});
+          console.log(place)
+          this.props
+            .updateAction({
+              ID: this.state.accountData.ID,
+              lat : this.state.latitude,
+              lng: this.state.longitude,
+              address: this.state.address,
+            })
+            .then(() => {
               this.setState({isLoading: false});
-              console.log(this.props.updatedData.dataRes)
-            } else {
-              this.setState({isLoading: false});
-              this.alertMessage(this.props.updatedData.errorMessage);
-            }
-          });
+              if (this.props.updatedData.success) {
+                this.setState({isLoading: false});
+                // console.log(this.props.updatedData.dataRes)
+              } else {
+                this.setState({isLoading: false});
+                this.alertMessage(this.props.updatedData.errorMessage);
+              }
+            });
         }
 
       })
       .catch(error => console.log(error.message));
+  }
+
+  NearMe = () => {
+    if (!this.state.isLoading) {
+      this.setState({ isLoading: true });
+      this.props
+        .addressAction({
+          lat: this.state.latitude,
+          lng: this.state.longitude,
+        })
+        .then(() => {
+          this.setState({ isLoading: false });
+          if (this.props.locationData.success) {
+            this.setState({ isLoading: false });
+            console.log(this.props.locationData.dataRes)
+          } else {
+            this.setState({ isLoading: false });
+            this.alertMessage(this.props.locationData.errorMessage);
+          }
+        });
+    }
   }
 
   render() {
@@ -193,14 +228,16 @@ class HomeComponent extends Component {
           />
           <AddressBox
             openSearchModal = {() => this.openSearchModal()}
+            currentAddress = {this.state.address}
           />
-          <AddressBox />
 
           <BannerImageView />
 
-          <FoodRecommendBar />
-
-          <BottomBarComponent 
+          <FoodRecommendBar
+            NearMe = {() => this.NearMe()}
+          />
+          
+          <BottomBarComponent
             selectedTab = 'home'
             onPressHome = {() => this.props.navigation.navigate('Home')}
             onPressHistory = {() => this.props.navigation.navigate('History')}
@@ -208,8 +245,9 @@ class HomeComponent extends Component {
             onPressProfile = {() => this.props.navigation.navigate('Profile')}
           />
 
+
           {/* <TabbarView /> */}
-          {/* <HomeBottomTabbar 
+          {/* <HomeBottomTabbar
             onPressHistory={() => this.props.navigation.navigate('History')}
           /> */}
 
@@ -226,7 +264,7 @@ class SearchBox extends Component {
         style={{
           marginTop: 20,
           flexDirection: 'row',
-          flex: 0.06,
+          height: WINDOW_SIZE.HEIGHT/18,
           backgroundColor: '#FFFFFF',
         }}>
         <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
@@ -260,7 +298,6 @@ class SearchBox extends Component {
             }}
             onChangeText={this.props.onChangeSearchQuery}
             onSubmitEditing={this.props.onSubmitEditing}
-            // onKeyPress = {this.props.pressReturnSearchKey}
           />
         </View>
         <TouchableOpacity
@@ -280,7 +317,7 @@ class AddressBox extends Component {
         style={{
           marginTop: 12,
           flexDirection: 'row',
-          flex: 0.05,
+          height: WINDOW_SIZE.HEIGHT / 20,
           backgroundColor: '#FFFF',
         }}>
         <View style={{flex: 0.1}} />
@@ -295,19 +332,21 @@ class AddressBox extends Component {
             alignSelf: 'center',
             justifyContent: 'center',
           }}>
-          <View>
+          <View style = {{alignSelf: 'flex-start', justifyContent: 'center'}}>
             <TouchableOpacity onPress={this.props.openSearchModal}>
               <Text
+                numberOfLines = {1}
                 style={{
                   fontFamily: 'Times New Roman',
                   fontStyle: 'italic',
-                  fontWeight: 'normal',
-                  lineHeight: 41,
+                  fontWeight: 'bold',
                   alignSelf: 'center',
                   justifyContent: 'center',
+                  padding: 10,
+                  color: "rgba(0, 0, 0, 0.7)"
                 }}
                 >
-                {'Chọn địa chỉ nhận hàng'}
+                {this.props.currentAddress}
               </Text>
             </TouchableOpacity>
           </View>
@@ -324,7 +363,7 @@ class BannerImageView extends Component {
         style={{
           marginTop: 12,
           flexDirection: 'row',
-          flex: 0.3,
+          height: WINDOW_SIZE.HEIGHT/5
         }} >
 
         <Image
@@ -355,6 +394,10 @@ class FoodRecommendBar extends Component {
       ...this.state,
       selectedIndex: index,
     });
+    if(index == 1){
+      this.props.NearMe()
+      ToastAndroid.show("Index 1", ToastAndroid.SHORT)
+    }
   }
 
   render() {
