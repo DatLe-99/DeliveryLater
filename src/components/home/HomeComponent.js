@@ -351,7 +351,7 @@ class BannerImageView extends Component {
         style={{
           marginTop: 12,
           flexDirection: 'row',
-          flex: 0.3,
+          height: WINDOW_SIZE.HEIGHT/5
         }} >
 
         <Image
