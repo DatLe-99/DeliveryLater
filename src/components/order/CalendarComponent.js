@@ -39,11 +39,16 @@ export default class CalendarComponent extends Component {
   };
 
   orders() {
-    console.log(this.state.order);
+    if (this.state.order.time) {
+      console.log(this.state.order);
+    }
   }
   changetime(time) {
-    var selected = {date: this.state.order.date, time: time};
-    this.setState({order: selected});
+    console.log(moment(time, 'HH:mm', true));
+    if (moment(time, 'HH:mm', true) != null) {
+      var selected = {date: this.state.order.date, time: time};
+      this.setState({order: selected});
+    }
   }
 
   render() {
@@ -150,6 +155,7 @@ class OrderList extends Component {
               fontWeight: 'normal',
               fontSize: 15,
               lineHeight: 18,
+              height: 30,
               display: 'flex',
               alignItems: 'center',
               textAlign: 'center',
