@@ -204,6 +204,8 @@ class HomeComponent extends Component {
             selectedTab = 'home'
             onPressHome = {() => this.props.navigation.navigate('Home')}
             onPressHistory = {() => this.props.navigation.navigate('History')}
+            onPressCart = {() => this.props.navigation.navigate('Cart')}
+            onPressProfile = {() => this.props.navigation.navigate('Profile')}
           />
 
           {/* <TabbarView /> */}

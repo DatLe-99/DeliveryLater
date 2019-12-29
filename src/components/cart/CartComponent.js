@@ -33,14 +33,14 @@ export default class HistoryComponent extends Component {
                 }}>
 
                 <BottomBarComponent 
-                    selectedTab = 'history'
+                    selectedTab = 'cart'
                     onPressHome = {() => this.props.navigation.navigate('Home')}
                     onPressHistory = {() => this.props.navigation.navigate('History')}
                     onPressCart = {() => this.props.navigation.navigate('Cart')}
                     onPressProfile = {() => this.props.navigation.navigate('Profile')}
                 />
 
-                <Text>History</Text>
+                <Text>Cart</Text>
             </View>
             
         );

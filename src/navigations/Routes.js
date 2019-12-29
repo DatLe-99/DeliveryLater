@@ -8,6 +8,8 @@ import SearchComponent from '../components/search/SearchComponent';
 import RestaurantComponent from '../components/restaurant/RestaurantComponent'
 import CalendarComponent from '../components/order/CalendarComponent';
 import HistoryComponent from '../components/history/HistoryComponent';
+import CartComponent from '../components/cart/CartComponent';
+import ProfileComponent from '../components/profile/ProfileComponent';
 
 const RootNavigator = createStackNavigator(
   {
@@ -51,6 +53,20 @@ const RootNavigator = createStackNavigator(
 
     History: {
       screen: HistoryComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+
+    Cart: {
+      screen: CartComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+
+    Profile: {
+      screen: ProfileComponent,
       navigationOptions: {
         gesturesEnabled: false,
       },

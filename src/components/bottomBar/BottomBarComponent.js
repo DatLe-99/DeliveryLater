@@ -112,7 +112,9 @@ export default class BottomBarComponent extends Component {
           <View
             style={{flex: 0.25}}
            >
-            <TouchableOpacity style = {styles.bottomBarItem}>
+            <TouchableOpacity 
+                style = {styles.bottomBarItem}
+                onPress = {this.props.onPressCart} >
               <IconMaterialCommunity name="cart" size={px2dp(22)} color={this.state.cartIconColor}/>
   
               <Text
@@ -127,7 +129,9 @@ export default class BottomBarComponent extends Component {
   
           <View
             style = {{flex: 0.25}}>
-            <TouchableOpacity style={styles.bottomBarItem}>
+            <TouchableOpacity 
+                style={styles.bottomBarItem}
+                onPress = {this.props.onPressProfile}>
               <IconAwesome name="user" size={px2dp(22)} color={this.state.profileIconColor}/>
               <Text
                 style={{
@@ -144,22 +148,6 @@ export default class BottomBarComponent extends Component {
   }
 
 const styles = StyleSheet.create({
-    // container: {
-    //   flex: 1,
-    //   justifyContent: 'center',
-    //   alignItems: 'center',
-    //   backgroundColor: '#fff',
-    // },
-    // welcome: {
-    //   fontSize: 20,
-    //   textAlign: 'center',
-    //   margin: 10,
-    // },
-    // instructions: {
-    //   textAlign: 'center',
-    //   color: '#333333',
-    //   marginBottom: 5,
-    // },
     bottomBarItem: {
         flex: 0.5,
         flexDirection: 'column',
@@ -167,16 +155,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
         marginTop: 10,
-    },
-
-    buttonPress: {
-        flex: 0.5,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 10,
-        marginTop: 10,
-        backgroundColor: '#3d3'
     },
 });
 
