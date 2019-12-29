@@ -12,6 +12,7 @@ import {
   Keyboard,
   BackHandler,
   TextInput,
+  ToastAndroid,
 } from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
@@ -26,8 +27,8 @@ class LoginComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '0356222105',
-      password: 'abc',
+      username: '',
+      password: '',
       isLoading: false,
     };
   }
@@ -44,7 +45,9 @@ class LoginComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.signInData.success) {
             this.setState({isLoading: false});
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Home', {
+              accountData: this.props.signInData.dataRes,
+            });
           } else {
             this.setState({isLoading: false});
             this.alertMessage(this.props.signInData.errorMessage);

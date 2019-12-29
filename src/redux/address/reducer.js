@@ -1,7 +1,7 @@
 import {
-  SIGN_UP_REQUEST,
-  SIGN_UP_SUCCESS,
-  SIGN_UP_FAILURE,
+  ADDRESS_REQUEST,
+  ADDRESS_SUCCESS,
+  ADDRESS_FAILURE,
 } from './actionTypes.js';
 
 const initialState = {
@@ -13,18 +13,18 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case SIGN_UP_REQUEST:
+    case ADDRESS_REQUEST:
       return {
         ...state,
       };
-    case SIGN_UP_SUCCESS:
+    case ADDRESS_SUCCESS:
       return {
         error: false,
         success: action.dataResult.status,
-        dataRes: action.dataResult.account,
+        dataRes: action.dataResult.store,
         errorMessage: action.dataResult.message,
       };
-    case SIGN_UP_FAILURE:
+    case ADDRESS_FAILURE:
       return {
         ...state,
         error: true,

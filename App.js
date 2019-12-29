@@ -24,6 +24,8 @@ import {
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 
+//import 'react-native-gesture-handler';
+
 // class HomeScreen extends React.Component {
 //   render() {
 //     const {navigate} = this.props.navigation;
