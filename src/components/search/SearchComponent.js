@@ -211,7 +211,7 @@ class SearchBox extends Component {
                 style={{
                     marginTop: 20,
                     flexDirection: 'row',
-                    // flex: 0.08,
+                    height: WINDOW_SIZE.HEIGHT/18,
                     backgroundColor: '#FFFFFF',
                 }}>
                 <TouchableOpacity
