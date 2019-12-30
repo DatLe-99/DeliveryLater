@@ -45,9 +45,8 @@ class LoginComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.signInData.success) {
             this.setState({isLoading: false});
-            this.props.navigation.navigate('Home',
-            {
-              accountData: this.props.signInData.dataRes
+            this.props.navigation.navigate('Home', {
+              accountData: this.props.signInData.dataRes,
             });
           } else {
             this.setState({isLoading: false});
@@ -136,40 +135,66 @@ class BoxLogin extends Component {
 }
 
 class BoxUsername extends Component {
-    render() {
-        return (
-            <View style={{ width: 367, height: 42, backgroundColor: '#21B341', borderRadius: 13 }}>
-                <TextInput
-                    placeholder="Số điện thoại"
-                    style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF' }}
-                    onChangeText={this.props.onChangeUsername}
-                />
-            </View>
-        );
-    }
+  render() {
+    return (
+      <View
+        style={{
+          width: 367,
+          height: 42,
+          backgroundColor: '#21B341',
+          borderRadius: 13,
+        }}>
+        <TextInput
+          placeholder="Số điện thoại"
+          style={{
+            fontFamily: 'Verdana',
+            fontStyle: 'normal',
+            fontWeight: 'normal',
+            fontSize: 15,
+            lineHeight: 18,
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
+            color: '#FFFFFF',
+          }}
+          onChangeText={this.props.onChangeUsername}
+        />
+      </View>
+    );
+  }
 }
 
 class BoxPassword extends Component {
-    render() {
-        return (
-            <View
-                style={{
-                    width: 367,
-                    height: 42,
-                    backgroundColor: '#AA9B15',
-                    borderRadius: 13,
-                    marginTop: 20
-                }}>
-                <TextInput placeholder="Mật khẩu"
-                    secureTextEntry={true}
-                    style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF' }}
-                    onChangeText={this.props.onChangePassword}
-                />
-            </View>
-        );
-    }
+  render() {
+    return (
+      <View
+        style={{
+          width: 367,
+          height: 42,
+          backgroundColor: '#AA9B15',
+          borderRadius: 13,
+          marginTop: 20,
+        }}>
+        <TextInput
+          placeholder="Mật khẩu"
+          secureTextEntry={true}
+          style={{
+            fontFamily: 'Verdana',
+            fontStyle: 'normal',
+            fontWeight: 'normal',
+            fontSize: 15,
+            lineHeight: 18,
+            display: 'flex',
+            alignItems: 'center',
+            textAlign: 'center',
+            color: '#FFFFFF',
+          }}
+          onChangeText={this.props.onChangePassword}
+        />
+      </View>
+    );
   }
-
+}
 
 class LoginwithEmail extends Component {
   render() {

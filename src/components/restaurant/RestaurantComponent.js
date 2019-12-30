@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     FlatList,
     View,
@@ -21,10 +21,10 @@ import {
     Dimensions,
 } from 'react-native';
 
-import { WINDOW_SIZE } from '../../utils/scale';
-import { FONT_SIZE } from '../../utils/fontsize';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import {WINDOW_SIZE} from '../../utils/scale';
+import {FONT_SIZE} from '../../utils/fontsize';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 
@@ -89,8 +89,9 @@ export default class RestaurantComponent extends Component{
           totalitem: 1 + this.state.totalitem,
           listorder: tmp,
         });
-        console.log(tmp)
-    }
+
+        return;
+      }
     MinusItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
@@ -112,14 +113,14 @@ export default class RestaurantComponent extends Component{
             return;
           }
         }
-    }
+        this.setState({
+          totalprice: -item.price + this.state.totalprice,
+          totalitem: -1 + this.state.totalitem,
+          listorder: tmp,
+        });
+        return;
+      }
 
-    // onRefresh = (item) => {
-    //     this.countFoodItem(item)
-    //     this.setState({
-    //         refreshing: false
-    //     })
-    // }
     render(){
         return(
             <View style = {{flex: 1}}>
@@ -519,40 +520,13 @@ class OrderedBar extends Component{
     }
 }
 
-class OrderedModal extends Component{
-    render(){
-        return (
-          <View>
-            <Modal animationType={'slide'} transparent={false}>
-              <View style={{flexDirection: 'column'}}>
-                <OrderedBar />
-                <View>
-                  <FlatList
-                    data={this.props.listorder}
-                    listKey={(item, index) => 'D' + index.toString()}
-                    renderItem={({item}) => (
-                      <FoodItem
-                          fooditem = {item}
-                          AddItemFood = {this.props.AddItemFood}
-                          MinusItemFood = {this.props.MinusItemFood}
-                          count = {item}
-                      />
-                    )}
-                    keyExtractor={item => item.id}
-                  />
-                </View>
-              </View>
-            </Modal>
-          </View>
-        );
-    }
-}
-
-
-
-function CategoryItem({ cate , AddItemFood, MinusItemFood, count}) {
+class OrderedModal extends Component {
+  render() {
     return (
-        <View style={{ flexDirection: "column", flex: 1 }}>
+      <View>
+        <Modal animationType={'slide'} transparent={false}>
+          <View style={{flexDirection: 'column'}}>
+            <OrderedBar />
             <View>
                 <Text
                     style={{ margin: 5, fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 16, color : "#000000" }}
@@ -574,8 +548,11 @@ function CategoryItem({ cate , AddItemFood, MinusItemFood, count}) {
                     keyExtractor={item => item.id}
                 />
             </View>
-        </View>
+          </View>
+        </Modal>
+      </View>
     );
+  }
 }
 
 function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
@@ -615,7 +592,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
         );
 }
 
-function countFoodItem (item, listorder) {
+function countFoodItem(item, listorder) {
   var tmp = listorder;
   for (var i = 0; i < tmp.length; i++) {
     if (item.ID == tmp[i].ID) {

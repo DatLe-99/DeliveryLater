@@ -38,6 +38,7 @@ const RootNavigator = createStackNavigator(
         gesturesEnabled: false,
       },
     },
+
     Restaurant: {
       screen: RestaurantComponent,
       navigationOptions: {
