@@ -6,3 +6,4 @@ export const SEARCH = DOMAIN_URL + 'api/stores/search';
 export const ADDRESS = DOMAIN_URL + 'api/stores/nearestStore';
 export const UPDATE = DOMAIN_URL + 'api/accounts/update';
 export const RECOMMEND = DOMAIN_URL + 'api/stores/highestRateStore'
+export const NEWEST = DOMAIN_URL + 'api/stores/newestStore';

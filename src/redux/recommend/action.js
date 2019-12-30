@@ -8,6 +8,7 @@ import {
     RECOMMEND
 } from '../../utils/api'
 
+
 const recommendRequest = () => {
     return {
         type: RECOMMEND_REQUEST

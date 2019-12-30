@@ -33,7 +33,7 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from 'react-native-geolocation-service';
 import BottomBarComponent from '../bottomBar/BottomBarComponent';
-import {searchAction, addressAction, updateAction, recommendAction} from '../../redux/action';
+import {searchAction, addressAction, updateAction, recommendAction, newestAction} from '../../redux/action';
 import IconAwesome from 'react-native-vector-icons/FontAwesome'
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
@@ -73,24 +73,23 @@ class HomeComponent extends Component {
       accountData: this.props.navigation.getParam('accountData'),
       currentData: [],
       refreshing: false,
-      tabindex: 0 //[Goi y, Gan toi, Vua dat, Moi]
+      tabindex: 0, //[Goi y, Gan toi, Vua dat, Moi]
     };
     //this.index = 0
   }
 
-
-  async componentDidMount () {
+  async componentDidMount() {
     RNGooglePlaces.getCurrentPlace()
-      .then((results) => {
-        console.log(results)
+      .then(results => {
+        console.log(results);
         this.setState({
           latitude: results[0].location.latitude,
           longitude: results[0].location.longitude,
-          address: results[0].address
-        })
+          address: results[0].address,
+        });
       })
-      .catch((error) => console.log(error.message));
-    this.recommendStore()
+      .catch(error => console.log(error.message));
+    this.recommendStore();
   }
 
   onPressNoti = () => {
@@ -108,12 +107,9 @@ class HomeComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.searchData.success) {
             this.setState({isLoading: false});
-            this.props.navigation.navigate('Search',
-              {
-                listRestaurant: this.props.searchData.dataRes.store
-              }
-            );
-
+            this.props.navigation.navigate('Search', {
+              listRestaurant: this.props.searchData.dataRes.store,
+            });
           } else {
             this.setState({isLoading: false});
             this.alertMessage(this.props.searchData.errorMessage);
@@ -138,27 +134,27 @@ class HomeComponent extends Component {
     );
   };
 
-  exitApp = () =>{
+  exitApp = () => {
     Alert.alert(
       '',
-      "Bạn có muốn thoát khỏi ứng dụng",
+      'Bạn có muốn thoát khỏi ứng dụng',
       [
         {
           text: 'OK',
           onPress: () => {
-            BackHandler.exitApp()
+            BackHandler.exitApp();
           },
         },
         {
           text: 'Không',
           onPress: () => {
             return;
-          }
-        }
+          },
+        },
       ],
-      { cancelable: false },
+      {cancelable: false},
     );
-  }
+  };
   openSearchModal() {
     RNGooglePlaces.openAutocompleteModal()
       .then(place => {
@@ -166,143 +162,161 @@ class HomeComponent extends Component {
           latitude: place.location.latitude,
           longitude: place.location.longitude,
           address: place.address,
-        })
+        });
         // place represents user's selection from the
         // suggestions and it is a simplified Google Place object.
         if (!this.state.isLoading) {
           this.setState({isLoading: true});
-          console.log(place)
+          console.log(place);
           this.props
             .updateAction({
               ID: this.state.accountData.ID,
               account_location: {
                 account_id: this.state.accountData.ID,
                 address: this.state.address,
-                lat : this.state.latitude,
+                lat: this.state.latitude,
                 lng: this.state.longitude,
-              }
+              },
             })
             .then(() => {
               this.setState({isLoading: false});
               if (this.props.updatedData.success) {
-                this.setState({isLoading: false });
-                if(this.state.tabindex== 0){
-                  this.recommendStore()
+                this.setState({isLoading: false});
+                if (this.state.tabindex == 0) {
+                  this.recommendStore();
+                } else if (this.state.tabindex == 1) {
+                  this.NearMe();
                 }
-                else if (this.state.tabindex == 1){
-                  this.NearMe()
+                else if (this.state.tabindex == 3){
+                  this.newestStore()
                 }
-                console.log(this.props.updatedData.dataRes)
+                console.log(this.props.updatedData.dataRes);
               } else {
                 this.setState({isLoading: false});
                 this.alertMessage(this.props.updatedData.errorMessage);
               }
             });
         }
-
       })
       .catch(error => console.log(error.message));
   }
 
   NearMe = () => {
     if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
+      this.setState({isLoading: true});
       this.props
         .addressAction({
           lat: this.state.latitude,
           lng: this.state.longitude,
         })
         .then(() => {
-          this.setState({ isLoading: false });
+          this.setState({isLoading: false});
           if (this.props.nearStoreData.success) {
             this.setState({
               isLoading: false,
-              currentData: this.props.nearStoreData.dataRes
+              currentData: this.props.nearStoreData.dataRes,
             });
-            console.log(this.props.nearStoreData.dataRes)
-
+            console.log(this.props.nearStoreData.dataRes);
           } else {
-            this.setState({ isLoading: false });
+            this.setState({isLoading: false});
             this.alertMessage(this.props.nearStoreData.errorMessage);
           }
         });
     }
-  }
+  };
 
   recommendStore = () => {
     if (!this.state.isLoading) {
-      this.setState({ isLoading: true });
+      this.setState({isLoading: true});
       this.props
         .recommendAction({
           lat: this.state.latitude,
           lng: this.state.longitude,
         })
         .then(() => {
-          this.setState({ isLoading: false });
+          this.setState({isLoading: false});
           if (this.props.recommendData.success) {
             this.setState({
               isLoading: false,
-              currentData: this.props.recommendData.dataRes
+              currentData: this.props.recommendData.dataRes,
             });
-            console.log(this.props.recommendData.dataRes)
-
+            console.log(this.props.recommendData.dataRes);
           } else {
-            this.setState({ isLoading: false });
+            this.setState({isLoading: false});
             this.alertMessage(this.props.recommendData.errorMessage);
           }
         });
     }
-  }
+  };
 
-  parentCallbackIndex = (index) =>{
+  newestStore = () => {
+    if (!this.state.isLoading) {
+      this.setState({isLoading: true});
+      this.props
+        .newestAction({
+          lat: this.state.latitude,
+          lng: this.state.longitude,
+        })
+        .then(() => {
+          this.setState({isLoading: false});
+          if (this.props.newestData.success) {
+            this.setState({
+              isLoading: false,
+              currentData: this.props.newestData.dataRes,
+            });
+            console.log(this.props.newestData.dataRes);
+          } else {
+            this.setState({isLoading: false});
+            this.alertMessage(this.props.newestData.errorMessage);
+          }
+        });
+    }
+  };
+
+  parentCallbackIndex = index => {
     this.setState({
-      tabindex: index
-    })
-  }
+      tabindex: index,
+    });
+  };
   render() {
     return (
-        <View
-          style={{alignContents: 'center', flexDirection: 'column', flex: 1}}>
-          <SearchBox
-            onSubmitEditing={() => {
-              this.pressReturnSearchKey();
-            }}
-            onChangeSearchQuery={text => {
-              this.setState({searchQuery: text});
-            }}
-            onPressNoti={() => this.onPressNoti()}
+      <View style={{alignContents: 'center', flexDirection: 'column', flex: 1}}>
+        <SearchBox
+          onSubmitEditing={() => {
+            this.pressReturnSearchKey();
+          }}
+          onChangeSearchQuery={text => {
+            this.setState({searchQuery: text});
+          }}
+          onPressNoti={() => this.onPressNoti()}
+          onBack={() => this.exitApp()}
+        />
+        <AddressBox
+          openSearchModal={() => this.openSearchModal()}
+          currentAddress={this.state.address}
+        />
 
-            onBack = {() => this.exitApp()}
-          />
-          <AddressBox
-            openSearchModal = {() => this.openSearchModal()}
-            currentAddress = {this.state.address}
-          />
-
-          <BannerImageView />
-          <FoodRecommendBar 
-
-
-            NearMe = {() => this.NearMe()}
-            recommendStore = {() => this.recommendStore()}
-            parentCallbackIndex={this.parentCallbackIndex}
-          />
-        <View style={{ flex: 5, marginTop: 10 }}>
+        <BannerImageView />
+        <FoodRecommendBar
+          NearMe={() => this.NearMe()}
+          recommendStore={() => this.recommendStore()}
+          parentCallbackIndex={this.parentCallbackIndex}
+          newestStore={() => this.newestStore()}
+        />
+        <View style={{flex: 5, marginTop: 10}}>
           <FlatList
             data={this.state.currentData}
             listKey={(item, index) => 'D' + index.toString()}
-            renderItem={({ item }) =>
+            renderItem={({item}) => (
               <TouchableOpacity
-                onPress={() => this.props.navigation.navigate("Restaurant",
-                  {
-                    listMenu: { item }
-                  })}
-              >
-                <RestaurantItem
-                  res={item}
-                />
+                onPress={() =>
+                  this.props.navigation.navigate('Restaurant', {
+                    listMenu: {item},
+                  })
+                }>
+                <RestaurantItem res={item} />
               </TouchableOpacity>
-            }
+            )}
             keyExtractor={item => item.id}
             refreshControl={
               <RefreshControl
@@ -311,17 +325,18 @@ class HomeComponent extends Component {
               />
             }
           />
-          </View>
-          
-
-          <BottomBarComponent
-            selectedTab = 'home'
-            onPressHome = {() => this.props.navigation.navigate('Home')}
-            onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
-            onPressHistory = {() => this.props.navigation.navigate('History')}
-            onPressProfile = {() => this.props.navigation.navigate('Profile')}
-          />
         </View>
+
+        <BottomBarComponent
+          selectedTab="home"
+          onPressHome={() => this.props.navigation.navigate('Home')}
+          onPressUpcomingOrder={() =>
+            this.props.navigation.navigate('UpcomingOrder')
+          }
+          onPressHistory={() => this.props.navigation.navigate('History')}
+          onPressProfile={() => this.props.navigation.navigate('Profile')}
+        />
+      </View>
     );
   }
 }
@@ -465,6 +480,7 @@ class FoodRecommendBar extends Component {
     });
 
     this.props.parentCallbackIndex(index)
+    
     if(index == 1){
       this.props.NearMe()
       ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)
@@ -472,6 +488,10 @@ class FoodRecommendBar extends Component {
     else if(index == 0){
       this.props.recommendStore()
       ToastAndroid.show("Quán được đề xuất", ToastAndroid.SHORT)
+    }
+    else if(index == 3){
+      this.props.newestStore()
+      ToastAndroid.show('Quán mới', ToastAndroid.SHORT);
     }
   }
 
@@ -631,6 +651,7 @@ function mapStateToProps(state) {
     nearStoreData: state.AddressReducer,
     updatedData: state.UpdateReducer,
     recommendData: state.RecommendReducer,
+    newestData: state.NewestReducer,
   };
 }
 
@@ -641,6 +662,7 @@ function dispatchToProps(dispatch) {
       addressAction,
       updateAction,
       recommendAction,
+      newestAction,
     },
     dispatch,
   );
