@@ -168,7 +168,7 @@ class HeaderRestaurant extends Component {
                     </View>
                     <View style={{flex: 0.9}}></View>
                     <Text
-                        style = {{margin: 5,fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 12, color: "#FFFFFF"}}
+                        style = {{margin: 5,fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF"}}
                     >{this.props.ResName}</Text>
                     <Text
                         style={{ margin: 5, fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "normal", fontSize: 12, lineHeight: 12, color : "#FFFFFF" }}
@@ -253,7 +253,7 @@ function CategoryItem({ cate , AddItemFood, MinusItemFood, count}) {
         <View style={{ flexDirection: "column", flex: 1 }}>
             <View>
                 <Text
-                    style={{ margin: 5, fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color : "#000000" }}
+                    style={{ margin: 5, fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 16, color : "#000000" }}
                 >Phân loại: {cate.name}</Text>
             </View>
             <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1 }} />
