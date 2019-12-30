@@ -18,6 +18,7 @@ import {
     AppRegistry,
     Modal,
     RefreshControl,
+    Dimensions,
 } from 'react-native';
 
 import { WINDOW_SIZE } from '../../utils/scale';
@@ -25,6 +26,15 @@ import { FONT_SIZE } from '../../utils/fontsize';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Icon from 'react-native-vector-icons/AntDesign';
+
+import SegmentedControlTab from 'react-native-segmented-control-tab';
+
+import faker from 'faker';
+import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
 export default class RestaurantComponent extends Component{
@@ -38,11 +48,19 @@ export default class RestaurantComponent extends Component{
              totalprice: 0,
              totalitem: 0,
              listorder: this.innitialState,
+             tabindex: 0, //gian hàng, đánh giá, hình ảnh
          }
     }
     componentDidMount = () => {
         console.log(this.state.listData.item)
     }
+
+    parentCallbackIndex = (index) =>{
+        this.setState({
+          tabindex: index
+        })
+      }
+
     AddItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
@@ -98,7 +116,7 @@ export default class RestaurantComponent extends Component{
     // }
     render(){
         return(
-            <View style = {{flexDirection: "column", flex: 1}}>
+            <View style = {{flex: 1}}>
                 {/* <Text>{this.data.Categories[0].Items[0].name}</Text> */}
                 {/* Can not get this data => Chỗ này lấy data không cần phức tạp vậy =.=
                 cái item được truyền ở trong flatlist nó đã là 1 object rồi, lấy đơn giản như ở dưới đây là được!!!
@@ -108,33 +126,71 @@ export default class RestaurantComponent extends Component{
                     ResName = {this.state.listData.item.name}
                     ResAddress={this.state.listData.item.store_location.address}
                     onBack = {() => this.props.navigation.navigate("Search")}
-                ></HeaderRestaurant>
-                <ListChoosen></ListChoosen>
-                <View style={{marginTop: 10, flex: 0.9}}>
-                    <FlatList
+                />
+                
+                <ListChoosen
+                    parentCallbackIndex={this.parentCallbackIndex}
+                />
+                     
+                {this.state.tabindex === 0 &&
+                    <GianHang
                         data={this.state.listData.item.Categories}
-                        listKey={(item, index) => 'D' + index.toString()}
-                        renderItem={({ item }) =>
-                                <CategoryItem
-                                    cate={item}
-                                    AddItemFood = {this.AddItemFood}
-                                    MinusItemFood = {this.MinusItemFood}
-                                    count = {this.state.listorder}
-                                />
-                        }
-                        keyExtractor={item => item.id}
+                        AddItemFood = {this.AddItemFood}
+                        MinusItemFood = {this.MinusItemFood}
+                        count = {this.state.listorder}
+                        totalprice = {this.state.totalprice}
+                        totalitem = {this.state.totalitem}
+                        Setschedule = {() => this.props.navigation.navigate("Calendar")}
+                        goToPayment = {() => this.props.navigation.navigate("Payment")}
                     />
-                </View>
+                }
+
+                {this.state.tabindex === 1 && 
+                    <Review />
+                }
+                
+            </View> 
+            
+        );
+    }
+}
+
+class Review extends Component {
+    render() {
+        return(
+            <Text>danh gia</Text>
+        );
+    }
+}
+class GianHang extends Component {
+    render() {
+        return (
+            <View style={{
+                marginTop: 10,
+                flexDirection: 'column',
+                flex: 1,
+            }}>
+                <FlatList
+                    data={this.props.data}
+                    listKey={(item, index) => 'D' + index.toString()}
+                    renderItem={({ item }) =>
+                            <CategoryItem
+                                cate={item}
+                                AddItemFood = {this.props.AddItemFood}
+                                MinusItemFood = {this.props.MinusItemFood}
+                                count = {this.props.count}
+                            />
+                    }
+                    keyExtractor={item => item.id}
+                />
+
                 <OrderedBar
-                    totalprice = {this.state.totalprice}
-                    totalitem = {this.state.totalitem}
-                    Setschedule = {() => this.props.navigation.navigate("Calendar")}
-                    goToPayment = {() => this.props.navigation.navigate("Payment")}
-                ></OrderedBar>
-                {/* <OrderedModal
-                    AddItemFood = {this.AddItemFood}
-                    MinusItemFood = {this.MinusItemFood}
-                /> */}
+                    totalprice = {this.props.totalprice}
+                    totalitem = {this.props.totalitem}
+                    Setschedule = {this.props.Setschedule}
+                    goToPayment = {this.props.goToPayment}
+                />
+           
             </View>
         );
     }
@@ -173,26 +229,79 @@ class HeaderRestaurant extends Component {
 }
 
 class ListChoosen extends Component {
-    render(){
-        return(
-            <View style = {{flexDirection: "row", flex: 0.05, marginTop: 10}}>
-                <Text style={{ flex: 1 , color: "#F34F08", fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, textAlign: 'center'}}>Gian hàng</Text>
-                <Text style={{ flex: 1, fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "normal", fontSize: 14, lineHeight: 14, color: "#000000", textAlign: 'center'}}>Đánh giá</Text>
-                <Text style={{ flex: 1 , fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "normal", fontSize: 14, lineHeight: 14, color: "#000000", textAlign: 'center' }}>Hình ảnh</Text>
+    constructor(){
+      super()
+      this.state = {
+        selectedIndex: 0,
+      };
+    }
+  
+    handleIndexChange = (index) => {
+      this.setState({
+        ...this.state,
+        selectedIndex: index,
+      });
+  
+      this.props.parentCallbackIndex(index)
+      if(index == 0){
+        //this.props.NearMe()
+        ToastAndroid.show("Gian hàng pressed", ToastAndroid.SHORT)
+      }
+      else if(index == 1){
+        //this.props.recommendStore()
+        ToastAndroid.show("Đánh giá pressed", ToastAndroid.SHORT)
+      }
+    }
+  
+    render() {
+        return (
+            <View
+              style = { {
+                marginTop: 12
+            }
+            }>
+                <SegmentedControlTab
+                    values={['Gian hàng', 'Đánh giá', 'Hình ảnh']}
+                    selectedIndex={this.state.selectedIndex}
+                    onTabPress={this.handleIndexChange}
+                    borderRadius={0}
+                    tabsContainerStyle={{backgroundColor: '#F2F2F2' }}
+                    tabStyle={{ backgroundColor: '#F2F2F2', borderWidth: 0, borderColor: 'transparent' }}
+                    activeTabStyle={{ backgroundColor: 'white', marginTop: 2 }}
+                    tabTextStyle={{ color: '#000'}}
+                    activeTabTextStyle={{ color: '#fb4f46', fontWeight: 'bold' }}
+                />
             </View>
         );
     }
-}
+  }
 
 class OrderedBar extends Component{
     render(){
         return(
-            <View style= {{flexDirection: 'row', position: 'absolute',width: '100%',height: WINDOW_SIZE.HEIGHT/25 ,bottom: 0, backgroundColor: "#C4C4C4", borderRadius: 10}}>
+            <View 
+                style = {{
+                    flexDirection: 'row-reverse', 
+                    position: 'absolute',
+                    //width: '100%',
+                    //height: WINDOW_SIZE.HEIGHT/25 ,
+                    bottom: 0,
+                    backgroundColor: "#f2f2f2", 
+                    borderRadius: 10,
+                }}>
 
-                <TouchableOpacity style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>
-                    <Text>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
+                <TouchableOpacity
+                    onPress = {this.props.Setschedule}
+                    style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
+                    <Text style={{ 
+                        fontFamily: 'Roboto', 
+                        fontStyle: 'normal', 
+                        fontWeight: "bold", 
+                        fontSize: 14, 
+                        lineHeight: 14, 
+                        color: "#FFFFFF", textAlign: 'center'}}>Lên lịch</Text>
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
                     style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}
                     onPress = {this.props.goToPayment}
@@ -200,11 +309,21 @@ class OrderedBar extends Component{
                     <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Đặt ngay</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress = {this.props.Setschedule}
-                    style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
-                    <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Lên lịch</Text>
+                <TouchableOpacity 
+                    style={{
+                        // flex: 1, 
+                        // alignSelf: 'center', 
+                        // marginLeft: 10
+                    }}>
+                    <Text
+                        style = {{
+                            padding: 10,
+                        }}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
                 </TouchableOpacity>
+                
+                
+
+                
             </View>
         );
     }

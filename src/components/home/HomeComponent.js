@@ -260,6 +260,7 @@ class HomeComponent extends Component {
       tabindex: index
     })
   }
+  
   render() {
     return (
         <View
@@ -321,7 +322,6 @@ class HomeComponent extends Component {
             onPressProfile = {() => this.props.navigation.navigate('Profile')}
           />
         </View>
-      </View>
     );
   }
 }
