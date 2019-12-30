@@ -75,6 +75,7 @@ export default class RestaurantComponent extends Component{
                     totalprice = {this.state.totalprice}
                     totalitem = {this.state.totalitem}
                     Setschedule = {() => this.props.navigation.navigate("Calendar")}
+                    goToPayment = {() => this.props.navigation.navigate("Payment")}
                 ></OrderedBar>
             </View>
         );
@@ -130,7 +131,10 @@ class OrderedBar extends Component{
         return(
             <View style= {{flexDirection: 'row', position: 'absolute',width: '100%',height: WINDOW_SIZE.HEIGHT/25 ,bottom: 0, backgroundColor: "#C4C4C4", borderRadius: 10}}>
                 <Text style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
-                <TouchableOpacity style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}>
+                <TouchableOpacity 
+                    style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}
+                    onPress = {this.props.goToPayment}
+                    >
                     <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Đặt ngay</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 

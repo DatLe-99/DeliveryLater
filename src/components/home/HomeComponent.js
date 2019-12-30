@@ -319,6 +319,7 @@ class HomeComponent extends Component {
             onPressProfile = {() => this.props.navigation.navigate('Profile')}
           />
         </View>
+      </View>
     );
   }
 }
@@ -576,7 +577,7 @@ function RestaurantItem({ res }) {
             <View style={{ flex: 0.2, alignSelf: "center" }}>
               <View style={{ flexDirection: 'row', flex: 1, alignContent: "center", justifyContent: "center" }}>
                 <Text style={{ marginRight: 5, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>30p</Text>
-                <Icon name="clockcircle" size={12} color="#F34F08" />
+                <IconAntDesign name="clockcircle" size={12} color="#F34F08" />
               </View>
             </View>
           </View>
