@@ -79,7 +79,6 @@ export default class RestaurantComponent extends Component{
                   totalitem: 1 + this.state.totalitem,
                   listorder: tmp,
                 });
-
                 return;
             }
         }
@@ -89,8 +88,6 @@ export default class RestaurantComponent extends Component{
           totalitem: 1 + this.state.totalitem,
           listorder: tmp,
         });
-
-        return;
       }
     MinusItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
@@ -113,12 +110,6 @@ export default class RestaurantComponent extends Component{
             return;
           }
         }
-        this.setState({
-          totalprice: -item.price + this.state.totalprice,
-          totalitem: -1 + this.state.totalitem,
-          listorder: tmp,
-        });
-        return;
       }
 
     render(){
@@ -553,6 +544,43 @@ class OrderedModal extends Component {
       </View>
     );
   }
+}
+
+function CategoryItem({cate, AddItemFood, MinusItemFood, count}) {
+  return (
+    <View style={{flexDirection: 'column', flex: 1}}>
+      <View>
+        <Text
+          style={{
+            margin: 5,
+            fontFamily: 'Roboto',
+            fontStyle: 'normal',
+            fontWeight: 'bold',
+            fontSize: 14,
+            lineHeight: 14,
+            color: '#000000',
+          }}>
+          Phân loại: {cate.name}
+        </Text>
+      </View>
+      <View style={{borderBottomColor: '#000000', borderBottomWidth: 1}} />
+      <View>
+        <FlatList
+          listKey={(item, index) => 'D' + index.toString()}
+          data={cate.Items}
+          renderItem={({item}) => (
+            <FoodItem
+              fooditem={item}
+              AddItemFood={AddItemFood}
+              MinusItemFood={MinusItemFood}
+              count={count}
+            />
+          )}
+          keyExtractor={item => item.id}
+        />
+      </View>
+    </View>
+  );
 }
 
 function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
