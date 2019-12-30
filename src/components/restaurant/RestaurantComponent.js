@@ -283,7 +283,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
                     <Image style={{ borderRadius: 10, width: 30, height: 30, margin: 5 }}
                         source={require("../../media/images/test.jpg")}
                     />
-                    <View style={{ flexDirection: 'column', flex: 0.6 }}>
+                    <View style={{ flexDirection: 'column', flex: 0.8 }}>
                         <Text
                             style={{ fontFamily: "Roboto", fontStyle: "normal", fontWeight: "bold", fontSize: 12, lineHeight: 12, alignItems: "center", color: "#000000", opacity: 0.5 }}
 
