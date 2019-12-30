@@ -244,13 +244,6 @@ class HomeComponent extends Component {
             onPressHistory = {() => this.props.navigation.navigate('History')}
             onPressProfile = {() => this.props.navigation.navigate('Profile')}
           />
-
-
-          {/* <TabbarView /> */}
-          {/* <HomeBottomTabbar
-            onPressHistory={() => this.props.navigation.navigate('History')}
-          /> */}
-
         </View>
       // </ImageBackground>
     );
