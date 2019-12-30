@@ -32,15 +32,9 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 //import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from 'react-native-geolocation-service';
-import Icon from 'react-native-vector-icons/AntDesign';
-
-import {
-  searchAction,
-  addressAction,
-  updateAction,
-  recommendAction,
-} from '../../redux/action';
-import IconAwesome from 'react-native-vector-icons/FontAwesome';
+import BottomBarComponent from '../bottomBar/BottomBarComponent';
+import {searchAction, addressAction, updateAction, recommendAction, newestAction} from '../../redux/action';
+import IconAwesome from 'react-native-vector-icons/FontAwesome'
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import TabNavigator from 'react-native-tab-navigator';
@@ -114,7 +108,6 @@ class HomeComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.searchData.success) {
             this.setState({isLoading: false});
-
             this.props.navigation.navigate('Search', {
               listRestaurant: this.props.searchData.dataRes.store,
             });
@@ -195,6 +188,9 @@ class HomeComponent extends Component {
                 } else if (this.state.tabindex == 1) {
                   this.NearMe();
                 }
+                else if (this.state.tabindex == 3){
+                  this.newestStore()
+                }
                 console.log(this.props.updatedData.dataRes);
               } else {
                 this.setState({isLoading: false});
@@ -255,6 +251,30 @@ class HomeComponent extends Component {
     }
   };
 
+  newestStore = () => {
+    if (!this.state.isLoading) {
+      this.setState({isLoading: true});
+      this.props
+        .newestAction({
+          lat: this.state.latitude,
+          lng: this.state.longitude,
+        })
+        .then(() => {
+          this.setState({isLoading: false});
+          if (this.props.newestData.success) {
+            this.setState({
+              isLoading: false,
+              currentData: this.props.newestData.dataRes,
+            });
+            console.log(this.props.newestData.dataRes);
+          } else {
+            this.setState({isLoading: false});
+            this.alertMessage(this.props.newestData.errorMessage);
+          }
+        });
+    }
+  };
+
   parentCallbackIndex = index => {
     this.setState({
       tabindex: index,
@@ -279,11 +299,11 @@ class HomeComponent extends Component {
         />
 
         <BannerImageView />
-
         <FoodRecommendBar
           NearMe={() => this.NearMe()}
           recommendStore={() => this.recommendStore()}
           parentCallbackIndex={this.parentCallbackIndex}
+          newestStore={() => this.newestStore()}
         />
         <View style={{flex: 5, marginTop: 10}}>
           <FlatList
@@ -307,17 +327,17 @@ class HomeComponent extends Component {
               />
             }
           />
-
-          <BottomBarComponent
-            selectedTab="home"
-            onPressHome={() => this.props.navigation.navigate('Home')}
-            onPressUpcomingOrder={() =>
-              this.props.navigation.navigate('UpcomingOrder')
-            }
-            onPressHistory={() => this.props.navigation.navigate('History')}
-            onPressProfile={() => this.props.navigation.navigate('Profile')}
-          />
         </View>
+
+        <BottomBarComponent
+          selectedTab="home"
+          onPressHome={() => this.props.navigation.navigate('Home')}
+          onPressUpcomingOrder={() =>
+            this.props.navigation.navigate('UpcomingOrder')
+          }
+          onPressHistory={() => this.props.navigation.navigate('History')}
+          onPressProfile={() => this.props.navigation.navigate('Profile')}
+        />
       </View>
     );
   }
@@ -461,15 +481,21 @@ class FoodRecommendBar extends Component {
       selectedIndex: index,
     });
 
-    this.props.parentCallbackIndex(index);
-    if (index == 1) {
-      this.props.NearMe();
-      ToastAndroid.show('Các quán ăn gần bạn', ToastAndroid.SHORT);
-    } else if (index == 0) {
-      this.props.recommendStore();
-      ToastAndroid.show('Quán được đề xuất', ToastAndroid.SHORT);
+    this.props.parentCallbackIndex(index)
+    
+    if(index == 1){
+      this.props.NearMe()
+      ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)
     }
-  };
+    else if(index == 0){
+      this.props.recommendStore()
+      ToastAndroid.show("Quán được đề xuất", ToastAndroid.SHORT)
+    }
+    else if(index == 3){
+      this.props.newestStore()
+      ToastAndroid.show('Quán mới', ToastAndroid.SHORT);
+    }
+  }
 
   render() {
     return (
@@ -732,6 +758,7 @@ function mapStateToProps(state) {
     nearStoreData: state.AddressReducer,
     updatedData: state.UpdateReducer,
     recommendData: state.RecommendReducer,
+    newestData: state.NewestReducer,
   };
 }
 
@@ -742,6 +769,7 @@ function dispatchToProps(dispatch) {
       addressAction,
       updateAction,
       recommendAction,
+      newestAction,
     },
     dispatch,
   );

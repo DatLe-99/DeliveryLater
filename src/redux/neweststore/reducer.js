@@ -1,4 +1,4 @@
-import {RECOMMEND_REQUEST, RECOMMEND_SUCCESS, RECOMMEND_FAILURE} from './actionTypes.js';
+import {NEWEST_REQUEST, NEWEST_SUCCESS, NEWEST_FAILURE} from './actionTypes.js';
 
 const initialState = {
     dataRes: null,
@@ -10,18 +10,18 @@ const initialState = {
 export default (state = initialState, action) => {
 
     switch (action.type) {
-      case RECOMMEND_REQUEST:
+      case NEWEST_REQUEST:
         return {
           ...state,
         };
-      case RECOMMEND_SUCCESS:
+      case NEWEST_SUCCESS:
         return {
           error: false,
           success: action.dataResult.status,
           dataRes: action.dataResult.store,
           errorMessage: action.dataResult.message,
         };
-      case RECOMMEND_FAILURE:
+      case NEWEST_FAILURE:
         return {
           ...state,
           error: true,
