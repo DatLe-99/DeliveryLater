@@ -18,6 +18,7 @@ import {
     AppRegistry,
     Modal,
     RefreshControl,
+    Dimensions,
 } from 'react-native';
 
 import { WINDOW_SIZE } from '../../utils/scale';
@@ -25,6 +26,19 @@ import { FONT_SIZE } from '../../utils/fontsize';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Icon from 'react-native-vector-icons/AntDesign';
+import IconEntypo from 'react-native-vector-icons/Entypo';
+
+import SegmentedControlTab from 'react-native-segmented-control-tab';
+
+import faker from 'faker';
+import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+
+import ReadMore from 'react-native-read-more-text';
+
+import OnLayout from 'react-native-on-layout';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
 export default class RestaurantComponent extends Component{
@@ -40,11 +54,19 @@ export default class RestaurantComponent extends Component{
              listorder: this.innitialState,
              addess: this.props.navigation.getParam('address'),
              accountID: this.props.navigation.getParam('accountID'),
+             tabindex: 0, //gian hàng, đánh giá, hình ảnh
          }
     }
     componentDidMount = () => {
         console.log(this.state.listData.item)
     }
+
+    parentCallbackIndex = (index) =>{
+        this.setState({
+          tabindex: index
+        })
+      }
+
     AddItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
@@ -57,7 +79,7 @@ export default class RestaurantComponent extends Component{
                   totalitem: 1 + this.state.totalitem,
                   listorder: tmp,
                 });
-                
+
                 return;
             }
         }
@@ -91,7 +113,7 @@ export default class RestaurantComponent extends Component{
           }
         }
     }
-    
+
     // onRefresh = (item) => {
     //     this.countFoodItem(item)
     //     this.setState({
@@ -99,50 +121,266 @@ export default class RestaurantComponent extends Component{
     //     })
     // }
     render(){
-        return (
-          <View style={{flexDirection: 'column', flex: 1}}>
-            {/* <Text>{this.data.Categories[0].Items[0].name}</Text> */}
-            {/* Can not get this data => Chỗ này lấy data không cần phức tạp vậy =.=
-                cái item được truyền ở trong flatlist nó đã là 1 object rồi, lấy đơn giản như ở dưới đây là được!!! 
+        return(
+            <View style = {{flex: 1}}>
+                {/* <Text>{this.data.Categories[0].Items[0].name}</Text> */}
+                {/* Can not get this data => Chỗ này lấy data không cần phức tạp vậy =.=
+                cái item được truyền ở trong flatlist nó đã là 1 object rồi, lấy đơn giản như ở dưới đây là được!!!
                 */}
-            {/* <Text>{this.state.listData.item}</Text> */}
-            <HeaderRestaurant
-              ResName={this.state.listData.item.name}
-              ResAddress={this.state.listData.item.store_location.address}
-              onBack={() =>
-                this.props.navigation.navigate('Home')
-              }></HeaderRestaurant>
-            <ListChoosen></ListChoosen>
-            <View style={{marginTop: 10, flex: 0.9}}>
-              <FlatList
-                data={this.state.listData.item.Categories}
-                listKey={(item, index) => 'D' + index.toString()}
-                renderItem={({item}) => (
-                  <CategoryItem
-                    cate={item}
-                    AddItemFood={this.AddItemFood}
-                    MinusItemFood={this.MinusItemFood}
-                    count={this.state.listorder}
-                  />
-                )}
-                keyExtractor={item => item.id}
-              />
+                {/* <Text>{this.state.listData.item}</Text> */}
+                <HeaderRestaurant
+                    ResName = {this.state.listData.item.name}
+                    ResAddress={this.state.listData.item.store_location.address}
+                    onBack = {() => this.props.navigation.navigate("Search")}
+                />
+                
+                <ListChoosen
+                    parentCallbackIndex={this.parentCallbackIndex}
+                />
+                     
+                {this.state.tabindex === 0 &&
+                    <GianHang
+                        data={this.state.listData.item.Categories}
+                        AddItemFood = {this.AddItemFood}
+                        MinusItemFood = {this.MinusItemFood}
+                        count = {this.state.listorder}
+                        totalprice = {this.state.totalprice}
+                        totalitem = {this.state.totalitem}
+                        Setschedule = {() => this.props.navigation.navigate("Calendar")}
+                        goToPayment = {() => this.props.navigation.navigate("Payment")}
+                    />
+                }
+
+                {this.state.tabindex === 1 && 
+                    <Review />
+                }
+                
+            </View> 
+            
+        );
+    }
+}
+
+class Review extends Component {
+    constructor(props) {
+        super(props);
+    
+        const fakeData = [];
+
+        for(i = 0; i < 100; i+= 1) {
+          fakeData.push({
+            type: 'NORMAL',
+            item: {
+              id: i,
+              image: faker.image.avatar(),
+              nameUser: faker.name.firstName(),
+              numStar: faker.random.number(5),
+              description: faker.random.words(20),
+            },
+          });
+        }
+        this.state = {
+          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
+          
+        };
+    
+        this.layoutProvider = new LayoutProvider((i) => {
+          return this.state.list.getDataForIndex(i).type;
+        }, (type, dim) => {
+          switch (type) {
+            case 'NORMAL': 
+                dim.width = SCREEN_WIDTH;
+                dim.height = SCREEN_HEIGHT/3.5;
+              break;
+            default: 
+              dim.width = 0;
+              dim.height = 0;
+              break;
+              
+          };
+        })
+      }
+    
+      rowRenderer = (type, data) => {
+        const { image, nameUser, description, numStar} = data.item;
+        return (
+          <View 
+            style={{
+                backgroundColor: '#fff',
+                marginTop: 0.026*SCREEN_HEIGHT,
+                marginBottom: 0.03*SCREEN_HEIGHT,
+                marginLeft: 0.03*SCREEN_WIDTH,
+                marginRight: 0.03*SCREEN_WIDTH,
+                //height: 0.3*SCREEN_WIDTH,
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 1,
+                },
+                shadowOpacity: 0.20,
+                shadowRadius: 1.41,
+
+                elevation: 2,
+                flexDirection: 'column',
+                borderRadius: 7,
+          }}>
+            <View 
+                style = {{
+                    flexDirection: 'row',
+                }}>
+                <Image style={{
+                    width: SCREEN_HEIGHT/20,
+                    height: SCREEN_HEIGHT/20,
+                    marginLeft: 0.01*SCREEN_HEIGHT,
+                    marginTop: 0.01*SCREEN_HEIGHT,
+                    borderRadius: SCREEN_HEIGHT/5,
+                }} source={{ uri: image }} />
+
+                <Text
+                    style = {{
+                        marginLeft: 0.01*SCREEN_HEIGHT,
+                        fontSize: SCREEN_WIDTH/25,
+                        padding: 0.01*SCREEN_HEIGHT,
+                        fontWeight: 'bold',
+                    }}>
+                    {nameUser}
+                </Text>
+                
+                <View
+                    style = {{
+                        position: 'absolute',
+                        right: 0,
+                        flexDirection: 'row',
+                        margin: 0.01*SCREEN_HEIGHT,
+                        marginRight: 0.03*SCREEN_HEIGHT,
+                    }}>
+                    <Text
+                        style = {{
+                            fontSize: SCREEN_WIDTH/25,
+                        }}>
+                        {numStar}
+                    </Text>
+                    
+                    {numStar !== 0 && 
+                        <IconEntypo name = 'star' size = {SCREEN_WIDTH/20} color = 'yellow'/>
+                    }
+                    
+                    {numStar === 0 && 
+                        <IconEntypo name = 'star' size = {SCREEN_WIDTH/20} color = '#CFCFCF'/>
+                    }
+                    
+                </View>
+                
             </View>
-            <OrderedBar
-              totalprice={this.state.totalprice}
-              totalitem={this.state.totalitem}
-              Setschedule={() =>
-                this.props.navigation.navigate('Calendar', {
-                  accountID: this.state.accountID,
-                  address: this.state.address,
-                  orderlist: this.state.listorder
-                })
-              }></OrderedBar>
-            {/* <OrderedModal
-                    AddItemFood = {this.AddItemFood}
-                    MinusItemFood = {this.MinusItemFood}
-                /> */}
+
+            <View style = {{
+                    marginTop: 0.007*SCREEN_HEIGHT,
+                    marginLeft: 0.082*SCREEN_HEIGHT,
+                    marginRight: 0.03*SCREEN_HEIGHT,
+                    marginBottom: 0.007*SCREEN_HEIGHT,
+                }}>
+                <CommentViewMore 
+                    text = {description}
+                />
+            </View>
+            
           </View>
+        )
+      }
+    
+    render() {
+        return(
+            <RecyclerListView
+                rowRenderer={this.rowRenderer}
+                dataProvider={this.state.list}
+                layoutProvider={this.layoutProvider}
+            />
+        );
+    }
+}
+
+class CommentViewMore extends Component {
+    _renderTruncatedFooter = (handlePress) => {
+        return (
+          <Text style={{color: '#CFCFCF', marginTop: 5}} onPress={handlePress}>
+            Xem thêm
+          </Text>
+        );
+      }
+    
+      _renderRevealedFooter = (handlePress) => {
+        return (
+          <Text style={{color: '#CFCFCF', marginTop: 5}} onPress={handlePress}>
+            Ẩn bớt
+          </Text>
+        );
+      }
+
+    render() {
+        return (
+            <ReadMore
+                numberOfLines={3}
+                renderTruncatedFooter={this._renderTruncatedFooter}
+                renderRevealedFooter={this._renderRevealedFooter}
+            >
+            <Text>
+                {this.props.text}
+            </Text>
+            </ReadMore>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.05)',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    card: {
+      marginHorizontal: 10,
+      padding: 10,
+      borderRadius: 3,
+      borderColor: 'rgba(0,0,0,0.1)',
+      borderWidth: 1,
+      backgroundColor: '#fff',
+    },
+    cardText: {
+      fontSize: 14,
+    },
+  });
+
+class GianHang extends Component {
+    render() {
+        return (
+            <View style={{
+                marginTop: 10,
+                flexDirection: 'column',
+                flex: 1,
+            }}>
+                <FlatList
+                    data={this.props.data}
+                    listKey={(item, index) => 'D' + index.toString()}
+                    renderItem={({ item }) =>
+                            <CategoryItem
+                                cate={item}
+                                AddItemFood = {this.props.AddItemFood}
+                                MinusItemFood = {this.props.MinusItemFood}
+                                count = {this.props.count}
+                            />
+                    }
+                    keyExtractor={item => item.id}
+                />
+
+                <OrderedBar
+                    totalprice = {this.props.totalprice}
+                    totalitem = {this.props.totalitem}
+                    Setschedule = {this.props.Setschedule}
+                    goToPayment = {this.props.goToPayment}
+                />
+
+            </View>
         );
     }
 }
@@ -151,7 +389,7 @@ class HeaderRestaurant extends Component {
     render(){
         let Image_Http_Url = { uri: "https://images.unsplash.com/photo-1499084732479-de2c02d45fcc?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80"};
         return(
-            <ImageBackground 
+            <ImageBackground
                 source = {Image_Http_Url}
                 style={{ width: WINDOW_SIZE.WIDTH, height: WINDOW_SIZE.HEIGHT/4}}>
                 <View style = {{flexDirection: 'column', flex: 1}}>
@@ -161,7 +399,7 @@ class HeaderRestaurant extends Component {
                         >
                             <Icon name="left" size={30} color= "#FFFFFF" />
                         </TouchableOpacity>
-                        
+
                         <View style={{flex: 1}}></View>
                         <Icon style = {{marginRight: 10}} name="star" size={30} color="#E1CC08"/>
                         <Text>{this.props.Rating}</Text>
@@ -179,39 +417,103 @@ class HeaderRestaurant extends Component {
     }
 }
 
+
 class ListChoosen extends Component {
-    render(){
-        return(
-            <View style = {{flexDirection: "row", flex: 0.05, marginTop: 10}}>
-                <Text style={{ flex: 1 , color: "#F34F08", fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, textAlign: 'center'}}>Gian hàng</Text>
-                <Text style={{ flex: 1, fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "normal", fontSize: 14, lineHeight: 14, color: "#000000", textAlign: 'center'}}>Đánh giá</Text>
-                <Text style={{ flex: 1 , fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "normal", fontSize: 14, lineHeight: 14, color: "#000000", textAlign: 'center' }}>Hình ảnh</Text>
+    constructor(){
+      super()
+      this.state = {
+        selectedIndex: 0,
+      };
+    }
+  
+    handleIndexChange = (index) => {
+      this.setState({
+        ...this.state,
+        selectedIndex: index,
+      });
+  
+      this.props.parentCallbackIndex(index)
+      if(index == 0){
+        //this.props.NearMe()
+        ToastAndroid.show("Gian hàng pressed", ToastAndroid.SHORT)
+      }
+      else if(index == 1){
+        //this.props.recommendStore()
+        ToastAndroid.show("Đánh giá pressed", ToastAndroid.SHORT)
+      }
+    }
+  
+    render() {
+        return (
+            <View
+              style = { {
+                marginTop: 12
+            }
+            }>
+                <SegmentedControlTab
+                    values={['Gian hàng', 'Đánh giá', 'Hình ảnh']}
+                    selectedIndex={this.state.selectedIndex}
+                    onTabPress={this.handleIndexChange}
+                    borderRadius={0}
+                    tabsContainerStyle={{backgroundColor: '#F2F2F2' }}
+                    tabStyle={{ backgroundColor: '#F2F2F2', borderWidth: 0, borderColor: 'transparent' }}
+                    activeTabStyle={{ backgroundColor: 'white', marginTop: 2 }}
+                    tabTextStyle={{ color: '#000'}}
+                    activeTabTextStyle={{ color: '#fb4f46', fontWeight: 'bold' }}
+                />
             </View>
         );
     }
-}
+  }
 
 class OrderedBar extends Component{
     render(){
         return(
-            <View style= {{flexDirection: 'row', position: 'absolute',width: '100%',height: WINDOW_SIZE.HEIGHT/25 ,bottom: 0, backgroundColor: "#C4C4C4", borderRadius: 10}}>
-                
-                <TouchableOpacity style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>
-                    <Text>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
+            <View 
+                style = {{
+                    flexDirection: 'row-reverse', 
+                    position: 'absolute',
+                    //width: '100%',
+                    //height: WINDOW_SIZE.HEIGHT/25 ,
+                    bottom: 0,
+                    backgroundColor: "#f2f2f2", 
+                    borderRadius: 10,
+                }}>
+
+                <TouchableOpacity
+                    onPress = {this.props.Setschedule}
+                    style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
+                    <Text style={{ 
+                        fontFamily: 'Roboto', 
+                        fontStyle: 'normal', 
+                        fontWeight: "bold", 
+                        fontSize: 14, 
+                        lineHeight: 14, 
+                        color: "#FFFFFF", textAlign: 'center'}}>Lên lịch</Text>
                 </TouchableOpacity>
-                
-                <TouchableOpacity 
+
+                <TouchableOpacity
                     style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}
-                    // onPress = {}
+                    onPress = {this.props.goToPayment}
                     >
                     <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Đặt ngay</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
-                    onPress = {this.props.Setschedule}
-                    style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
-                    <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Lên lịch</Text>
+                    style={{
+                        // flex: 1, 
+                        // alignSelf: 'center', 
+                        // marginLeft: 10
+                    }}>
+                    <Text
+                        style = {{
+                            padding: 10,
+                        }}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
                 </TouchableOpacity>
+                
+                
+
+                
             </View>
         );
     }
@@ -262,8 +564,8 @@ function CategoryItem({ cate , AddItemFood, MinusItemFood, count}) {
                     listKey={(item, index) => 'D' + index.toString()}
                     data={cate.Items}
                     renderItem={({ item }) =>
-                        <FoodItem 
-                            fooditem={item} 
+                        <FoodItem
+                            fooditem={item}
                             AddItemFood = {AddItemFood}
                             MinusItemFood = {MinusItemFood}
                             count = {count}
@@ -306,7 +608,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
                         <Icon name="pluscircle" size={15} color= "#900" />
                     </TouchableOpacity>
                     </View>
-                    
+
                 </View>
                 <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1, marginLeft: 30, marginRight: 30, marginTop: 5 }} />
             </View>
