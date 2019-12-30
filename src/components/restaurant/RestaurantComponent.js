@@ -52,8 +52,8 @@ export default class RestaurantComponent extends Component{
              totalprice: 0,
              totalitem: 0,
              listorder: this.innitialState,
-             addess: this.props.navigation.getParam('address'),
-             accountID: this.props.navigation.getParam('accountID'),
+             address: this.props.navigation.getParam('address'),
+             account: this.props.navigation.getParam('account'),
              tabindex: 0, //gian hàng, đánh giá, hình ảnh
          }
     }
@@ -139,7 +139,14 @@ export default class RestaurantComponent extends Component{
                         totalprice = {this.state.totalprice}
                         totalitem = {this.state.totalitem}
                         Setschedule = {() => this.props.navigation.navigate("Calendar")}
-                        goToPayment = {() => this.props.navigation.navigate("Payment")}
+                        goToPayment = {() => this.props.navigation.navigate("Payment",{
+                            listorder: this.state.listorder,
+                            address: this.state.address,
+                            account: this.state.account,    
+                            totalprice: this.state.totalprice,
+                            totalitem: this.state.totalitem,  
+                            restaurant: this.props.navigation.getParam("restaurant")                      
+                        })}
                     />
                 }
 

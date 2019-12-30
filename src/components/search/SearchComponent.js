@@ -108,7 +108,7 @@ class SearchComponent extends Component {
             isLoading: false,
             refreshing: false,
             address: this.props.navigation.getParam('address'),
-            accountID: this.props.navigation.getParam('accountID'),
+            account: this.props.navigation.getParam('account'),
         }
         this.data = this.props.navigation.getParam('listRestaurant')
     }
@@ -184,8 +184,9 @@ class SearchComponent extends Component {
                     onPress={() =>
                       this.props.navigation.navigate('Restaurant', {
                         listMenu: {item},
-                        accountID: this.state.accountID,
+                        account: this.state.account,
                         address: this.state.address,
+                        restaurant: item
                       })
                     }>
                     <RestaurantItem res={item} />

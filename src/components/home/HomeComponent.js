@@ -67,7 +67,7 @@ import RNGooglePlaces from 'react-native-google-places';
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
-    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+    // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.state = {
       searchQuery: '',
       isLoading: false,
@@ -83,21 +83,21 @@ class HomeComponent extends Component {
     };
     //this.index = 0
   }
-  componentWillMount() {
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
-  }
-  componentWillUnmount() {
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
-  }
-  handleBackButtonClick() {
-    this.exitApp();
-  }
+  // componentWillMount() {
+  //   BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     this.handleBackButtonClick,
+  //   );
+  // }
+  // componentWillUnmount() {
+  //   BackHandler.removeEventListener(
+  //     'hardwareBackPress',
+  //     this.handleBackButtonClick,
+  //   );
+  // }
+  // handleBackButtonClick() {
+  //   this.exitApp();
+  // }
 
   async componentDidMount() {
     RNGooglePlaces.getCurrentPlace()
@@ -130,7 +130,7 @@ class HomeComponent extends Component {
             this.setState({isLoading: false});
             this.props.navigation.navigate('Search', {
               listRestaurant: this.props.searchData.dataRes.store,
-              accountID: this.state.accountData.ID,
+              account: this.state.accountData,
               address: this.state.address,
             });
           } else {
@@ -335,8 +335,9 @@ class HomeComponent extends Component {
                 onPress={() =>
                   this.props.navigation.navigate('Restaurant', {
                     listMenu: {item},
-                    accountID: this.state.accountData.ID,
+                    account: this.state.accountData,
                     address: this.state.address,
+                    restaurant: item,
                   })
                 }>
                 <RestaurantItem res={item} />

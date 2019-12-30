@@ -32,32 +32,39 @@ import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
+function cloneData(listorder){
+    const cloneData = [];
+    for (var i = 0; i < listorder.length; i += 1) {
+      cloneData.push({
+        type: 'NORMAL',
+        item: {
+          ID: listorder[i].ID,
+          name: listorder[i].name,
+          price: listorder[i].price,
+          count: listorder[i].count,
+        },
+      });
+    }
+    return cloneData
+}
+
 export default class PaymentComponent extends Component {
     constructor(props) {
         super(props);
-    
-        const fakeData = [];
-        for(i = 0; i < 10; i+= 1) {
-          fakeData.push({
-            type: 'NORMAL',
-            item: {
-              id: i,
-              nameProduct: faker.commerce.productName(),
-              size: 'L',
-              numberProduct: faker.random.number(10),
-              price: faker.commerce.price(),
-            },
-          });
-        }
+        
         this.state = {
-          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
+          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(cloneData(this.props.navigation.getParam("listorder"))),
+          listorder: this.props.navigation.getParam("listorder"),
+          address: this.props.navigation.getParam("address"),
+          account: this.props.navigation.getParam("account"),
+          restaurant: this.props.navigation.getParam("restaurant"),
         };
     
         this.layoutProvider = new LayoutProvider((i) => {
-          return this.state.list.getDataForIndex(i).type;
+          return this.state.list.getDataForIndex(i).type
         }, (type, dim) => {
           switch (type) {
-            case 'NORMAL': 
+            case "NORMAL": 
                 dim.width = SCREEN_WIDTH;
                 dim.height = SCREEN_HEIGHT/12;
               break;
@@ -68,13 +75,17 @@ export default class PaymentComponent extends Component {
           };
         })
       }
+
+      componentDidMount(){
+          console.log(this.state.listorder)
+      }
     
       rowRenderer = (type, data) => {
-        const {nameProduct, size, numberProduct, price} = data.item;
+        const {ID, name, price, count} = data.item;
         return (
             <InformationBar 
-                text1 = {nameProduct + ' (' + size + ')' + ' x' + numberProduct}
-                text2 = {price + ' VNĐ'}
+                text1 = {name + ' x ' + count}
+                text2 = {price*count + ' VNĐ'}
             />
            
         )
@@ -93,9 +104,9 @@ export default class PaymentComponent extends Component {
                         flexDirection: 'row',
                     }}>
                     <UserInfo 
-                        text1 = 'Dat Le'
-                        text2 = '0356222105'
-                        text3 = '227 Nguyen Van Cu, P.4, Q.5, TP.HCM'
+                        text1 = {this.state.account.name}
+                        text2 = {this.state.account.phone}
+                        text3 = {this.state.address}
                         text4 = '100.000 km'
                     />
                 
@@ -166,8 +177,8 @@ export default class PaymentComponent extends Component {
                     }}>
 
                     <Storename 
-                        storeName = 'Phuc Long Coffee & Tea'
-                        storeAddress = '29 Ngo Duc Ke, Q.1, TP.HCM'
+                        storeName = {this.state.restaurant.name}
+                        storeAddress = {this.state.restaurant.store_location.address}
 
                     />
                 </View>
@@ -179,7 +190,7 @@ export default class PaymentComponent extends Component {
                 />
 
                 <Total 
-                    text = '4 phần - 215.000 VNĐ'
+                    total = {this.props.navigation.getParam("totalitem") + " phần - " + this.props.navigation.getParam("totalprice") + "đ"}
                 />
             </View>  
         );
@@ -355,7 +366,7 @@ class Total extends Component {
                         padding: 10,
                         marginLeft: 20,
                         textAlignVertical: 'center',
-                    }}>{this.props.text}</Text>
+                    }}>{this.props.total}</Text>
                 <TouchableOpacity
                     style = {{
                         position: 'absolute',

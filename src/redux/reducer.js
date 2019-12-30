@@ -7,6 +7,7 @@ import AddressReducer from './address/reducer'
 import UpdateReducer from './update/reducer'
 import RecommendReducer from './recommend/reducer'
 import NewestReducer from './neweststore/reducer'
+import OrderReducer from './addorder/reducer'
 
 export default combineReducers({
   form: reduxFormReducer,
@@ -17,4 +18,5 @@ export default combineReducers({
   UpdateReducer,
   RecommendReducer,
   NewestReducer,
+  OrderReducer,
 });
