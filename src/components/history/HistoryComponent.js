@@ -19,6 +19,7 @@ import {
 
 import {WINDOW_SIZE} from '../../utils/scale';
 import {FONT_SIZE} from '../../utils/fontsize';
+
 import LoginBackground from 'images/LoginBackground.jpg';
 
 import {connect} from 'react-redux';
@@ -238,7 +239,7 @@ class HeaderBar extends Component {
                     elevation: 1,
                 }}>
                 <Text
-                    style = {styles.name, {
+                    style = {{
                         color: '#fff',
                         alignSelf: 'center',
                         fontWeight: 'bold',

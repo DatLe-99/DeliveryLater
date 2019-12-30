@@ -91,7 +91,7 @@ class HomeComponent extends Component {
       })
       .catch((error) => console.log(error.message));
     this.recommendStore()
-  } 
+  }
 
   onPressNoti = () => {
     this.alertMessage('Da nhan notification');
@@ -215,7 +215,7 @@ class HomeComponent extends Component {
         .then(() => {
           this.setState({ isLoading: false });
           if (this.props.nearStoreData.success) {
-            this.setState({ 
+            this.setState({
               isLoading: false,
               currentData: this.props.nearStoreData.dataRes
             });
@@ -228,7 +228,7 @@ class HomeComponent extends Component {
         });
     }
   }
-  
+
   recommendStore = () => {
     if (!this.state.isLoading) {
       this.setState({ isLoading: true });
@@ -282,6 +282,7 @@ class HomeComponent extends Component {
           <BannerImageView />
           <FoodRecommendBar 
 
+
             NearMe = {() => this.NearMe()}
             recommendStore = {() => this.recommendStore()}
             parentCallbackIndex={this.parentCallbackIndex}
@@ -312,6 +313,7 @@ class HomeComponent extends Component {
           />
           </View>
           
+
           <BottomBarComponent
             selectedTab = 'home'
             onPressHome = {() => this.props.navigation.navigate('Home')}
@@ -319,7 +321,6 @@ class HomeComponent extends Component {
             onPressHistory = {() => this.props.navigation.navigate('History')}
             onPressProfile = {() => this.props.navigation.navigate('Profile')}
           />
-
         </View>
     );
   }
@@ -456,7 +457,7 @@ class FoodRecommendBar extends Component {
       selectedIndex: 0,
     };
   }
-  
+
   handleIndexChange = (index) => {
     this.setState({
       ...this.state,
@@ -572,7 +573,7 @@ function RestaurantItem({ res }) {
         <View style={{ flex: 0.15 }}>
           <View style={{ flexDirection: 'column', flex: 1, alignItems: "center", justifyContent: "center" }}>
             <View style={{ flex: 0.6 }}></View>
-            <Text 
+            <Text
               numberOfLines = {1}
               style={{ flex: 0.2, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>{res.distance.toFixed(2)} km</Text>
             <View style={{ flex: 0.2, alignSelf: "center" }}>
