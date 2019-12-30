@@ -26,12 +26,16 @@ import { FONT_SIZE } from '../../utils/fontsize';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Icon from 'react-native-vector-icons/AntDesign';
+import IconEntypo from 'react-native-vector-icons/Entypo';
 
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 
 import faker from 'faker';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 
+import ReadMore from 'react-native-read-more-text';
+
+import OnLayout from 'react-native-on-layout';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -156,12 +160,195 @@ export default class RestaurantComponent extends Component{
 }
 
 class Review extends Component {
+    constructor(props) {
+        super(props);
+    
+        const fakeData = [];
+
+        for(i = 0; i < 100; i+= 1) {
+          fakeData.push({
+            type: 'NORMAL',
+            item: {
+              id: i,
+              image: faker.image.avatar(),
+              nameUser: faker.name.firstName(),
+              numStar: faker.random.number(5),
+              description: faker.random.words(20),
+            },
+          });
+        }
+        this.state = {
+          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
+          
+        };
+    
+        this.layoutProvider = new LayoutProvider((i) => {
+          return this.state.list.getDataForIndex(i).type;
+        }, (type, dim) => {
+          switch (type) {
+            case 'NORMAL': 
+                dim.width = SCREEN_WIDTH;
+                dim.height = SCREEN_HEIGHT/3.5;
+              break;
+            default: 
+              dim.width = 0;
+              dim.height = 0;
+              break;
+              
+          };
+        })
+      }
+    
+      rowRenderer = (type, data) => {
+        const { image, nameUser, description, numStar} = data.item;
+        return (
+          <View 
+            style={{
+                backgroundColor: '#fff',
+                marginTop: 0.026*SCREEN_HEIGHT,
+                marginBottom: 0.03*SCREEN_HEIGHT,
+                marginLeft: 0.03*SCREEN_WIDTH,
+                marginRight: 0.03*SCREEN_WIDTH,
+                //height: 0.3*SCREEN_WIDTH,
+                shadowColor: "#000",
+                shadowOffset: {
+                    width: 0,
+                    height: 1,
+                },
+                shadowOpacity: 0.20,
+                shadowRadius: 1.41,
+
+                elevation: 2,
+                flexDirection: 'column',
+                borderRadius: 7,
+          }}>
+            <View 
+                style = {{
+                    flexDirection: 'row',
+                }}>
+                <Image style={{
+                    width: SCREEN_HEIGHT/20,
+                    height: SCREEN_HEIGHT/20,
+                    marginLeft: 0.01*SCREEN_HEIGHT,
+                    marginTop: 0.01*SCREEN_HEIGHT,
+                    borderRadius: SCREEN_HEIGHT/5,
+                }} source={{ uri: image }} />
+
+                <Text
+                    style = {{
+                        marginLeft: 0.01*SCREEN_HEIGHT,
+                        fontSize: SCREEN_WIDTH/25,
+                        padding: 0.01*SCREEN_HEIGHT,
+                        fontWeight: 'bold',
+                    }}>
+                    {nameUser}
+                </Text>
+                
+                <View
+                    style = {{
+                        position: 'absolute',
+                        right: 0,
+                        flexDirection: 'row',
+                        margin: 0.01*SCREEN_HEIGHT,
+                        marginRight: 0.03*SCREEN_HEIGHT,
+                    }}>
+                    <Text
+                        style = {{
+                            fontSize: SCREEN_WIDTH/25,
+                        }}>
+                        {numStar}
+                    </Text>
+                    
+                    {numStar !== 0 && 
+                        <IconEntypo name = 'star' size = {SCREEN_WIDTH/20} color = 'yellow'/>
+                    }
+                    
+                    {numStar === 0 && 
+                        <IconEntypo name = 'star' size = {SCREEN_WIDTH/20} color = '#CFCFCF'/>
+                    }
+                    
+                </View>
+                
+            </View>
+
+            <View style = {{
+                    marginTop: 0.007*SCREEN_HEIGHT,
+                    marginLeft: 0.082*SCREEN_HEIGHT,
+                    marginRight: 0.03*SCREEN_HEIGHT,
+                    marginBottom: 0.007*SCREEN_HEIGHT,
+                }}>
+                <CommentViewMore 
+                    text = {description}
+                />
+            </View>
+            
+          </View>
+        )
+      }
+    
     render() {
         return(
-            <Text>danh gia</Text>
+            <RecyclerListView
+                rowRenderer={this.rowRenderer}
+                dataProvider={this.state.list}
+                layoutProvider={this.layoutProvider}
+            />
         );
     }
 }
+
+class CommentViewMore extends Component {
+    _renderTruncatedFooter = (handlePress) => {
+        return (
+          <Text style={{color: '#CFCFCF', marginTop: 5}} onPress={handlePress}>
+            Xem thêm
+          </Text>
+        );
+      }
+    
+      _renderRevealedFooter = (handlePress) => {
+        return (
+          <Text style={{color: '#CFCFCF', marginTop: 5}} onPress={handlePress}>
+            Ẩn bớt
+          </Text>
+        );
+      }
+
+    render() {
+        return (
+            <ReadMore
+                numberOfLines={3}
+                renderTruncatedFooter={this._renderTruncatedFooter}
+                renderRevealedFooter={this._renderRevealedFooter}
+            >
+            <Text>
+                {this.props.text}
+            </Text>
+            </ReadMore>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.05)',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    card: {
+      marginHorizontal: 10,
+      padding: 10,
+      borderRadius: 3,
+      borderColor: 'rgba(0,0,0,0.1)',
+      borderWidth: 1,
+      backgroundColor: '#fff',
+    },
+    cardText: {
+      fontSize: 14,
+    },
+  });
+
 class GianHang extends Component {
     render() {
         return (
@@ -190,7 +377,7 @@ class GianHang extends Component {
                     Setschedule = {this.props.Setschedule}
                     goToPayment = {this.props.goToPayment}
                 />
-           
+
             </View>
         );
     }
@@ -227,6 +414,7 @@ class HeaderRestaurant extends Component {
         );
     }
 }
+
 
 class ListChoosen extends Component {
     constructor(){

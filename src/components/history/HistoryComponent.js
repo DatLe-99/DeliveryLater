@@ -111,7 +111,7 @@ export default class HistoryComponent extends Component {
 
                 <View
                     style = {{
-                        flexDirection: 'column',                        justifyContent: 'center',
+                        flexDirection: 'column',
                         justifyContent: 'center',
 
                     }}>
