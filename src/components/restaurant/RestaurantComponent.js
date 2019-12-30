@@ -58,7 +58,7 @@ export default class RestaurantComponent extends Component{
                     onBack = {() => this.props.navigation.navigate("Search")}
                 ></HeaderRestaurant>
                 <ListChoosen></ListChoosen>
-                <View style={{marginTop: 10}}>
+                <View style={{marginTop: 10, flex: 0.9}}>
                     <FlatList
                         data={this.state.listData.item.Categories}
                         listKey={(item, index) => 'D' + index.toString()}

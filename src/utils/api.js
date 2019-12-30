@@ -5,3 +5,4 @@ export const SIGN_UP =  DOMAIN_URL + "api/accounts/new";
 export const SEARCH = DOMAIN_URL + 'api/stores/search';
 export const ADDRESS = DOMAIN_URL + 'api/stores/nearestStore';
 export const UPDATE = DOMAIN_URL + 'api/accounts/update';
+export const RECOMMEND = DOMAIN_URL + 'api/stores/highestRateStore'

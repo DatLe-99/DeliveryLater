@@ -16,6 +16,8 @@ import {
     Dimensions,
     ToastAndroid,
     PermissionsAndroid,
+    FlatList,
+    RefreshControl,
 } from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
@@ -31,8 +33,8 @@ import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIc
 import Geolocation from 'react-native-geolocation-service';
 import BottomBarComponent from '../bottomBar/BottomBarComponent';
 
-import {searchAction, addressAction, updateAction} from '../../redux/action';
-import IconAwesome from 'react-native-vector-icons/FontAwesome';
+import {searchAction, addressAction, updateAction, recommendAction} from '../../redux/action';
+import IconAwesome from 'react-native-vector-icons/FontAwesome'
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import TabNavigator from 'react-native-tab-navigator';
@@ -47,7 +49,10 @@ import RNGooglePlaces from 'react-native-google-places';
 //         'message': 'ReactNativeCode App needs access to your location'
 //       }
 //     )
-//     if(granted != PermissionsAndroid.RESULTS.GRANTED){
+//     if(granted === PermissionsAndroid.RESULTS.GRANTED){
+//       Alert.alert("Location Permission Granted");
+//     }
+//     else {
 //       Alert.alert("Location Permission Not Granted");
 //     }
 //   }catch(err){
@@ -66,10 +71,15 @@ class HomeComponent extends Component {
       error: null,
       address: '',
       accountData: this.props.navigation.getParam('accountData'),
+      currentData: [],
+      refreshing: false,
+      tabindex: 0 //[Goi y, Gan toi, Vua dat, Moi]
     };
+    //this.index = 0
   }
 
-  componentDidMount = () => {
+
+  async componentDidMount () {
     RNGooglePlaces.getCurrentPlace()
       .then((results) => {
         console.log(results)
@@ -80,6 +90,7 @@ class HomeComponent extends Component {
         })
       })
       .catch((error) => console.log(error.message));
+    this.recommendStore()
   }
 
   onPressNoti = () => {
@@ -148,9 +159,6 @@ class HomeComponent extends Component {
       { cancelable: false },
     );
   }
-
-
-
   openSearchModal() {
     RNGooglePlaces.openAutocompleteModal()
       .then(place => {
@@ -167,15 +175,24 @@ class HomeComponent extends Component {
           this.props
             .updateAction({
               ID: this.state.accountData.ID,
-              lat : this.state.latitude,
-              lng: this.state.longitude,
-              address: this.state.address,
+              account_location: {
+                account_id: this.state.accountData.ID,
+                address: this.state.address,
+                lat : this.state.latitude,
+                lng: this.state.longitude,
+              }
             })
             .then(() => {
               this.setState({isLoading: false});
               if (this.props.updatedData.success) {
-                this.setState({isLoading: false});
-                // console.log(this.props.updatedData.dataRes)
+                this.setState({isLoading: false });
+                if(this.state.tabindex== 0){
+                  this.recommendStore()
+                }
+                else if (this.state.tabindex == 1){
+                  this.NearMe()
+                }
+                console.log(this.props.updatedData.dataRes)
               } else {
                 this.setState({isLoading: false});
                 this.alertMessage(this.props.updatedData.errorMessage);
@@ -197,22 +214,53 @@ class HomeComponent extends Component {
         })
         .then(() => {
           this.setState({ isLoading: false });
-          if (this.props.locationData.success) {
-            this.setState({ isLoading: false });
-            console.log(this.props.locationData.dataRes)
+          if (this.props.nearStoreData.success) {
+            this.setState({
+              isLoading: false,
+              currentData: this.props.nearStoreData.dataRes
+            });
+            console.log(this.props.nearStoreData.dataRes)
+
           } else {
             this.setState({ isLoading: false });
-            this.alertMessage(this.props.locationData.errorMessage);
+            this.alertMessage(this.props.nearStoreData.errorMessage);
           }
         });
     }
   }
 
+  recommendStore = () => {
+    if (!this.state.isLoading) {
+      this.setState({ isLoading: true });
+      this.props
+        .recommendAction({
+          lat: this.state.latitude,
+          lng: this.state.longitude,
+        })
+        .then(() => {
+          this.setState({ isLoading: false });
+          if (this.props.recommendData.success) {
+            this.setState({
+              isLoading: false,
+              currentData: this.props.recommendData.dataRes
+            });
+            console.log(this.props.recommendData.dataRes)
+
+          } else {
+            this.setState({ isLoading: false });
+            this.alertMessage(this.props.recommendData.errorMessage);
+          }
+        });
+    }
+  }
+
+  parentCallbackIndex = (index) =>{
+    this.setState({
+      tabindex: index
+    })
+  }
   render() {
     return (
-      // <ImageBackground
-      //   source={LoginBackground}
-      //   style={{width: WINDOW_SIZE.WIDTH, height: WINDOW_SIZE.HEIGHT}}>
         <View
           style={{alignContents: 'center', flexDirection: 'column', flex: 1}}>
           <SearchBox
@@ -235,8 +283,34 @@ class HomeComponent extends Component {
 
           <FoodRecommendBar
             NearMe = {() => this.NearMe()}
+            recommendStore = {() => this.recommendStore()}
+            parentCallbackIndex={this.parentCallbackIndex}
           />
-          
+        <View style={{ flex: 5, marginTop: 10 }}>
+          <FlatList
+            data={this.state.currentData}
+            listKey={(item, index) => 'D' + index.toString()}
+            renderItem={({ item }) =>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate("Restaurant",
+                  {
+                    listMenu: { item }
+                  })}
+              >
+                <RestaurantItem
+                  res={item}
+                />
+              </TouchableOpacity>
+            }
+            keyExtractor={item => item.id}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.props.onRefresh}
+              />
+            }
+          />
+
           <BottomBarComponent
             selectedTab = 'home'
             onPressHome = {() => this.props.navigation.navigate('Home')}
@@ -245,7 +319,6 @@ class HomeComponent extends Component {
             onPressProfile = {() => this.props.navigation.navigate('Profile')}
           />
         </View>
-      // </ImageBackground>
     );
   }
 }
@@ -387,9 +460,15 @@ class FoodRecommendBar extends Component {
       ...this.state,
       selectedIndex: index,
     });
+
+    this.props.parentCallbackIndex(index)
     if(index == 1){
       this.props.NearMe()
-      ToastAndroid.show("Index 1", ToastAndroid.SHORT)
+      ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)
+    }
+    else if(index == 0){
+      this.props.recommendStore()
+      ToastAndroid.show("Quán được đề xuất", ToastAndroid.SHORT)
     }
   }
 
@@ -414,6 +493,98 @@ class FoodRecommendBar extends Component {
           </View>
       );
   }
+}
+
+class TabDemo extends Component {
+  state= {
+    selectedTab: 'home'
+  };
+
+  render() {
+    return (
+      <TabNavigator
+        style={styles.container} >
+        <TabNavigator.Item
+          selected={this.state.selectedTab === 'home'}
+          title="Home"
+          selectedTitleStyle={{color: "#DF0029"}}
+          renderIcon={() => <IconMaterialCommunity name="food-fork-drink" size={px2dp(22)} color="#666"/>}
+          renderSelectedIcon={() => <IconMaterialCommunity name="food-fork-drink" size={px2dp(22)} color="#DF0029"/>}
+          //badgeText="1"
+          onPress={() => this.setState({selectedTab: 'home'})} >
+          <Text></Text>
+        </TabNavigator.Item>
+
+        <TabNavigator.Item
+          selected={this.state.selectedTab === 'history'}
+          title="History"
+          selectedTitleStyle={{color: "#DF0029"}}
+          renderIcon={() => <IconAwesome name="history" size={px2dp(22)} color="#666"/>}
+          renderSelectedIcon={() => <IconAwesome name="history" size={px2dp(22)} color="#DF0029"/>}
+          onPress={() => this.setState({selectedTab: 'history'})}>
+          <Text></Text>
+        </TabNavigator.Item>
+
+        <TabNavigator.Item
+          selected={this.state.selectedTab === 'cart'}
+          title="Cart"
+          selectedTitleStyle={{color: "#DF0029"}}
+          renderIcon={() => <IconMaterialCommunity name="cart" size={px2dp(22)} color="#666"/>}
+          renderSelectedIcon={() => <IconMaterialCommunity name="cart" size={px2dp(22)} color="#DF0029"/>}
+          //badgeText="1"
+          onPress={() => this.setState({selectedTab: 'cart'})}>
+          <Text></Text>
+        </TabNavigator.Item>
+
+        <TabNavigator.Item
+          selected={this.state.selectedTab === 'profile'}
+          title="Profile"
+          selectedTitleStyle={{color: "#DF0029"}}
+          renderIcon={() => <IconAwesome name="user" size={px2dp(22)} color="#666"/>}
+          renderSelectedIcon={() => <IconAwesome name="user" size={px2dp(22)} color="#DF0029"/>}
+          onPress={() => this.setState({selectedTab: 'profile'})}>
+          <Text></Text>
+
+        </TabNavigator.Item>
+      </TabNavigator>
+    );
+  }
+}
+
+function RestaurantItem({ res }) {
+  return (
+    <View style={{ flexDirection: "column", flex: 1 }}>
+      <View style={{ flexDirection: "row", flex: 1 }}>
+        <Image
+          style={{ flex: 0.25, width: 100, height: 100, margin: 10, borderRadius: 10 }}
+          source={require('../../media/images/test.jpg')}
+        />
+        <View style={{ flex: 0.6 }}>
+          <View style={{ flexDirection: 'column', flex: 1, margin: 5 }}>
+            <View style={{ flex: 0.1 }} />
+            <Text style={{ flex: 0.3, fontFamily: 'Verdana', fontSize: 15, lineHeight: 17, alignItems: 'center', alignContent: "center", color: '#000000' }}>{res.name}</Text>
+            <Text style={{ flex: 0.3, fontFamily: 'Verdana', fontWeight: 'normal', fontSize: 12, lineHeight: 14, alignItems: 'center', alignContent: "center", color: 'rgba(0,0,0,0.7)' }}>{res.store_location.address + ", " + res.city + ", " + res.province}</Text>
+            <Text style={{ flex: 0.3, fontFamily: 'Verdana', fontWeight: 'normal', fontSize: 12, lineHeight: 14, alignItems: 'center', alignContent: "center", color: '#000000' }}>Giá: ~50k</Text>
+          </View>
+        </View>
+        <View style={{ flex: 0.15 }}>
+          <View style={{ flexDirection: 'column', flex: 1, alignItems: "center", justifyContent: "center" }}>
+            <View style={{ flex: 0.6 }}></View>
+            <Text
+              numberOfLines = {1}
+              style={{ flex: 0.2, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>{res.distance.toFixed(2)} km</Text>
+            <View style={{ flex: 0.2, alignSelf: "center" }}>
+              <View style={{ flexDirection: 'row', flex: 1, alignContent: "center", justifyContent: "center" }}>
+                <Text style={{ marginRight: 5, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>30p</Text>
+                <Icon name="clockcircle" size={12} color="#F34F08" />
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+      <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1 }} />
+    </View>
+  );
 }
 
 const deviceW = Dimensions.get('window').width
@@ -454,8 +625,9 @@ const styles = StyleSheet.create({
 function mapStateToProps(state) {
   return {
     searchData: state.SearchReducer,
-    locationData: state.AddressReducer,
+    nearStoreData: state.AddressReducer,
     updatedData: state.UpdateReducer,
+    recommendData: state.RecommendReducer,
   };
 }
 
@@ -465,6 +637,7 @@ function dispatchToProps(dispatch) {
       searchAction,
       addressAction,
       updateAction,
+      recommendAction,
     },
     dispatch,
   );
