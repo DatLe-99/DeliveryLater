@@ -30,9 +30,8 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 //import IconEntypo from 'react-native-vector-icons/Entypo';
 //import IconMaterial from 'react-native-vector-icons/MaterialIcons';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
-import Geolocation from 'react-native-geolocation-service'
-import Icon from 'react-native-vector-icons/AntDesign';
-
+import Geolocation from 'react-native-geolocation-service';
+import BottomBarComponent from '../bottomBar/BottomBarComponent';
 import {searchAction, addressAction, updateAction, recommendAction} from '../../redux/action';
 import IconAwesome from 'react-native-vector-icons/FontAwesome'
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
@@ -280,8 +279,8 @@ class HomeComponent extends Component {
           />
 
           <BannerImageView />
-          
           <FoodRecommendBar 
+
             NearMe = {() => this.NearMe()}
             recommendStore = {() => this.recommendStore()}
             parentCallbackIndex={this.parentCallbackIndex}
@@ -310,8 +309,16 @@ class HomeComponent extends Component {
               />
             }
           />
-        </View>
-          <TabDemo />
+          </View>
+          
+          <BottomBarComponent
+            selectedTab = 'home'
+            onPressHome = {() => this.props.navigation.navigate('Home')}
+            onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
+            onPressHistory = {() => this.props.navigation.navigate('History')}
+            onPressProfile = {() => this.props.navigation.navigate('Profile')}
+          />
+
         </View>
     );
   }
@@ -328,7 +335,7 @@ class SearchBox extends Component {
           backgroundColor: '#FFFFFF',
         }}>
         <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
-          <Icon
+          <IconAntDesign
           onPress = {this.props.onBack}
           name="left" size={30} color="#000000" />
         </TouchableOpacity>
@@ -363,7 +370,7 @@ class SearchBox extends Component {
         <TouchableOpacity
           onPress={this.props.onPressNoti}
           style={{flex: 0.1, alignSelf: 'center'}}>
-          <Icon name="bells" size={30} color="#900" />
+          <IconAntDesign name="bells" size={30} color="#900" />
         </TouchableOpacity>
       </View>
     );
@@ -606,6 +613,14 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  bottomBarItem: {
+      flex: 0.5,
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 10,
+      marginTop: 10,
+  }
 });
 
 function mapStateToProps(state) {

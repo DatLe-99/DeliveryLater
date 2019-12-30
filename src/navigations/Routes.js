@@ -7,7 +7,9 @@ import RegisterComponent from '../components/authenticate/RegisterComponent';
 import SearchComponent from '../components/search/SearchComponent';
 import RestaurantComponent from '../components/restaurant/RestaurantComponent'
 import CalendarComponent from '../components/order/CalendarComponent';
-
+import HistoryComponent from '../components/history/HistoryComponent';
+import UpcomingOrderComponent from '../components/upcomingOrder/UpcomingOrderComponent';
+import ProfileComponent from '../components/profile/ProfileComponent';
 
 const RootNavigator = createStackNavigator(
   {
@@ -48,7 +50,29 @@ const RootNavigator = createStackNavigator(
         gesturesEnabled: false,
       },
     },
+
+    History: {
+      screen: HistoryComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+
+    UpcomingOrder: {
+      screen: UpcomingOrderComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+
+    Profile: {
+      screen: ProfileComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
   },
+
   {
     initialRouteName: 'SignIn',
     headerMode: 'none',
