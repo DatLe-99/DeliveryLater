@@ -15,7 +15,8 @@ import {
     BackHandler,
     TextInput,
     ToastAndroid,
-    AppRegistry
+    AppRegistry,
+    Modal,
 } from 'react-native';
 
 import { WINDOW_SIZE } from '../../utils/scale';
@@ -44,13 +45,31 @@ export default class RestaurantComponent extends Component{
     AddItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
-        var tmp = this.state.listorder;
+        var tmp = this.state.listorder;s
         tmp.push({name: item.name, price: item.price, count: 1})
         this.setState({
           totalprice: item.price + this.state.totalprice,
           totalitem: 1 + this.state.totalitem,
           listorder: tmp
         });
+        console.log(this.state.listorder)
+    }
+    MinusItemFood = (item) =>{
+        // ToastAndroid.show(item.name,ToastAndroid.SHORT)
+        // var orderItem = [{name: item.name, price: item.price, count: 1}]
+        if(this.state.totalitem == 0){
+            return;
+        }
+        var tmp = this.state.listorder;
+        if (tmp.includes({name: item.name, price: item.price, count: 1})){
+            tmp.remove({name: item.name, price: item.price, count: 1});
+            this.setState({
+              totalprice: this.state.totalprice - item.price,
+              totalitem: this.state.totalitem - 1,
+              listorder: tmp,
+            });
+        }
+          
         console.log(this.state.listorder)
     }
     render(){
@@ -75,6 +94,7 @@ export default class RestaurantComponent extends Component{
                                 <CategoryItem
                                     cate={item}
                                     AddItemFood = {this.AddItemFood}
+                                    MinusItemFood = {this.MinusItemFood}
                                 />
                         }
                         keyExtractor={item => item.id}
@@ -157,9 +177,35 @@ class OrderedBar extends Component{
     }
 }
 
+class OrderedModal extends Component{
+    render(){
+        return (
+          <View>
+            <Modal animationType={'slide'} transparent={false}>
+              <View style={{flexDirection: 'column'}}>
+                <OrderedBar />
+                <View>
+                  <FlatList
+                    data={this.props.listorder}
+                    listKey={(item, index) => 'D' + index.toString()}
+                    renderItem={({item}) => (
+                      <FoodItem
+                          fooditem = {item}
+                      />
+                    )}
+                    keyExtractor={item => item.id}
+                  />
+                </View>
+              </View>
+            </Modal>
+          </View>
+        );
+    }
+}
 
 
-function CategoryItem({ cate , AddItemFood}) {
+
+function CategoryItem({ cate , AddItemFood, MinusItemFood}) {
     return (
         <View style={{ flexDirection: "column", flex: 1 }}>
             <View>
@@ -176,6 +222,7 @@ function CategoryItem({ cate , AddItemFood}) {
                         <FoodItem 
                             fooditem={item} 
                             AddItemFood = {AddItemFood}
+                            MinusItemFood = {MinusItemFood}
                         />
                     }
                     keyExtractor={item => item.id}
@@ -185,7 +232,7 @@ function CategoryItem({ cate , AddItemFood}) {
     );
 }
 
-function FoodItem({ fooditem, AddItemFood}) {
+function FoodItem({ fooditem, AddItemFood, MinusItemFood}) {
     return(
             <View>
                 <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "#C4C4C4", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
@@ -202,11 +249,20 @@ function FoodItem({ fooditem, AddItemFood}) {
 
                         >{fooditem.price}</Text>
                     </View>
+                    <View style = {{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', flex: 1, margin: 10}}>
+                        <TouchableOpacity
+                        onPress={() => MinusItemFood(fooditem)}
+                        style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
+                        <Icon name="minuscircle" size={15} color= "#900" />
+                    </TouchableOpacity>
+                    <Text></Text>
                     <TouchableOpacity
                         onPress={() => AddItemFood(fooditem)}
                         style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
                         <Icon name="pluscircle" size={15} color= "#900" />
                     </TouchableOpacity>
+                    </View>
+                    
                 </View>
                 <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1, marginLeft: 30, marginRight: 30, marginTop: 5 }} />
             </View>
