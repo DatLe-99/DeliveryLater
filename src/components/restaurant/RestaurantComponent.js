@@ -17,6 +17,7 @@ import {
     ToastAndroid,
     AppRegistry,
     Modal,
+    RefreshControl,
 } from 'react-native';
 
 import { WINDOW_SIZE } from '../../utils/scale';
@@ -45,33 +46,56 @@ export default class RestaurantComponent extends Component{
     AddItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
-        var tmp = this.state.listorder;s
+        var tmp = this.state.listorder;
+        for(var i = 0; i < tmp.length; i++){
+            if( item.name == tmp[i].name){
+                tmp[i].count += 1;
+                this.setState({
+                  totalprice: item.price + this.state.totalprice,
+                  totalitem: 1 + this.state.totalitem,
+                  listorder: tmp,
+                });
+                
+                return;
+            }
+        }
         tmp.push({name: item.name, price: item.price, count: 1})
         this.setState({
           totalprice: item.price + this.state.totalprice,
           totalitem: 1 + this.state.totalitem,
-          listorder: tmp
+          listorder: tmp,
         });
-        console.log(this.state.listorder)
+        console.log(tmp)
     }
     MinusItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
-        if(this.state.totalitem == 0){
+        if(this.state.totalitem <= 0){
             return;
         }
         var tmp = this.state.listorder;
-        if (tmp.includes({name: item.name, price: item.price, count: 1})){
-            tmp.remove({name: item.name, price: item.price, count: 1});
+        for (var i = 0; i < tmp.length; i++) {
+          if (item.name == tmp[i].name) {
+            tmp[i].count -= 1;
+            if(tmp[i].count == 0){
+                tmp.splice(i)
+            }
             this.setState({
-              totalprice: this.state.totalprice - item.price,
-              totalitem: this.state.totalitem - 1,
+              totalprice: - item.price + this.state.totalprice,
+              totalitem: - 1 + this.state.totalitem,
               listorder: tmp,
             });
+            return;
+          }
         }
-          
-        console.log(this.state.listorder)
     }
+    
+    // onRefresh = (item) => {
+    //     this.countFoodItem(item)
+    //     this.setState({
+    //         refreshing: false
+    //     })
+    // }
     render(){
         return(
             <View style = {{flexDirection: "column", flex: 1}}>
@@ -95,6 +119,7 @@ export default class RestaurantComponent extends Component{
                                     cate={item}
                                     AddItemFood = {this.AddItemFood}
                                     MinusItemFood = {this.MinusItemFood}
+                                    count = {this.state.listorder}
                                 />
                         }
                         keyExtractor={item => item.id}
@@ -105,6 +130,10 @@ export default class RestaurantComponent extends Component{
                     totalitem = {this.state.totalitem}
                     Setschedule = {() => this.props.navigation.navigate("Calendar")}
                 ></OrderedBar>
+                {/* <OrderedModal
+                    AddItemFood = {this.AddItemFood}
+                    MinusItemFood = {this.MinusItemFood}
+                /> */}
             </View>
         );
     }
@@ -163,7 +192,10 @@ class OrderedBar extends Component{
                     <Text>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
                 </TouchableOpacity>
                 
-                <TouchableOpacity style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}>
+                <TouchableOpacity 
+                    style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}
+                    // onPress = {}
+                    >
                     <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Đặt ngay</Text>
                 </TouchableOpacity>
 
@@ -191,6 +223,9 @@ class OrderedModal extends Component{
                     renderItem={({item}) => (
                       <FoodItem
                           fooditem = {item}
+                          AddItemFood = {this.props.AddItemFood}
+                          MinusItemFood = {this.props.MinusItemFood}
+                          count = {item}
                       />
                     )}
                     keyExtractor={item => item.id}
@@ -205,7 +240,7 @@ class OrderedModal extends Component{
 
 
 
-function CategoryItem({ cate , AddItemFood, MinusItemFood}) {
+function CategoryItem({ cate , AddItemFood, MinusItemFood, count}) {
     return (
         <View style={{ flexDirection: "column", flex: 1 }}>
             <View>
@@ -223,6 +258,7 @@ function CategoryItem({ cate , AddItemFood, MinusItemFood}) {
                             fooditem={item} 
                             AddItemFood = {AddItemFood}
                             MinusItemFood = {MinusItemFood}
+                            count = {count}
                         />
                     }
                     keyExtractor={item => item.id}
@@ -232,7 +268,7 @@ function CategoryItem({ cate , AddItemFood, MinusItemFood}) {
     );
 }
 
-function FoodItem({ fooditem, AddItemFood, MinusItemFood}) {
+function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
     return(
             <View>
                 <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "#C4C4C4", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
@@ -255,7 +291,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood}) {
                         style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
                         <Icon name="minuscircle" size={15} color= "#900" />
                     </TouchableOpacity>
-                    <Text></Text>
+                    <Text>{countFoodItem(fooditem, count)}</Text>
                     <TouchableOpacity
                         onPress={() => AddItemFood(fooditem)}
                         style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
@@ -268,3 +304,13 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood}) {
             </View>
         );
 }
+
+function countFoodItem (item, listorder) {
+  var tmp = listorder;
+  for (var i = 0; i < tmp.length; i++) {
+    if (item.name == tmp[i].name) {
+      return tmp[i].count;
+    }
+  }
+  return 0;
+};
