@@ -18,6 +18,7 @@ import {
     PermissionsAndroid,
     FlatList,
     RefreshControl,
+
 } from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
@@ -310,6 +311,7 @@ class HomeComponent extends Component {
               />
             }
           />
+          </View>
 
           <BottomBarComponent
             selectedTab = 'home'
