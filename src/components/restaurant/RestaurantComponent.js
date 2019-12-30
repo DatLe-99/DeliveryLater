@@ -26,6 +26,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 
 
 export default class RestaurantComponent extends Component{
+    innitialState = []
     constructor(props){
         super(props)
         // this.data = this.props.navigation.getParam('listMenu')
@@ -33,16 +34,24 @@ export default class RestaurantComponent extends Component{
          this.state = {
              listData : this.props.navigation.getParam('listMenu'),
              totalprice: 0,
-             totalitem: 0
+             totalitem: 0,
+             listorder: this.innitialState,
          }
     }
     componentDidMount = () => {
         console.log(this.state.listData.item)
     }
     AddItemFood = (item) =>{
-        ToastAndroid.show(item.name,ToastAndroid.LONG)
-        this.setState({ totalprice: item.price + this.state.totalprice})
-        this.setState({ totalitem: 1 + this.state.totalitem })
+        // ToastAndroid.show(item.name,ToastAndroid.SHORT)
+        // var orderItem = [{name: item.name, price: item.price, count: 1}]
+        var tmp = this.state.listorder;
+        tmp.push({name: item.name, price: item.price, count: 1})
+        this.setState({
+          totalprice: item.price + this.state.totalprice,
+          totalitem: 1 + this.state.totalitem,
+          listorder: tmp
+        });
+        console.log(this.state.listorder)
     }
     render(){
         return(
@@ -129,10 +138,15 @@ class OrderedBar extends Component{
     render(){
         return(
             <View style= {{flexDirection: 'row', position: 'absolute',width: '100%',height: WINDOW_SIZE.HEIGHT/25 ,bottom: 0, backgroundColor: "#C4C4C4", borderRadius: 10}}>
-                <Text style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
+                
+                <TouchableOpacity style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>
+                    <Text>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
+                </TouchableOpacity>
+                
                 <TouchableOpacity style={{ backgroundColor: "rgba(243,79,8,0.8)", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center'}}>
                     <Text style={{ fontFamily: 'Roboto', fontStyle: 'normal', fontWeight: "bold", fontSize: 14, lineHeight: 14, color: "#FFFFFF", textAlign: 'center'}}>Đặt ngay</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity 
                     onPress = {this.props.Setschedule}
                     style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
