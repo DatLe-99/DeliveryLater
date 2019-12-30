@@ -109,6 +109,8 @@ class HomeComponent extends Component {
             this.setState({isLoading: false});
             this.props.navigation.navigate('Search', {
               listRestaurant: this.props.searchData.dataRes.store,
+              accountID: this.state.accountData.ID,
+              address: this.state.address,
             });
           } else {
             this.setState({isLoading: false});
@@ -312,6 +314,8 @@ class HomeComponent extends Component {
                 onPress={() =>
                   this.props.navigation.navigate('Restaurant', {
                     listMenu: {item},
+                    accountID: this.state.accountData.ID,
+                    address: this.state.address,
                   })
                 }>
                 <RestaurantItem res={item} />
@@ -480,7 +484,7 @@ class FoodRecommendBar extends Component {
     });
 
     this.props.parentCallbackIndex(index)
-    
+
     if(index == 1){
       this.props.NearMe()
       ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)

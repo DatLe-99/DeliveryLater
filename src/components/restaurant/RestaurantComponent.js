@@ -38,6 +38,8 @@ export default class RestaurantComponent extends Component{
              totalprice: 0,
              totalitem: 0,
              listorder: this.innitialState,
+             addess: this.props.navigation.getParam('address'),
+             accountID: this.props.navigation.getParam('accountID'),
          }
     }
     componentDidMount = () => {
@@ -48,7 +50,7 @@ export default class RestaurantComponent extends Component{
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
         var tmp = this.state.listorder;
         for(var i = 0; i < tmp.length; i++){
-            if( item.name == tmp[i].name){
+            if( item.ID == tmp[i].ID){
                 tmp[i].count += 1;
                 this.setState({
                   totalprice: item.price + this.state.totalprice,
@@ -59,7 +61,7 @@ export default class RestaurantComponent extends Component{
                 return;
             }
         }
-        tmp.push({name: item.name, price: item.price, count: 1})
+        tmp.push({ID: item.ID, name: item.name, price: item.price, count: 1})
         this.setState({
           totalprice: item.price + this.state.totalprice,
           totalitem: 1 + this.state.totalitem,
@@ -75,7 +77,7 @@ export default class RestaurantComponent extends Component{
         }
         var tmp = this.state.listorder;
         for (var i = 0; i < tmp.length; i++) {
-          if (item.name == tmp[i].name) {
+          if (item.ID == tmp[i].ID) {
             tmp[i].count -= 1;
             if(tmp[i].count == 0){
                 tmp.splice(i)
@@ -97,44 +99,50 @@ export default class RestaurantComponent extends Component{
     //     })
     // }
     render(){
-        return(
-            <View style = {{flexDirection: "column", flex: 1}}>
-                {/* <Text>{this.data.Categories[0].Items[0].name}</Text> */} 
-                {/* Can not get this data => Chỗ này lấy data không cần phức tạp vậy =.=
+        return (
+          <View style={{flexDirection: 'column', flex: 1}}>
+            {/* <Text>{this.data.Categories[0].Items[0].name}</Text> */}
+            {/* Can not get this data => Chỗ này lấy data không cần phức tạp vậy =.=
                 cái item được truyền ở trong flatlist nó đã là 1 object rồi, lấy đơn giản như ở dưới đây là được!!! 
                 */}
-                {/* <Text>{this.state.listData.item}</Text> */}
-                <HeaderRestaurant 
-                    ResName = {this.state.listData.item.name}
-                    ResAddress={this.state.listData.item.store_location.address}
-                    onBack = {() => this.props.navigation.navigate("Home")}
-                ></HeaderRestaurant>
-                <ListChoosen></ListChoosen>
-                <View style={{marginTop: 10, flex: 0.9}}>
-                    <FlatList
-                        data={this.state.listData.item.Categories}
-                        listKey={(item, index) => 'D' + index.toString()}
-                        renderItem={({ item }) => 
-                                <CategoryItem
-                                    cate={item}
-                                    AddItemFood = {this.AddItemFood}
-                                    MinusItemFood = {this.MinusItemFood}
-                                    count = {this.state.listorder}
-                                />
-                        }
-                        keyExtractor={item => item.id}
-                    />
-                </View>
-                <OrderedBar
-                    totalprice = {this.state.totalprice}
-                    totalitem = {this.state.totalitem}
-                    Setschedule = {() => this.props.navigation.navigate("Calendar")}
-                ></OrderedBar>
-                {/* <OrderedModal
+            {/* <Text>{this.state.listData.item}</Text> */}
+            <HeaderRestaurant
+              ResName={this.state.listData.item.name}
+              ResAddress={this.state.listData.item.store_location.address}
+              onBack={() =>
+                this.props.navigation.navigate('Home')
+              }></HeaderRestaurant>
+            <ListChoosen></ListChoosen>
+            <View style={{marginTop: 10, flex: 0.9}}>
+              <FlatList
+                data={this.state.listData.item.Categories}
+                listKey={(item, index) => 'D' + index.toString()}
+                renderItem={({item}) => (
+                  <CategoryItem
+                    cate={item}
+                    AddItemFood={this.AddItemFood}
+                    MinusItemFood={this.MinusItemFood}
+                    count={this.state.listorder}
+                  />
+                )}
+                keyExtractor={item => item.id}
+              />
+            </View>
+            <OrderedBar
+              totalprice={this.state.totalprice}
+              totalitem={this.state.totalitem}
+              Setschedule={() =>
+                this.props.navigation.navigate('Calendar', {
+                  accountID: this.state.accountID,
+                  address: this.state.address,
+                  orderlist: this.state.listorder
+                })
+              }></OrderedBar>
+            {/* <OrderedModal
                     AddItemFood = {this.AddItemFood}
                     MinusItemFood = {this.MinusItemFood}
                 /> */}
-            </View>
+          </View>
         );
     }
 }
@@ -275,7 +283,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
                     <Image style={{ borderRadius: 10, width: 30, height: 30, margin: 5 }}
                         source={require("../../media/images/test.jpg")}
                     />
-                    <View style={{ flexDirection: 'column', flex: 0.9 }}>
+                    <View style={{ flexDirection: 'column', flex: 0.6 }}>
                         <Text
                             style={{ fontFamily: "Roboto", fontStyle: "normal", fontWeight: "bold", fontSize: 12, lineHeight: 12, alignItems: "center", color: "#000000", opacity: 0.5 }}
 
@@ -291,7 +299,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
                         style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
                         <Icon name="minuscircle" size={15} color= "#900" />
                     </TouchableOpacity>
-                    <Text>{countFoodItem(fooditem, count)}</Text>
+                    <Text> {countFoodItem(fooditem, count)} </Text>
                     <TouchableOpacity
                         onPress={() => AddItemFood(fooditem)}
                         style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
@@ -308,7 +316,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
 function countFoodItem (item, listorder) {
   var tmp = listorder;
   for (var i = 0; i < tmp.length; i++) {
-    if (item.name == tmp[i].name) {
+    if (item.ID == tmp[i].ID) {
       return tmp[i].count;
     }
   }

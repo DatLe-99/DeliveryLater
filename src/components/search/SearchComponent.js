@@ -107,6 +107,8 @@ class SearchComponent extends Component {
             searchQuery: '',
             isLoading: false,
             refreshing: false,
+            address: this.props.navigation.getParam('address'),
+            accountID: this.props.navigation.getParam('accountID'),
         }
         this.data = this.props.navigation.getParam('listRestaurant')
     }
@@ -163,42 +165,42 @@ class SearchComponent extends Component {
     render() {
         
         return (
-        <View style = {{flexDirection: "column", flex: 1, alignContent: "center"}}> 
-            <SearchBox 
-                    onSubmitEditing={() => {
-                        this.pressReturnSearchKey()
-                    }}
-                    onChangeSearchQuery={text => {
-                        this.setState({ searchQuery: text });
-                    }}
-                    onBack={() => this.props.navigation.navigate("Home")}
-            ></SearchBox>
-            <View style={{ flex: 1, marginTop: 10}}>
-                <FlatList
-                    data={this.data}
-                    listKey={(item, index) => 'D' + index.toString()}
-                    renderItem={({ item }) => 
-                        <TouchableOpacity
-                            onPress = {() => this.props.navigation.navigate("Restaurant", 
-                            {
-                                listMenu: {item}
-                            })}
-                            >
-                            <RestaurantItem
-                                res={item}
-                            />
-                        </TouchableOpacity>
-                    }
-                    keyExtractor={item => item.id}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.refreshing}
-                            onRefresh={this.props.onRefresh}
-                        />
-                    }
-                />
+          <View
+            style={{flexDirection: 'column', flex: 1, alignContent: 'center'}}>
+            <SearchBox
+              onSubmitEditing={() => {
+                this.pressReturnSearchKey();
+              }}
+              onChangeSearchQuery={text => {
+                this.setState({searchQuery: text});
+              }}
+              onBack={() => this.props.navigation.navigate('Home')}></SearchBox>
+            <View style={{flex: 1, marginTop: 10}}>
+              <FlatList
+                data={this.data}
+                listKey={(item, index) => 'D' + index.toString()}
+                renderItem={({item}) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      this.props.navigation.navigate('Restaurant', {
+                        listMenu: {item},
+                        accountID: this.state.accountID,
+                        address: this.state.address,
+                      })
+                    }>
+                    <RestaurantItem res={item} />
+                  </TouchableOpacity>
+                )}
+                keyExtractor={item => item.id}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={this.props.onRefresh}
+                  />
+                }
+              />
             </View>
-        </View>
+          </View>
         );
     }
 }
