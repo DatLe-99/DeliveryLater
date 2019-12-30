@@ -9,6 +9,7 @@ import {
   Image,
   Icon,
   ToastAndroid,
+  CheckBox,
 } from 'react-native';
 import TimePicker from 'react-native-24h-timepicker';
 import {WINDOW_SIZE} from '../../utils/scale';
@@ -20,6 +21,7 @@ import {Calendar} from 'react-native-calendars';
 import {FlatList} from 'react-native-gesture-handler';
 import {TextInput} from 'react-native-paper';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import Modal from 'react-native-modal';
 
 const format = 'YYYY-MM-DD';
 const today = moment().format(format);
@@ -34,6 +36,7 @@ export default class CalendarComponent extends Component {
     this.state = {
       schedual: {date: today},
       orderlist: this.props.navigation.getParam('orderlist'),
+      isModalVisible: false,
     };
   }
   onDaySelect = day => {
@@ -46,6 +49,8 @@ export default class CalendarComponent extends Component {
   orders() {
     if (this.state.schedual.time) {
       console.log(this.state.schedual);
+      ToastAndroid.show(this.state.schedual, ToastAndroid.LONG);
+      this.setState({isModalVisible: true});
     }
   }
   changetime(time) {
@@ -55,6 +60,9 @@ export default class CalendarComponent extends Component {
       this.setState({schedual: selected});
       ToastAndroid.show(time, ToastAndroid.LONG);
     }
+  }
+  closeModal() {
+    this.setState({isModalVisible: false});
   }
 
   render() {
@@ -111,9 +119,82 @@ export default class CalendarComponent extends Component {
           date={this.state.schedual.date}
           onChangeTime={time => this.changetime(time)}
         />
+        <Modal isVisible={this.state.isModalVisible}>
+          <View style={{flex: 1}}>
+            <TouchableOpacity
+              onPress={() => this.closeModal()}></TouchableOpacity>
+            <FlatList
+              data={this.state.orderlist}
+              listKey={(item, index) => 'D' + index.toString()}
+              renderItem={({item}) => <OrderItem fooditem={item} />}
+              keyExtractor={item => item.ID}
+            />
+          </View>
+        </Modal>
       </View>
     );
   }
+}
+
+function OrderItem(fooditem) {
+  return (
+    <View>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 5,
+          borderRadius: 12,
+          backgroundColor: '#C4C4C4',
+          alignItems: 'center',
+          marginLeft: 30,
+          marginRight: 30,
+        }}>
+        <Image
+          style={{borderRadius: 10, width: 30, height: 30, margin: 5}}
+          source={require('../../media/images/test.jpg')}
+        />
+        <View style={{flexDirection: 'column', flex: 0.9}}>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              fontWeight: 'bold',
+              fontSize: 12,
+              lineHeight: 12,
+              alignItems: 'center',
+              color: '#000000',
+              opacity: 0.5,
+            }}>
+            {fooditem.name}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              fontWeight: '300',
+              fontSize: 12,
+              lineHeight: 12,
+              alignItems: 'center',
+              color: '#000000',
+              opacity: 0.5,
+            }}>
+            {fooditem.price}
+          </Text>
+        </View>
+        <CheckBox />
+      </View>
+
+      <View
+        style={{
+          borderBottomColor: '#000000',
+          borderBottomWidth: 1,
+          marginLeft: 30,
+          marginRight: 30,
+          marginTop: 5,
+        }}
+      />
+    </View>
+  );
 }
 
 class HeaderCalendar extends Component {

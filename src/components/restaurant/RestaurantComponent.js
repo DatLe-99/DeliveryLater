@@ -129,7 +129,9 @@ export default class RestaurantComponent extends Component {
           totalprice={this.state.totalprice}
           totalitem={this.state.totalitem}
           Setschedule={() =>
-            this.props.navigation.navigate('Calendar')
+            this.props.navigation.navigate('Calendar', {
+              orderlist: this.state.listorder,
+            })
           }></OrderedBar>
         {/* <OrderedModal
                     AddItemFood = {this.AddItemFood}
@@ -247,82 +249,69 @@ class ListChoosen extends Component {
 class OrderedBar extends Component {
   render() {
     return (
-      <View>
-        <View
+      <View
+        style={{
+          flexDirection: 'row',
+          position: 'absolute',
+          width: '100%',
+          height: WINDOW_SIZE.HEIGHT / 25,
+          bottom: 0,
+          backgroundColor: '#C4C4C4',
+          borderRadius: 10,
+        }}>
+        <TouchableOpacity
+          style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>
+          <Text>
+            {this.props.totalitem} phần - {this.props.totalprice}đ
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={{
-            flexDirection: 'row',
-            position: 'absolute',
-            width: '100%',
-            height: WINDOW_SIZE.HEIGHT / 25,
-            bottom: 0,
-            backgroundColor: '#C4C4C4',
+            backgroundColor: 'rgba(243,79,8,0.8)',
             borderRadius: 10,
-          }}>
-          <TouchableOpacity
-            style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>
-            <Text>
-              {this.props.totalitem} phần - {this.props.totalprice}đ
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
+            flex: 0.5,
+            alignSelf: 'stretch',
+            justifyContent: 'center',
+          }}
+          // onPress = {}
+        >
+          <Text
             style={{
-              backgroundColor: 'rgba(243,79,8,0.8)',
-              borderRadius: 10,
-              flex: 0.5,
-              alignSelf: 'stretch',
-              justifyContent: 'center',
-            }}
-            // onPress = {}
-          >
-            <Text
-              style={{
-                fontFamily: 'Roboto',
-                fontStyle: 'normal',
-                fontWeight: 'bold',
-                fontSize: 14,
-                lineHeight: 14,
-                color: '#FFFFFF',
-                textAlign: 'center',
-              }}>
-              Đặt ngay
-            </Text>
-          </TouchableOpacity>
-
-          <View style={{flex: 1}}></View>
-          <Icon
-            style={{marginRight: 10}}
-            name="star"
-            size={30}
-            color="#E1CC08"
-          />
-          <Text>{this.props.Rating}</Text>
-        </View>
-        <View style={{flex: 0.9}}></View>
-        <Text
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              fontWeight: 'bold',
+              fontSize: 14,
+              lineHeight: 14,
+              color: '#FFFFFF',
+              textAlign: 'center',
+            }}>
+            Đặt ngay
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={this.props.Setschedule}
           style={{
-            margin: 5,
-            fontFamily: 'Roboto',
-            fontStyle: 'normal',
-            fontWeight: 'bold',
-            fontSize: 14,
-            lineHeight: 12,
-            color: '#FFFFFF',
+            backgroundColor: '#2D87E2',
+            borderRadius: 10,
+            flex: 0.5,
+            alignSelf: 'stretch',
+            justifyContent: 'center',
+            marginRight: 10,
           }}>
-          {this.props.ResName}
-        </Text>
-        <Text
-          style={{
-            margin: 5,
-            fontFamily: 'Roboto',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            fontSize: 12,
-            lineHeight: 12,
-            color: '#FFFFFF',
-          }}>
-          {this.props.ResAddress}
-        </Text>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              fontWeight: 'bold',
+              fontSize: 14,
+              lineHeight: 14,
+              color: '#FFFFFF',
+              textAlign: 'center',
+            }}>
+            Lên lịch
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   }

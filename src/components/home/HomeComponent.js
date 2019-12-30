@@ -23,7 +23,6 @@ import {
 import {WINDOW_SIZE} from '../../utils/scale';
 import {FONT_SIZE} from '../../utils/fontsize';
 import LoginBackground from 'images/LoginBackground.jpg';
-import BottomBarComponent from '../bottomBar/BottomBarComponent';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import SaleOff50 from 'images/SaleOff50.png';
@@ -33,8 +32,14 @@ import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconMaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import Geolocation from 'react-native-geolocation-service';
 import BottomBarComponent from '../bottomBar/BottomBarComponent';
-import {searchAction, addressAction, updateAction, recommendAction, newestAction} from '../../redux/action';
-import IconAwesome from 'react-native-vector-icons/FontAwesome'
+import {
+  searchAction,
+  addressAction,
+  updateAction,
+  recommendAction,
+  newestAction,
+} from '../../redux/action';
+import IconAwesome from 'react-native-vector-icons/FontAwesome';
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import TabNavigator from 'react-native-tab-navigator';
@@ -62,7 +67,7 @@ import RNGooglePlaces from 'react-native-google-places';
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
-
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.state = {
       searchQuery: '',
       isLoading: false,
@@ -77,6 +82,21 @@ class HomeComponent extends Component {
       tabindex: 0, //[Goi y, Gan toi, Vua dat, Moi]
     };
     //this.index = 0
+  }
+  componentWillMount() {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+  handleBackButtonClick() {
+    this.exitApp();
   }
 
   async componentDidMount() {
@@ -187,9 +207,8 @@ class HomeComponent extends Component {
                   this.recommendStore();
                 } else if (this.state.tabindex == 1) {
                   this.NearMe();
-                }
-                else if (this.state.tabindex == 3){
-                  this.newestStore()
+                } else if (this.state.tabindex == 3) {
+                  this.newestStore();
                 }
                 console.log(this.props.updatedData.dataRes);
               } else {
@@ -481,21 +500,19 @@ class FoodRecommendBar extends Component {
       selectedIndex: index,
     });
 
-    this.props.parentCallbackIndex(index)
-    
-    if(index == 1){
-      this.props.NearMe()
-      ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)
-    }
-    else if(index == 0){
-      this.props.recommendStore()
-      ToastAndroid.show("Quán được đề xuất", ToastAndroid.SHORT)
-    }
-    else if(index == 3){
-      this.props.newestStore()
+    this.props.parentCallbackIndex(index);
+
+    if (index == 1) {
+      this.props.NearMe();
+      ToastAndroid.show('Các quán ăn gần bạn', ToastAndroid.SHORT);
+    } else if (index == 0) {
+      this.props.recommendStore();
+      ToastAndroid.show('Quán được đề xuất', ToastAndroid.SHORT);
+    } else if (index == 3) {
+      this.props.newestStore();
       ToastAndroid.show('Quán mới', ToastAndroid.SHORT);
     }
-  }
+  };
 
   render() {
     return (
