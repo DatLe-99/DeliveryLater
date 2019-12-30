@@ -25,6 +25,7 @@ import {bindActionCreators} from 'redux';
 import Icon from 'react-native-vector-icons/AntDesign';
 
 export default class RestaurantComponent extends Component {
+  innitialState = [];
   constructor(props) {
     super(props);
     // this.data = this.props.navigation.getParam('listMenu')
@@ -33,15 +34,23 @@ export default class RestaurantComponent extends Component {
       listData: this.props.navigation.getParam('listMenu'),
       totalprice: 0,
       totalitem: 0,
+      listorder: this.innitialState,
     };
   }
   componentDidMount = () => {
     console.log(this.state.listData.item);
   };
   AddItemFood = item => {
-    ToastAndroid.show(item.name, ToastAndroid.LONG);
-    this.setState({totalprice: item.price + this.state.totalprice});
-    this.setState({totalitem: 1 + this.state.totalitem});
+    // ToastAndroid.show(item.name,ToastAndroid.SHORT)
+    // var orderItem = [{name: item.name, price: item.price, count: 1}]
+    var tmp = this.state.listorder;
+    tmp.push({name: item.name, price: item.price, count: 1});
+    this.setState({
+      totalprice: item.price + this.state.totalprice,
+      totalitem: 1 + this.state.totalitem,
+      listorder: tmp,
+    });
+    console.log(this.state.listorder);
   };
   render() {
     return (
@@ -58,7 +67,7 @@ export default class RestaurantComponent extends Component {
             this.props.navigation.navigate('Search')
           }></HeaderRestaurant>
         <ListChoosen></ListChoosen>
-        <View style={{marginTop: 10}}>
+        <View style={{marginTop: 10, flex: 0.9}}>
           <FlatList
             data={this.state.listData.item.Categories}
             listKey={(item, index) => 'D' + index.toString()}
@@ -135,54 +144,6 @@ class HeaderRestaurant extends Component {
   }
 }
 
-class ListChoosen extends Component {
-  render() {
-    return (
-      <View style={{flexDirection: 'row', flex: 0.05, marginTop: 10}}>
-        <Text
-          style={{
-            flex: 1,
-            color: '#F34F08',
-            fontFamily: 'Roboto',
-            fontStyle: 'normal',
-            fontWeight: 'bold',
-            fontSize: 14,
-            lineHeight: 14,
-            textAlign: 'center',
-          }}>
-          Gian hàng
-        </Text>
-        <Text
-          style={{
-            flex: 1,
-            fontFamily: 'Roboto',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            fontSize: 14,
-            lineHeight: 14,
-            color: '#000000',
-            textAlign: 'center',
-          }}>
-          Đánh giá
-        </Text>
-        <Text
-          style={{
-            flex: 1,
-            fontFamily: 'Roboto',
-            fontStyle: 'normal',
-            fontWeight: 'normal',
-            fontSize: 14,
-            lineHeight: 14,
-            color: '#000000',
-            textAlign: 'center',
-          }}>
-          Hình ảnh
-        </Text>
-      </View>
-    );
-  }
-}
-
 class OrderedBar extends Component {
   render() {
     return (
@@ -196,9 +157,13 @@ class OrderedBar extends Component {
           backgroundColor: '#C4C4C4',
           borderRadius: 10,
         }}>
-        <Text style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>
-          {this.props.totalitem} phần - {this.props.totalprice}đ
-        </Text>
+        <TouchableOpacity
+          style={{flex: 1, alignSelf: 'center', marginLeft: 10}}>
+          <Text>
+            {this.props.totalitem} phần - {this.props.totalprice}đ
+          </Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={{
             backgroundColor: 'rgba(243,79,8,0.8)',

@@ -41,7 +41,6 @@ import {
   recommendAction,
 } from '../../redux/action';
 import BottomBarComponent from '../bottomBar/BottomBarComponent';
-
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
@@ -102,8 +101,8 @@ class HomeComponent extends Component {
   }
 
   onPressNoti = () => {
-    // this.alertMessage('Da nhan notification');
-    this.props.navigation.navigate('Calendar');
+    this.alertMessage('Da nhan notification');
+
   };
 
   pressReturnSearchKey = () => {
@@ -310,22 +309,17 @@ class HomeComponent extends Component {
               />
             }
           />
-
-          <BottomBarComponent
-            selectedTab="home"
-            onPressHome={() => this.props.navigation.navigate('Home')}
-            onPressUpcomingOrder={() =>
-              this.props.navigation.navigate('UpcomingOrder')
-            }
-            onPressHistory={() => this.props.navigation.navigate('History')}
-            onPressProfile={() => this.props.navigation.navigate('Profile')}
-          />
-
-          {/* <TabbarView /> */}
-          {/* <HomeBottomTabbar
-            onPressHistory={() => this.props.navigation.navigate('History')}
-          /> */}
         </View>
+
+        <BottomBarComponent
+          selectedTab="home"
+          onPressHome={() => this.props.navigation.navigate('Home')}
+          onPressUpcomingOrder={() =>
+            this.props.navigation.navigate('UpcomingOrder')
+          }
+          onPressHistory={() => this.props.navigation.navigate('History')}
+          onPressProfile={() => this.props.navigation.navigate('Profile')}
+        />
       </View>
     );
   }
@@ -688,7 +682,7 @@ function RestaurantItem({res}) {
                   }}>
                   >30p
                 </Text>
-                <Icon name="clockcircle" size={12} color="#F34F08" />
+                <IconAntDesign name="clockcircle" size={12} color="#F34F08" />
               </View>
             </View>
           </View>

@@ -19,6 +19,8 @@ import {bindActionCreators} from 'redux';
 import {Calendar} from 'react-native-calendars';
 import {FlatList} from 'react-native-gesture-handler';
 import {TextInput} from 'react-native-paper';
+import IconAntDesign from 'react-native-vector-icons/AntDesign';
+
 const format = 'YYYY-MM-DD';
 const today = moment().format(format);
 const maxDate = moment()
@@ -30,7 +32,7 @@ export default class CalendarComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      order: this.initialState,
+      order: {date: today},
     };
   }
   onDaySelect = day => {
@@ -57,6 +59,9 @@ export default class CalendarComponent extends Component {
   render() {
     return (
       <View>
+        <HeaderCalendar
+          onBack={() => this.props.navigation.navigate('Restaurant')}
+        />
         <Calendar
           // Initially visible month. Default = Date()
           //current={'2012-03-01'}
@@ -110,6 +115,52 @@ export default class CalendarComponent extends Component {
   }
 }
 
+class HeaderCalendar extends Component {
+  render() {
+    return (
+      <View
+        style={{
+          marginTop: 20,
+          flexDirection: 'row',
+          height: WINDOW_SIZE.HEIGHT / 18,
+          backgroundColor: '#FFFFFF',
+        }}>
+        <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
+          <IconAntDesign
+            onPress={this.props.onBack}
+            name="left"
+            size={30}
+            color="#000000"
+          />
+        </TouchableOpacity>
+        <View
+          style={{
+            flex: 0.8,
+            borderRadius: 20,
+            borderWidth: 1,
+            alignSelf: 'center',
+            justifyContent: 'center',
+          }}>
+          <Text
+            style={{
+              fontFamily: 'Verdana',
+              fontStyle: 'normal',
+              fontWeight: 'normal',
+              fontSize: 15,
+              lineHeight: 18,
+              display: 'flex',
+              alignItems: 'center',
+              textAlign: 'center',
+              color: '#000000',
+            }}>
+            Schedualer
+          </Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 class OrderList extends Component {
   constructor(props) {
     super(props);
@@ -158,24 +209,6 @@ class OrderList extends Component {
             }}>
             {'Time:  '}
           </Text>
-          {/* <TextInput
-            placeholder="07:00"
-            style={{
-              fontFamily: 'Verdana',
-              fontStyle: 'normal',
-              fontWeight: 'normal',
-              fontSize: 15,
-              lineHeight: 18,
-              height: 30,
-              display: 'flex',
-              alignItems: 'center',
-              textAlign: 'center',
-              color: '#000000',
-            }}
-            numberOfLines={1}
-            maxLength={5}
-            onChangeText={this.props.onChangeTime}
-          /> */}
           <TouchableOpacity
             onPress={() => this.TimePicker.open()}
             style={{
