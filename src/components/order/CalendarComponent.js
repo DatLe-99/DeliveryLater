@@ -32,26 +32,27 @@ export default class CalendarComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      order: {date: today},
+      schedual: {date: today},
+      orderlist: this.props.navigation.getParam('orderlist'),
     };
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
-    var selected = {date: selectedDay, time: this.state.order.time};
+    var selected = {date: selectedDay, time: this.state.schedual.time};
 
-    this.setState({order: selected});
+    this.setState({schedual: selected});
   };
 
   orders() {
-    if (this.state.order.time) {
-      console.log(this.state.order);
+    if (this.state.schedual.time) {
+      console.log(this.state.schedual);
     }
   }
   changetime(time) {
     console.log(moment(time, 'HH:mm', true));
     if (moment(time, 'HH:mm', true) != null) {
-      var selected = {date: this.state.order.date, time: time};
-      this.setState({order: selected});
+      var selected = {date: this.state.schedual.date, time: time};
+      this.setState({schedual: selected});
       ToastAndroid.show(time, ToastAndroid.LONG);
     }
   }
@@ -107,7 +108,7 @@ export default class CalendarComponent extends Component {
         />
         <OrderList
           onPress={() => this.orders()}
-          date={this.state.order.date}
+          date={this.state.schedual.date}
           onChangeTime={time => this.changetime(time)}
         />
       </View>

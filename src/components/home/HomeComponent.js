@@ -23,7 +23,7 @@ import {
 import {WINDOW_SIZE} from '../../utils/scale';
 import {FONT_SIZE} from '../../utils/fontsize';
 import LoginBackground from 'images/LoginBackground.jpg';
-
+import BottomBarComponent from '../bottomBar/BottomBarComponent';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import SaleOff50 from 'images/SaleOff50.png';
@@ -277,8 +277,6 @@ class HomeComponent extends Component {
           openSearchModal={() => this.openSearchModal()}
           currentAddress={this.state.address}
         />
-
-        <BannerImageView />
 
         <BannerImageView />
 
