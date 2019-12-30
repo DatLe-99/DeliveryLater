@@ -8,8 +8,9 @@ import {
   StyleSheet,
   Image,
   Icon,
+  ToastAndroid,
 } from 'react-native';
-
+import TimePicker from 'react-native-24h-timepicker';
 import {WINDOW_SIZE} from '../../utils/scale';
 import {FONT_SIZE} from '../../utils/fontsize';
 import LoginBackground from 'images/LoginBackground.jpg';
@@ -34,8 +35,9 @@ export default class CalendarComponent extends Component {
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
-    var select = {date: selectedDay};
-    this.setState({order: select});
+    var selected = {date: selectedDay, time: this.state.order.time};
+
+    this.setState({order: selected});
   };
 
   orders() {
@@ -48,6 +50,7 @@ export default class CalendarComponent extends Component {
     if (moment(time, 'HH:mm', true) != null) {
       var selected = {date: this.state.order.date, time: time};
       this.setState({order: selected});
+      ToastAndroid.show(time, ToastAndroid.LONG);
     }
   }
 
@@ -99,8 +102,8 @@ export default class CalendarComponent extends Component {
         />
         <OrderList
           onPress={() => this.orders()}
-          order={this.state.order}
-          onChangeTime={text => this.changetime(text)}
+          date={this.state.order.date}
+          onChangeTime={time => this.changetime(time)}
         />
       </View>
     );
@@ -111,10 +114,18 @@ class OrderList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      order: this.props.order,
+      time: moment().format('HH:mm'),
     };
   }
+  onCancel() {
+    this.TimePicker.close();
+  }
 
+  onConfirm(hour, minute) {
+    var time = hour + ':' + minute;
+    this.props.onChangeTime(time);
+    this.TimePicker.close();
+  }
   render() {
     return (
       <View style={{flexDirection: 'column', backgroundColor: '#c4c4c4'}}>
@@ -127,7 +138,7 @@ class OrderList extends Component {
             alignContent: 'center',
             color: '#000000',
           }}>
-          {'Date:' + this.state.order.date}
+          {'Date:  ' + this.props.date}
         </Text>
         <View
           style={{
@@ -145,9 +156,9 @@ class OrderList extends Component {
               alignContent: 'center',
               color: '#000000',
             }}>
-            {'Time'}
+            {'Time:  '}
           </Text>
-          <TextInput
+          {/* <TextInput
             placeholder="07:00"
             style={{
               fontFamily: 'Verdana',
@@ -161,7 +172,40 @@ class OrderList extends Component {
               textAlign: 'center',
               color: '#000000',
             }}
+            numberOfLines={1}
+            maxLength={5}
             onChangeText={this.props.onChangeTime}
+          /> */}
+          <TouchableOpacity
+            onPress={() => this.TimePicker.open()}
+            style={{
+              width: 100,
+              heigth: 30,
+              backgroundColor: '#ffffffff',
+              borderRadius: 10,
+            }}>
+            <Text
+              style={
+                (styles.text,
+                {
+                  color: '#000000',
+                  fontWeight: 'bold',
+                  width: 100,
+                  height: 30,
+                  fontSize: 16,
+                  textAlignVertical: 'center',
+                  textAlign: 'center',
+                })
+              }>
+              Pick time
+            </Text>
+          </TouchableOpacity>
+          <TimePicker
+            ref={ref => {
+              this.TimePicker = ref;
+            }}
+            onCancel={() => this.onCancel()}
+            onConfirm={(hour, minute) => this.onConfirm(hour, minute)}
           />
         </View>
         <TouchableOpacity
@@ -171,6 +215,7 @@ class OrderList extends Component {
             heigth: 42,
             backgroundColor: '#F34F08',
             borderRadius: 21,
+            margin: 5,
           }}>
           <Text
             style={

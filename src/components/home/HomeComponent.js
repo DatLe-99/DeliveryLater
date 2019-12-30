@@ -40,6 +40,8 @@ import {
   updateAction,
   recommendAction,
 } from '../../redux/action';
+import BottomBarComponent from '../bottomBar/BottomBarComponent';
+
 import IconAwesome from 'react-native-vector-icons/FontAwesome';
 //import TabBar from '@mindinventory/react-native-tab-bar-interaction';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
@@ -308,8 +310,22 @@ class HomeComponent extends Component {
               />
             }
           />
+
+          <BottomBarComponent
+            selectedTab="home"
+            onPressHome={() => this.props.navigation.navigate('Home')}
+            onPressUpcomingOrder={() =>
+              this.props.navigation.navigate('UpcomingOrder')
+            }
+            onPressHistory={() => this.props.navigation.navigate('History')}
+            onPressProfile={() => this.props.navigation.navigate('Profile')}
+          />
+
+          {/* <TabbarView /> */}
+          {/* <HomeBottomTabbar
+            onPressHistory={() => this.props.navigation.navigate('History')}
+          /> */}
         </View>
-        <TabDemo />
       </View>
     );
   }
@@ -326,7 +342,7 @@ class SearchBox extends Component {
           backgroundColor: '#FFFFFF',
         }}>
         <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
-          <Icon
+          <IconAntDesign
             onPress={this.props.onBack}
             name="left"
             size={30}
@@ -363,7 +379,7 @@ class SearchBox extends Component {
         <TouchableOpacity
           onPress={this.props.onPressNoti}
           style={{flex: 0.1, alignSelf: 'center'}}>
-          <Icon name="bells" size={30} color="#900" />
+          <IconAntDesign name="bells" size={30} color="#900" />
         </TouchableOpacity>
       </View>
     );
@@ -707,6 +723,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
+  },
+  bottomBarItem: {
+    flex: 0.5,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    marginTop: 10,
   },
 });
 
