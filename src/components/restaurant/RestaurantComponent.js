@@ -165,7 +165,7 @@ class Review extends Component {
     
         const fakeData = [];
 
-        for(i = 0; i < 100; i+= 1) {
+        for(var i = 0; i < 100; i+= 1) {
           fakeData.push({
             type: 'NORMAL',
             item: {

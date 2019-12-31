@@ -15,6 +15,7 @@ import {
   ToastAndroid,
   Dimensions,
   Image,
+  Button,
 } from 'react-native';
 
 import {WINDOW_SIZE} from '../../utils/scale';
@@ -44,6 +45,7 @@ import Modal, {
     SlideAnimation,
     ScaleAnimation,
   } from 'react-native-modals';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -54,7 +56,7 @@ export default class HistoryComponent extends Component {
         super(props);
     
         const fakeData = [];
-        for(i = 0; i < 100; i+= 1) {
+        for(var i = 0; i < 100; i+= 1) {
           fakeData.push({
             type: 'NORMAL',
             item: {
@@ -67,6 +69,7 @@ export default class HistoryComponent extends Component {
         }
         this.state = {
           list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
+          isPopupShown: false,
         };
     
         this.layoutProvider = new LayoutProvider((i) => {
@@ -87,6 +90,7 @@ export default class HistoryComponent extends Component {
     
       rowRenderer = (type, data) => {
         const { image, name, address} = data.item;
+        
         return (
             <View 
                 style = {{
@@ -167,6 +171,10 @@ export default class HistoryComponent extends Component {
                 <Text> 12:30 - Th 7, 23 thg 11 </Text>
                 
                 <TouchableOpacity
+                    onPress={
+                        () => this.setState({isPopupShown: true})
+                    }
+
                     style = {{
                         position: 'absolute',
                         right: 0,
@@ -194,6 +202,12 @@ export default class HistoryComponent extends Component {
         )
       }
 
+      setIsPopupShown = (boolVar) => {
+        this.setState({
+          isPopupShown: boolVar
+        })
+      }
+
     render(){
         return(
             <View
@@ -209,9 +223,15 @@ export default class HistoryComponent extends Component {
                     rowRenderer={this.rowRenderer}
                     dataProvider={this.state.list}
                     layoutProvider={this.layoutProvider}
+                    
                 />
 
-                <BottomBarComponent 
+                <ConfirmCancelOrderPopup 
+                    setIsPopupShown = {() => this.setState({isPopupShown: false})}
+                    isPopupShown = {this.state.isPopupShown}
+                />
+
+                <BottomBarComponent
                     selectedTab = 'upcomingOrder'
                     onPressHome = {() => this.props.navigation.navigate('Home')}
                     onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
@@ -223,6 +243,58 @@ export default class HistoryComponent extends Component {
         );
     }
 }
+
+class ConfirmCancelOrderPopup extends Component {
+    render() {
+      return (
+          <Modal.BottomModal
+            visible={this.props.isPopupShown}
+            onTouchOutside={this.props.setIsPopupShown}
+            height={0.5}
+            width={1}
+            onSwipeOut={this.props.setIsPopupShow}
+            modalTitle={
+              <ModalTitle
+                title="Bạn muốn hủy đơn hàng này?"
+                hasTitleBar
+              />
+            }
+  
+            footer={
+              <ModalFooter>
+                <ModalButton
+                  text="CANCEL"
+                  bordered
+                  onPress={
+                    this.props.setIsPopupShown
+                  }
+                  key="button-1"
+                />
+                <ModalButton
+                  text="OK"
+                  bordered
+                  onPress={
+                    this.props.setIsPopupShown
+                  }
+                  key="button-2"
+                />
+              </ModalFooter>
+            }
+          >
+            <ModalContent
+              style={{
+                flex: 1,
+                backgroundColor: 'fff',
+              }}
+            >
+              <Text>
+                Bottom Modal with Title
+              </Text>
+            </ModalContent>
+          </Modal.BottomModal>
+      );
+    }
+  }
 
 class HeaderBar extends Component {
     render() {
@@ -287,4 +359,4 @@ const styles = StyleSheet.create({
 
         elevation: 2,
     },
-  });
+});
