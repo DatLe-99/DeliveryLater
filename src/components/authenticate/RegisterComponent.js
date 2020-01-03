@@ -29,6 +29,7 @@ class RegisterComponent extends Component {
     super(props);
     this.state = {
       phone: '',
+      name: '',
       password: '',
       passwordConfirm: '',
       email: '',
@@ -45,6 +46,7 @@ class RegisterComponent extends Component {
           password: this.state.password,
           passwordConfirm: this.state.passwordConfirm,
           email: this.state.email,
+          name: this.state.name,
         })
         .then(() => {
           this.setState({isLoading: false});
@@ -106,6 +108,9 @@ class RegisterComponent extends Component {
               onChangeEmail={text => {
                 this.setState({email: text});
               }}
+              onChangeName={text => {
+                this.setState({name: text})
+              }}
             />
             <RegisterButton onPressRegister={() => this.onSignUp()} />
           </View>
@@ -129,12 +134,12 @@ class Header extends Component{
 class BoxRegister extends Component{
     render(){
         return (
-          <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop:20}}>
+          <View style = {{alignContents: 'center', flexDirection: 'column', alignItems: 'center', marginTop:40}}>
                 <BoxUsername onChangePhone={this.props.onChangePhone} ></BoxUsername>
+                <BoxName onChangeName={this.props.onChangeName}></BoxName>
                 <BoxPassword onChangePassword={this.props.onChangePassword}></BoxPassword>
                 <BoxConfirmPassword onChangePasswordConfirm={this.props.onChangePasswordConfirm}></BoxConfirmPassword>
                 <BoxEmail onChangeEmail={this.props.onChangeEmail}></BoxEmail>
-                <RegisterwithEmail/>
           </View>
         );
     }
@@ -147,10 +152,23 @@ class BoxUsername extends Component{
                 <TextInput 
                 onChangeText={this.props.onChangePhone}
                 placeholder= "Số điện thoại" 
-                style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}/>
+                style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}/>
             </View>
         );
     }
+}
+
+class BoxName extends Component {
+  render() {
+    return (
+      <View style={{ width: 367, height: 42, backgroundColor: '#C4C4C4', borderRadius: 13 , marginTop: 20}}>
+        <TextInput
+          onChangeText={this.props.onChangeName}
+          placeholder="Họ và tên"
+          style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF' }} />
+      </View>
+    );
+  }
 }
 
 class BoxPassword extends Component{
@@ -168,7 +186,7 @@ class BoxPassword extends Component{
             onChangeText={this.props.onChangePassword}
             placeholder= "Mật khẩu" 
             secureTextEntry={true} 
-            style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
+              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}></TextInput>
           </View>
         );
     }
@@ -188,7 +206,7 @@ class BoxConfirmPassword extends Component{
             onChangeText={this.props.onChangePasswordConfirm}
             placeholder= "Xac Nhan Mật khẩu" 
             secureTextEntry={true} 
-            style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
+              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}></TextInput>
           </View>
         );
     }
@@ -200,25 +218,15 @@ class BoxEmail extends Component{
             style={{
               width: 367,
               height: 42,
-              backgroundColor: '#AA9B15',
+              backgroundColor: '#F1A232',
               borderRadius: 13,
               marginTop: 20
             }}>
             <TextInput 
             onChangeText={this.props.onChangeEmail}
             placeholder= "Email" 
-            style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: 'rgba(233,218,218,0.5)'}}></TextInput>
+              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}></TextInput>
           </View>
-        );
-    }
-}
-
-class RegisterwithEmail extends Component{
-    render(){
-        return(
-            <View style={{width: 208, height: 42, marginTop: 20, alignSelf: 'flex-end'}}>
-                <Text style={styles.text, {width: 208, height: 42, color: '#C22828', textDecorationLine: 'underline', textAlign: "center", fontStyle: 'italic', fontWeight: 'bold'}}>Đăng Ký bằng email</Text>
-            </View>
         );
     }
 }
@@ -226,7 +234,7 @@ class RegisterwithEmail extends Component{
 class RegisterButton extends Component{
     render(){
         return (
-            <TouchableOpacity onPress={this.props.onPressRegister} style={{width: 208, heigth: 42, backgroundColor: '#D54646', borderRadius: 21}}>
+            <TouchableOpacity onPress={this.props.onPressRegister} style={{width: 208, heigth: 42, backgroundColor: '#D54646', borderRadius: 21, marginTop: 40}}>
                 <Text style={styles.text, { color: '#FFFFFF', fontWeight: "bold", width: 208, height: 42, fontSize: 16, textAlignVertical: "center",textAlign: "center"}}>Đăng Ký</Text>
             </TouchableOpacity>
         );

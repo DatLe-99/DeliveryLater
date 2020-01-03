@@ -6,7 +6,7 @@ import {ORDER} from '../../utils/api';
 
 const orderRequest = () => {
   return {
-    type: OEDER_REQUEST,
+    type: ORDER_REQUEST,
   };
 };
 

@@ -28,6 +28,7 @@ import BottomBarComponent from '../bottomBar/BottomBarComponent';
 
 import faker from 'faker';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+import {orderAction} from '../../redux/action'
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -48,16 +49,30 @@ function cloneData(listorder){
     return cloneData
 }
 
-export default class PaymentComponent extends Component {
+function listOrdersendRequest(listorder){
+    var sendData = [];
+    for (var i = 0; i< listorder.length; i++){
+        sendData.push({
+            ItemId: listorder[i].ID,
+            amount: listorder[i].count,
+            price: listorder[i].price,
+        })
+    }
+    return sendData
+}
+
+
+class PaymentComponent extends Component {
     constructor(props) {
         super(props);
-        
         this.state = {
           list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(cloneData(this.props.navigation.getParam("listorder"))),
           listorder: this.props.navigation.getParam("listorder"),
           address: this.props.navigation.getParam("address"),
           account: this.props.navigation.getParam("account"),
           restaurant: this.props.navigation.getParam("restaurant"),
+          date: new Date(),
+          isLoading: false,
         };
     
         this.layoutProvider = new LayoutProvider((i) => {
@@ -76,11 +91,11 @@ export default class PaymentComponent extends Component {
         })
       }
 
-      componentDidMount(){
+    componentDidMount(){
           console.log(this.state.listorder)
       }
     
-      rowRenderer = (type, data) => {
+    rowRenderer = (type, data) => {
         const {ID, name, price, count} = data.item;
         return (
             <InformationBar 
@@ -90,6 +105,38 @@ export default class PaymentComponent extends Component {
            
         )
       }
+    
+
+    CheckOut = () => {
+        if (!this.state.isLoading) {
+            this.setState({ isLoading: true });
+            this.props
+                .orderAction(
+                    [
+                        {
+                            AccountId: this.state.account.ID,
+                            created: "",
+                            deadline: "",
+                            address: this.state.address,
+                            orderitems: listOrdersendRequest(this.state.listorder)    
+                        },
+                    ]              
+                )
+                .then(() => {
+                    this.setState({ isLoading: false });
+                    if (this.props.orderData.success) {
+                        this.setState({
+                            isLoading: false,
+                        });
+                        console.log(this.props.orderData.dataRes);
+                        this.props.navigation.navigate("UpcomingOrder")
+                    } else {
+                        this.setState({ isLoading: false });
+                        this.alertMessage(this.props.orderData.errorMessage);
+                    }
+                });
+        }
+    }
     render(){
         return(
             <View
@@ -148,7 +195,7 @@ export default class PaymentComponent extends Component {
                     <Text
                         style = {{
                             padding: 10,
-                        }}>Giao ngay - 19:20 Hôm nay 08/12/2019</Text>
+                        }}>Giao ngay - 30' nữa, Hôm nay {this.state.date.getDate()}/{this.state.date.getMonth()+1}/{this.state.date.getFullYear()}</Text>
                     <TouchableOpacity
                         style = {{
                             position: 'absolute',
@@ -190,6 +237,7 @@ export default class PaymentComponent extends Component {
                 />
 
                 <Total 
+                    CheckOut = {this.CheckOut}
                     total = {this.props.navigation.getParam("totalitem") + " phần - " + this.props.navigation.getParam("totalprice") + "đ"}
                 />
             </View>  
@@ -368,6 +416,7 @@ class Total extends Component {
                         textAlignVertical: 'center',
                     }}>{this.props.total}</Text>
                 <TouchableOpacity
+                    onPress= {this.props.CheckOut}
                     style = {{
                         position: 'absolute',
                         right: 0,
@@ -410,3 +459,17 @@ const styles = StyleSheet.create({
         padding: 15,
     },
   });
+
+function mapStateToProps(state) {
+    return {
+        orderData: state.OrderReducer,
+    };
+}
+
+function dispatchToProps(dispatch) {
+    return bindActionCreators({
+        orderAction,
+    }, dispatch);
+}
+
+export default connect(mapStateToProps, dispatchToProps)(PaymentComponent);

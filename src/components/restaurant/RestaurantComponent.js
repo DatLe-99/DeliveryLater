@@ -111,6 +111,21 @@ export default class RestaurantComponent extends Component{
           }
         }
       }
+    goToPayment = () => {
+      if(this.state.totalitem == 0){
+        ToastAndroid.show("Đơn hàng của bạn đang rỗng. Vui lòng chọn món ăn", ToastAndroid.SHORT)
+      }
+      else{
+        this.props.navigation.navigate("Payment",{
+          listorder: this.state.listorder,
+          address: this.state.address,
+          account: this.state.account,
+          totalprice: this.state.totalprice,
+          totalitem: this.state.totalitem,
+          restaurant: this.props.navigation.getParam("restaurant")
+        })
+      }
+    }
 
     render(){
         return(
@@ -139,14 +154,7 @@ export default class RestaurantComponent extends Component{
                         totalprice = {this.state.totalprice}
                         totalitem = {this.state.totalitem}
                         Setschedule = {() => this.props.navigation.navigate("Calendar")}
-                        goToPayment = {() => this.props.navigation.navigate("Payment",{
-                            listorder: this.state.listorder,
-                            address: this.state.address,
-                            account: this.state.account,    
-                            totalprice: this.state.totalprice,
-                            totalitem: this.state.totalitem,  
-                            restaurant: this.props.navigation.getParam("restaurant")                      
-                        })}
+                        goToPayment = {this.goToPayment}
                     />
                 }
 
@@ -166,7 +174,7 @@ class Review extends Component {
     
         const fakeData = [];
 
-        for(i = 0; i < 100; i+= 1) {
+        for(var i = 0; i < 100; i+= 1) {
           fakeData.push({
             type: 'NORMAL',
             item: {
