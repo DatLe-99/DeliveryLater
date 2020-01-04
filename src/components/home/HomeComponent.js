@@ -67,10 +67,6 @@ import RNGooglePlaces from 'react-native-google-places';
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
-<<<<<<< HEAD
-=======
-    // this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
->>>>>>> 8581d520f6583b76b7ae1b796f013b2d4e56ea79
     this.state = {
       searchQuery: '',
       isLoading: false,
@@ -86,24 +82,6 @@ class HomeComponent extends Component {
     };
     //this.index = 0
   }
-<<<<<<< HEAD
-=======
-  // componentWillMount() {
-  //   BackHandler.addEventListener(
-  //     'hardwareBackPress',
-  //     this.handleBackButtonClick,
-  //   );
-  // }
-  // componentWillUnmount() {
-  //   BackHandler.removeEventListener(
-  //     'hardwareBackPress',
-  //     this.handleBackButtonClick,
-  //   );
-  // }
-  // handleBackButtonClick() {
-  //   this.exitApp();
-  // }
->>>>>>> 8581d520f6583b76b7ae1b796f013b2d4e56ea79
 
   async componentDidMount() {
     RNGooglePlaces.getCurrentPlace()
@@ -511,18 +489,16 @@ class FoodRecommendBar extends Component {
       selectedIndex: index,
     });
 
-    this.props.parentCallbackIndex(index)
+    this.props.parentCallbackIndex(index);
 
-    if(index == 1){
-      this.props.NearMe()
-      ToastAndroid.show("Các quán ăn gần bạn", ToastAndroid.SHORT)
-    }
-    else if(index == 0){
-      this.props.recommendStore()
-      ToastAndroid.show("Quán được đề xuất", ToastAndroid.SHORT)
-    }
-    else if(index == 3){
-      this.props.newestStore()
+    if (index == 1) {
+      this.props.NearMe();
+      ToastAndroid.show('Các quán ăn gần bạn', ToastAndroid.SHORT);
+    } else if (index == 0) {
+      this.props.recommendStore();
+      ToastAndroid.show('Quán được đề xuất', ToastAndroid.SHORT);
+    } else if (index == 3) {
+      this.props.newestStore();
       ToastAndroid.show('Quán mới', ToastAndroid.SHORT);
     }
   };

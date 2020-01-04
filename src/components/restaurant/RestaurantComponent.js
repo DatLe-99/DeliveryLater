@@ -126,6 +126,22 @@ export default class RestaurantComponent extends Component{
         })
       }
     }
+    goToSchedual = () => {
+      if(this.state.totalitem == 0){
+        ToastAndroid.show("Đơn hàng của bạn đang rỗng. Vui lòng chọn món ăn", ToastAndroid.SHORT)
+      }
+      else{
+        console.log(this.state.listorder)
+        this.props.navigation.navigate("Calendar",{
+          listorder: this.state.listorder,
+          address: this.state.address,
+          account: this.state.account,
+          totalprice: this.state.totalprice,
+          totalitem: this.state.totalitem,
+          restaurant: this.props.navigation.getParam("restaurant")
+        })
+      }
+    }
 
     render(){
         return(
@@ -153,7 +169,7 @@ export default class RestaurantComponent extends Component{
                         count = {this.state.listorder}
                         totalprice = {this.state.totalprice}
                         totalitem = {this.state.totalitem}
-                        Setschedule = {() => this.props.navigation.navigate("Calendar")}
+                        Setschedule = {this.goToSchedual}
                         goToPayment = {this.goToPayment}
                     />
                 }

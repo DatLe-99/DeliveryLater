@@ -11,16 +11,21 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {View} from 'react-native-animatable';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
+import {orderAction} from '../../redux/action';
 
-const format = 'DD-MM-YYYY, HH:mm';
-export default class SchedualerComponent extends Component {
+class SchedualerComponent extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       isDatePickerVisible: false,
-      orderlist: this.props.navigation.getParam('orderlist'),
+      orderlist: this.props.navigation.getParam('listorder'),
+      address: this.props.navigation.getParam('address'),
+      account: this.props.navigation.getParam('account'),
+
       currentFoodItem: {},
     };
+    console.log(this.state.orderlist);
     this.state.orderlist.forEach(function(element) {
       element.datetime = moment();
     });
@@ -29,7 +34,6 @@ export default class SchedualerComponent extends Component {
   showDatePicker = fooditem => {
     console.log(fooditem);
     this.setState({isDatePickerVisible: true, currentFoodItem: fooditem});
-    console.log(this.state.orderlist);
   };
   hideDatePicker() {
     this.setState({isDatePickerVisible: false});
@@ -49,6 +53,7 @@ export default class SchedualerComponent extends Component {
       }
     }
   }
+
   render() {
     return (
       <View>
@@ -56,17 +61,43 @@ export default class SchedualerComponent extends Component {
         <FlatList
           listKey={(item, index) => 'D' + index.toString()}
           data={this.state.orderlist}
-          renderItem={({item}) => (
-            <FoodItem fooditem={item} showDatePicker={this.showDatePicker} />
-          )}
+          renderItem={({item}) => <FoodItem fooditem={item} />}
           keyExtractor={item => item.id}
+          height={500}
         />
+
         <DateTimePickerModal
           isVisible={this.state.isDatePickerVisible}
           mode="datetime"
           onConfirm={datetime => this.handleConfirm(datetime)}
           onCancel={() => this.hideDatePicker()}
         />
+
+        <View>
+          <TouchableOpacity
+            onPress={}
+            style={{
+              backgroundColor: '#2D87E2',
+              borderRadius: 10,
+              flex: 0.5,
+              alignSelf: 'stretch',
+              justifyContent: 'center',
+              marginRight: 10,
+            }}>
+            <Text
+              style={{
+                fontFamily: 'Roboto',
+                fontStyle: 'normal',
+                fontWeight: 'bold',
+                fontSize: 14,
+                lineHeight: 14,
+                color: '#FFFFFF',
+                textAlign: 'center',
+              }}>
+              Lên lịch
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -97,9 +128,9 @@ const styles = StyleSheet.create({
   },
 });
 
-function FoodItem({fooditem, showDatePicker}) {
+function FoodItem({fooditem}) {
   return (
-    <TouchableOpacity onPress={() => showDatePicker(fooditem)}>
+    <View>
       <View
         style={{
           flexDirection: 'row',
@@ -122,6 +153,7 @@ function FoodItem({fooditem, showDatePicker}) {
               fontWeight: 'bold',
               fontSize: 12,
               lineHeight: 12,
+
               alignItems: 'center',
               color: '#000000',
               opacity: 0.5,
@@ -139,9 +171,22 @@ function FoodItem({fooditem, showDatePicker}) {
               color: '#000000',
               opacity: 0.5,
             }}>
-            {fooditem.datetime.format(format)}
+            {fooditem.price}
           </Text>
         </View>
+        <Text
+          style={{
+            fontFamily: 'Roboto',
+            fontStyle: 'normal',
+            fontWeight: '300',
+            fontSize: 12,
+            lineHeight: 12,
+            alignItems: 'center',
+            color: '#fb4f46',
+            opacity: 0.5,
+          }}>
+          {fooditem.datetime.format()}
+        </Text>
         <View
           style={{
             flexDirection: 'row',
@@ -173,21 +218,66 @@ function FoodItem({fooditem, showDatePicker}) {
           marginTop: 5,
         }}
       />
-    </TouchableOpacity>
+    </View>
   );
 }
+
+// class HeaderSchedualer extends Component {
+//   render() {
+//     return (
+//       <View
+//         style={{
+//           marginTop: 20,
+//           flexDirection: 'row',
+//           height: WINDOW_SIZE.HEIGHT / 18,
+//           backgroundColor: '#FFFFFF',
+//         }}>
+//         <TouchableOpacity style={{}}>
+//           <IconAntDesign
+//             onPress={this.props.onBack}
+//             name="left"
+//             size={30}
+//             color="#000000"
+//           />
+//         </TouchableOpacity>
+//         <View
+//           style={{
+//             borderRadius: 20,
+//             borderWidth: 1,
+//             alignSelf: 'center',
+//             justifyContent: 'center',
+//           }}>
+//           <Text
+//             style={{
+//               fontFamily: 'Verdana',
+//               fontStyle: 'normal',
+//               fontWeight: 'normal',
+//               fontSize: 15,
+//               lineHeight: 18,
+//               display: 'flex',
+//               alignItems: 'center',
+//               textAlign: 'center',
+//               color: '#000000',
+//             }}>
+//             Schedualer
+//           </Text>
+//         </View>
+//       </View>
+//     );
+//   }
+// }
 
 class HeaderSchedualer extends Component {
   render() {
     return (
       <View
         style={{
-          marginTop: 20,
+          //flex: 0.1,
+          alignItems: 'center',
+          backgroundColor: '#f2f2f2',
           flexDirection: 'row',
-          height: WINDOW_SIZE.HEIGHT / 18,
-          backgroundColor: '#FFFFFF',
         }}>
-        <TouchableOpacity style={{flex: 0.1, alignSelf: 'center'}}>
+        <TouchableOpacity style={{}}>
           <IconAntDesign
             onPress={this.props.onBack}
             name="left"
@@ -195,30 +285,38 @@ class HeaderSchedualer extends Component {
             color="#000000"
           />
         </TouchableOpacity>
-        <View
+        <Text
           style={{
-            flex: 0.8,
-            borderRadius: 20,
-            borderWidth: 1,
-            alignSelf: 'center',
-            justifyContent: 'center',
+            color: '#000',
+            alignSelf: 'flex-end',
+
+            fontWeight: 'bold',
+            fontSize: WINDOW_SIZE.WIDTH / 25,
+            flexDirection: 'column',
+            marginTop: 10,
+            marginBottom: 10,
+
+            //justifyContent: 'center',
           }}>
-          <Text
-            style={{
-              fontFamily: 'Verdana',
-              fontStyle: 'normal',
-              fontWeight: 'normal',
-              fontSize: 15,
-              lineHeight: 18,
-              display: 'flex',
-              alignItems: 'center',
-              textAlign: 'center',
-              color: '#000000',
-            }}>
-            Schedualer
-          </Text>
-        </View>
+          Len Lich
+        </Text>
       </View>
     );
   }
 }
+function mapStateToProps(state) {
+  return {
+    orderData: state.OrderReducer,
+  };
+}
+
+function dispatchToProps(dispatch) {
+  return bindActionCreators(
+    {
+      orderAction,
+    },
+    dispatch,
+  );
+}
+
+export default connect(mapStateToProps, dispatchToProps)(SchedualerComponent);
