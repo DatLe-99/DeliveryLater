@@ -43,7 +43,7 @@ export default class HistoryComponent extends Component {
         super(props);
     
         const fakeData = [];
-        for(i = 0; i < 100; i+= 1) {
+        for(var i = 0; i < 100; i+= 1) {
           fakeData.push({
             type: 'NORMAL',
             item: {
