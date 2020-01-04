@@ -11,6 +11,7 @@ import HistoryComponent from '../components/history/HistoryComponent';
 import UpcomingOrderComponent from '../components/upcomingOrder/UpcomingOrderComponent';
 import ProfileComponent from '../components/profile/ProfileComponent';
 import PaymentComponent from '../components/payment/PaymentComponent';
+import SchedulerComponent from '../components/order/CalendarComponent'
 
 const RootNavigator = createStackNavigator(
   {
@@ -47,7 +48,7 @@ const RootNavigator = createStackNavigator(
     },
 
     Calendar: {
-      screen: CalendarComponent,
+      screen: SchedulerComponent,
       navigationOptions: {
         gesturesEnabled: false,
       },
