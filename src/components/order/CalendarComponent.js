@@ -35,7 +35,7 @@ export default class CalendarComponent extends Component {
     super(props);
     this.state = {
       schedual: {date: today},
-      orderlist: this.props.navigation.getParam('orderlist'),
+      orderlist: this.props.navigation.getParam('listorder'),
       isModalVisible: false,
     };
   }
