@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
     case ORDER_SUCCESS:
       return {
         error: false,
-        success: action.dataResult.status,
+        success: action.dataResult[0].status,
         dataRes: action.dataResult,
         errorMessage: action.dataResult.message,
       };

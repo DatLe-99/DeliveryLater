@@ -12,6 +12,7 @@ import UpcomingOrderComponent from '../components/upcomingOrder/UpcomingOrderCom
 import ProfileComponent from '../components/profile/ProfileComponent';
 import PaymentComponent from '../components/payment/PaymentComponent';
 import SchedualerComponent from '../components/order/SchedualerComponent';
+import PaymentSchedule from '../components/payment/PaymentSchedule';
 const RootNavigator = createStackNavigator(
   {
     SignIn: {
@@ -76,6 +77,13 @@ const RootNavigator = createStackNavigator(
 
     Payment: {
       screen: PaymentComponent,
+      navigationOptions: {
+        gesturesEnabled: false,
+      },
+    },
+
+    PaymentSchedule: {
+      screen: PaymentSchedule,
       navigationOptions: {
         gesturesEnabled: false,
       },

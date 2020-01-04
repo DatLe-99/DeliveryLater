@@ -1,106 +1,62 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-  Platform,
-  ActivityIndicator,
-  Keyboard,
-  BackHandler,
-  TextInput,
-  ToastAndroid,
-  Dimensions,
-  Image,
+    View,
+    Text,
+    StyleSheet,
+    ImageBackground,
+    ScrollView,
+    TouchableOpacity,
+    Alert,
+    Platform,
+    ActivityIndicator,
+    Keyboard,
+    BackHandler,
+    TextInput,
+    ToastAndroid,
+    Dimensions,
+    Image,
 } from 'react-native';
 
-import {WINDOW_SIZE} from '../../utils/scale';
-import {FONT_SIZE} from '../../utils/fontsize';
-import LoginBackground from 'images/LoginBackground.jpg';
-
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {signInAction} from '../../redux/action';
-import BottomBarComponent from '../bottomBar/BottomBarComponent';
-
-import faker from 'faker';
-import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
-import {orderAction, updateAction, addressAction} from '../../redux/action'
+import { WINDOW_SIZE } from '../../utils/scale';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
+import { orderAction, updateAction, addressAction } from '../../redux/action'
 import RNGooglePlaces from 'react-native-google-places';
+import { FlatList } from 'react-native-gesture-handler';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 //2020-01-04T10:14:57+07:00
-function cloneData(listorder){
-    const cloneData = [];
-    for (var i = 0; i < listorder.length; i += 1) {
-      cloneData.push({
-        type: 'NORMAL',
-        item: {
-          ID: listorder[i].ID,
-          name: listorder[i].name,
-          price: listorder[i].price,
-          count: listorder[i].count,
-        },
-      });
-    }
-    return cloneData
-}
 
-function estimateDeliveryTime(distance){
-    var d = new Date()
-    var hour = d.getHours()
-    var minute = d.getMinutes()
-    var second = d.getSeconds()
-    var estimatetime = 20 + parseInt(distance / 20);
-    if(minute + estimatetime >= 60){
-        hour = hour + 1
-        minute = (minute + estimatetime) % 60
-    }
-    else{
-        minute += estimatetime
-    }
-    return {hour: hour, minute: minute, second: second}
-}
-
-function listOrdersendRequest(listorder){
+function listOrdersendRequest(listorder) {
     var sendData = [];
-    for (var i = 0; i< listorder.length; i++){
-        sendData.push({
-            ItemId: listorder[i].ID,
-            amount: listorder[i].count,
-            price: listorder[i].price,
-        })
+    for (var i = 0; i < listorder.length; i++) {
+            sendData.push({
+                ItemId: listorder[i].ID,
+                amount: listorder[i].count,
+                price: listorder[i].price,
+            })
     }
     return sendData
 }
-
-function formatYYYYMMDD(){
+function formatYYYYMMDD() {
     var today = new Date()
     var dd = today.getDate();
     var mm = today.getMonth() + 1;
     var yyyy = today.getFullYear();
-    // if(noworlater === 'now'){
-        var hr = today.getHours();
-        var mi = today.getMinutes();
-        var se = today.getSeconds();
-    // }
-    // else{
-    //     var esti = estimateDeliveryTime(distance)
-    //     var hr = esti.hour
-    //     var mi = esti.minute
-    //     var se = esti.second
-    // }
+
+    var hr = today.getHours();
+    var mi = today.getMinutes();
+    var se = today.getSeconds();
+    
     if (dd < 10) {
         dd = '0' + dd;
     }
     if (mm < 10) {
         mm = '0' + mm;
     }
-    if (hr < 10){
+    if (hr < 10) {
         hr = '0' + hr;
     }
     if (mi < 10) {
@@ -112,71 +68,54 @@ function formatYYYYMMDD(){
     return yyyy + '-' + mm + '-' + dd + "T" + hr + ":" + mi + ":" + se + "+07:00";
 }
 
-class PaymentComponent extends Component {
+function formatYYYYMMDDSchedule(time){
+    return time.date + "T" + time.time + "00" + "+07:00"
+}
+class PaymentSchedule extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(cloneData(this.props.navigation.getParam("listorder"))),
-          listorder: this.props.navigation.getParam("listorder"),
-          address: this.props.navigation.getParam("address"),
-          account: this.props.navigation.getParam("account"),
-          restaurant: this.props.navigation.getParam("restaurant"),
-          distance: this.props.navigation.getParam("restaurant").distance.toFixed(2),
-          date: new Date(),
-          isLoading: false,
+            listorder: this.props.navigation.getParam("listorder"),
+            address: this.props.navigation.getParam("address"),
+            account: this.props.navigation.getParam("account"),
+            restaurant: this.props.navigation.getParam("restaurant"),
+            distance: this.props.navigation.getParam("restaurant").distance.toFixed(2),
+            isLoading: false,
         };
-    
-        this.layoutProvider = new LayoutProvider((i) => {
-          return this.state.list.getDataForIndex(i).type
-        }, (type, dim) => {
-          switch (type) {
-            case "NORMAL": 
-                dim.width = SCREEN_WIDTH;
-                dim.height = SCREEN_HEIGHT/12;
-              break;
-            default: 
-              dim.width = 1;
-              dim.height = 1;
-              break;
-          };
-        })
-      }
+    }
 
-    componentDidMount(){
-          console.log(this.state.listorder)
-      }
-    
-    rowRenderer = (type, data) => {
-        const {ID, name, price, count} = data.item;
-        return (
-            <InformationBar 
-                text1 = {name + ' x ' + count}
-                text2 = {price*count + ' VNĐ'}
-            />
-           
-        )
-      }
-    
+    componentDidMount() {
+        console.log(this.state.listorder)
+    }
+
+    listOrderSend = () => {
+        var ret = []
+        var tmp = this.state.listorder;
+        for(var i = 0 ; i< tmp.length; i++){
+            ret.push(
+                {
+                AccountId: this.state.account.ID,
+                created: formatYYYYMMDD(),
+                deadline: formatYYYYMMDDSchedule(tmp[i]),
+                address: this.state.address,
+                orderitems: listOrdersendRequest(tmp[i].listorder),
+                }
+            )
+        }
+        return ret;
+    }
+
     //2020-01-04T10:14:57+07:00
     CheckOut = (distance) => {
-        if(distance > 20){
+        if (distance > 20) {
             ToastAndroid.show("Xin lỗi. Bạn chỉ có thể đặt trong bán kính 20km", ToastAndroid.SHORT)
             return;
         }
         if (!this.state.isLoading) {
             this.setState({ isLoading: true });
-            var date = this.state.date;
             this.props
                 .orderAction(
-                    [
-                        {
-                            AccountId: this.state.account.ID,
-                            created: formatYYYYMMDD(),
-                            deadline: formatYYYYMMDD(),
-                            address: this.state.address,
-                            orderitems: listOrdersendRequest(this.state.listorder)    
-                        },
-                    ]              
+                    this.listOrderSend()
                 )
                 .then(() => {
                     this.setState({ isLoading: false });
@@ -227,29 +166,29 @@ class PaymentComponent extends Component {
             })
             .catch(error => console.log(error.message));
     }
-    render(){
-        return(
+    render() {
+        return (
             <View
-                style = {{
-                   flex: 1,
-                   backgroundColor: '#f2f2f2',
+                style={{
+                    flex: 1,
+                    backgroundColor: '#f2f2f2',
                 }}>
                 <HeaderBar />
 
                 <View
-                    style = {{
+                    style={{
                         flexDirection: 'row',
                     }}>
-                    <UserInfo 
-                        openSearchModal = {() => this.openSearchModal()}
-                        text1 = {this.state.account.name}
-                        text2 = {this.state.account.phone}
-                        text3 = {this.state.address}
-                        text4={this.state.distance + " km"} 
+                    <UserInfo
+                        openSearchModal={() => this.openSearchModal()}
+                        text1={this.state.account.name}
+                        text2={this.state.account.phone}
+                        text3={this.state.address}
+                        text4={this.state.distance + " km"}
                     />
-                
+
                     <TouchableOpacity
-                        style = {{
+                        style={{
                             marginRight: 20,
                             marginTop: 10,
                             flexDirection: 'column',
@@ -257,107 +196,133 @@ class PaymentComponent extends Component {
                             right: 0,
                         }}>
                         <Image
-                            style = {{
+                            style={{
                                 padding: 10,
-                                height: SCREEN_HEIGHT/10,
-                                width: SCREEN_HEIGHT/10,
+                                height: SCREEN_HEIGHT / 10,
+                                width: SCREEN_HEIGHT / 10,
                             }}
-                            source = {require('../../media/images/modify.png')} />
+                            source={require('../../media/images/modify.png')} />
                     </TouchableOpacity>
-                     
+
                 </View>
-                
-                <View 
-                    style = {{
+
+                <View
+                    style={{
                         marginTop: 10,
                         flexDirection: 'row',
                     }}>
-                    
-                    <TouchableOpacity>
-                        <Text
-                            style = {{
-                                backgroundColor: 'rgba(243, 79, 8, 0.8)',
-                                padding: 10,
-                                borderRadius: 10,
-                                marginLeft: 10,
-                            }}>Đặt lịch</Text>
-                    </TouchableOpacity>
 
                     <Text
-                        style = {{
+                        style={{
                             padding: 10,
-                        }}>Giao ngay - {estimateDeliveryTime(this.state.distance).hour}:{estimateDeliveryTime(this.state.distance).minute}, Hôm nay {this.state.date.getDate()}/{this.state.date.getMonth()+1}/{this.state.date.getFullYear()}</Text>
+                        }}>Danh sách lịch đặt</Text>
                     <TouchableOpacity
-                        style = {{
+                        style={{
                             position: 'absolute',
                             right: 0,
                             alignSelf: 'center',
                             //marginTop: SCREEN_WIDTH/20,
                             marginRight: 5,
                         }}>
-                    <Image
-                            style = {{
+                        <Image
+                            style={{
                                 padding: 10,
-                                height: SCREEN_HEIGHT/20,
-                                width: SCREEN_HEIGHT/20,
+                                height: SCREEN_HEIGHT / 20,
+                                width: SCREEN_HEIGHT / 20,
                                 marginRight: 10,
 
                             }}
-                            source = {require('../../media/images/modify.png')} />
+                            source={require('../../media/images/modify.png')} />
                     </TouchableOpacity>
                 </View>
 
                 <View
-                    style = {{
+                    style={{
                         margin: 10,
                         marginBottom: 20,
 
                     }}>
 
-                    <Storename 
-                        storeName = {this.state.restaurant.name}
-                        storeAddress = {this.state.restaurant.store_location.address}
+                    <Storename
+                        storeName={this.state.restaurant.name}
+                        storeAddress={this.state.restaurant.store_location.address}
 
                     />
                 </View>
-                
-                <RecyclerListView
-                    rowRenderer={this.rowRenderer}
-                    dataProvider={this.state.list}
-                    layoutProvider={this.layoutProvider}
-                />
 
-                <Total 
-                    CheckOut = {() => this.CheckOut(this.state.distance)}
-                    total = {this.props.navigation.getParam("totalitem") + " phần - " + this.props.navigation.getParam("totalprice") + "đ"}
+                <View style={{flex: 1}}>
+                    <FlatList
+                        listKey={(item, index) => 'D' + index.toString()}
+                        data={this.state.listorder}
+                        renderItem={({ item }) => (
+                            <ScheduleItem
+                                orderitem= {item}
+                            />
+                        )}
+                        keyExtractor={item => item.id}
+                    />
+                </View>
+
+                <Total
+                    CheckOut={() => this.CheckOut(this.state.distance)}
+                    total={this.props.navigation.getParam("totalitem") + " phần - " + this.props.navigation.getParam("totalprice") + "đ"}
                 />
-            </View>  
+            </View>
+        );
+    }
+}
+
+class OrderedBar extends Component {
+    render() {
+        return (
+            <View
+                style={{
+                    flexDirection: 'row-reverse',
+                    position: 'absolute',
+                    //width: '100%',
+                    //height: WINDOW_SIZE.HEIGHT/25 ,
+                    bottom: 0,
+                    backgroundColor: "#f2f2f2",
+                    borderRadius: 10,
+                }}>
+                <TouchableOpacity
+                    style={{
+                        // flex: 1, 
+                        // alignSelf: 'center', 
+                        // marginLeft: 10
+                    }}>
+                    <Text
+                        style={{
+                            padding: 10,
+                        }}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
+                </TouchableOpacity>
+            </View>
         );
     }
 }
 
 class HeaderBar extends Component {
     render() {
-        return(
+        return (
             <View
-                style = {{
-                   //flex: 0.1,
-                   alignItems: 'center',
-                   backgroundColor: '#f2f2f2',
+                style={{
+                    //flex: 0.1,
+                    alignItems: 'center',
+                    backgroundColor: '#f2f2f2',
                 }}>
                 <Text
-                    style = {{
+                    style={{
                         color: '#000',
                         alignSelf: 'center',
                         fontWeight: 'bold',
-                        fontSize: SCREEN_WIDTH/25,
+                        fontSize: SCREEN_WIDTH / 25,
                         flexDirection: 'column',
                         marginTop: 10,
                         marginBottom: 10,
-                       
+
                         //justifyContent: 'center',
                     }}>
-                        Thanh toán
+                    Thanh toán
                     </Text>
             </View>
         );
@@ -366,36 +331,36 @@ class HeaderBar extends Component {
 
 class UserInfo extends Component {
     render() {
-        return(
+        return (
             <View
-                style = {{
+                style={{
                     flexDirection: 'column',
-                    marginTop: SCREEN_HEIGHT/50,
-                    marginLeft: SCREEN_HEIGHT/50,
+                    marginTop: SCREEN_HEIGHT / 50,
+                    marginLeft: SCREEN_HEIGHT / 50,
                 }}>
                 <Text
-                    style = {{
-                        fontSize: SCREEN_HEIGHT/30,
+                    style={{
+                        fontSize: SCREEN_HEIGHT / 30,
                         fontWeight: 'bold',
                         marginBottom: 10,
                     }}>
                     {this.props.text1}</Text>
-                
+
                 <Text
-                    style = {styles.margin}>
-                {this.props.text2}</Text>
+                    style={styles.margin}>
+                    {this.props.text2}</Text>
                 <TouchableOpacity
-                    onPress = {this.props.openSearchModal}
+                    onPress={this.props.openSearchModal}
                 >
                     <Text
                         style={styles.margin}>
                         {this.props.text3}
                     </Text>
                 </TouchableOpacity>
-                
+
                 <Text
-                    style = {styles.margin}>
-                {this.props.text4}</Text>
+                    style={styles.margin}>
+                    {this.props.text4}</Text>
             </View>
         );
     }
@@ -403,9 +368,9 @@ class UserInfo extends Component {
 
 class Storename extends Component {
     render() {
-        return(
+        return (
             <View
-                style = {{
+                style={{
                     flexDirection: 'row',
                     borderRadius: 10,
                     borderWidth: 1,
@@ -422,15 +387,15 @@ class Storename extends Component {
                     elevation: 3,
                 }}>
                 <Text
-                    style = {{
+                    style={{
                         flex: 0.7,
                         padding: 15,
-                        fontSize: SCREEN_WIDTH/25,
+                        fontSize: SCREEN_WIDTH / 25,
                         fontWeight: 'bold',
                         textAlignVertical: 'center',
                     }}>{this.props.storeName}</Text>
                 <Text
-                    style = {{
+                    style={{
                         flex: 0.3,
                         alignSelf: 'flex-end',
                         padding: 15,
@@ -447,33 +412,33 @@ class Storename extends Component {
 
 class InformationBar extends Component {
     render() {
-        return(
+        return (
             <View
-                style = {{
+                style={{
                     flexDirection: 'row',
-                   // marginTop: SCREEN_HEIGHT*0.03,
+                    // marginTop: SCREEN_HEIGHT*0.03,
                     borderBottomWidth: 0.5,
                     borderTopWidth: 0.5,
                     borderColor: '#e1dedb',
                     backgroundColor: '#fff',
                 }}>
                 <Text
-                    style = {{
+                    style={{
                         flex: 0.8,
                         padding: 20,
-                        fontSize: SCREEN_HEIGHT/45,
+                        fontSize: SCREEN_HEIGHT / 45,
                     }}>
                     {this.props.text1}
                 </Text>
-              
+
                 <Text
-                    style = {{
+                    style={{
                         position: 'absolute',
                         right: 0,
                         padding: 20,
                         paddingRight: 10,
-                        fontSize: SCREEN_HEIGHT/45,
-                        
+                        fontSize: SCREEN_HEIGHT / 45,
+
                     }}>
                     {this.props.text2}
                 </Text>
@@ -485,35 +450,37 @@ class InformationBar extends Component {
 
 class Total extends Component {
     render() {
-        return(
-            <View 
-                style = {{
+        return (
+            <View
+                style={{
                     marginTop: 10,
                     flexDirection: 'row',
                     marginBottom: 10,
                 }}>
-                
-               
+
+
                 <Text
-                    style = {{
+                    style={{
                         //backgroundColor: 'rgba(243, 79, 8, 0.8)',
                         padding: 10,
                         borderRadius: 10,
                         marginLeft: 10,
                         fontWeight: 'bold',
-                        fontSize: SCREEN_HEIGHT/40,
+                        fontSize: SCREEN_HEIGHT / 40,
                     }}>Tổng cộng</Text>
-                
+
 
                 <Text
-                    style = {{
+                    style={{
                         padding: 10,
                         marginLeft: 20,
                         textAlignVertical: 'center',
+                        fontWeight: "bold",
+                        fontSize: 15,
                     }}>{this.props.total}</Text>
                 <TouchableOpacity
-                    onPress= {this.props.CheckOut}
-                    style = {{
+                    onPress={this.props.CheckOut}
+                    style={{
                         position: 'absolute',
                         right: 0,
                         //marginTop: SCREEN_WIDTH/20,
@@ -521,14 +488,14 @@ class Total extends Component {
                     }}>
 
                     <Text
-                        style = {{
+                        style={{
                             backgroundColor: 'rgba(243, 79, 8, 0.8)',
                             padding: 10,
                             borderRadius: 10,
                             marginLeft: 10,
-                        
+
                         }}>Đặt ngay</Text>
-                
+
                 </TouchableOpacity>
             </View>
         );
@@ -537,13 +504,13 @@ class Total extends Component {
 
 const styles = StyleSheet.create({
     margin: {
-        marginTop: SCREEN_HEIGHT/150,
-        marginBottom: SCREEN_HEIGHT/150,
+        marginTop: SCREEN_HEIGHT / 150,
+        marginBottom: SCREEN_HEIGHT / 150,
     },
     bodyText: {
-        marginLeft: SCREEN_HEIGHT*0.005,
+        marginLeft: SCREEN_HEIGHT * 0.005,
         textAlignVertical: 'center',
-        fontSize: SCREEN_HEIGHT/50,
+        fontSize: SCREEN_HEIGHT / 50,
     },
     button: {
         padding: 10,
@@ -554,7 +521,64 @@ const styles = StyleSheet.create({
     notButton: {
         padding: 15,
     },
-  });
+});
+
+function ScheduleItem({orderitem}) {
+    return (
+        <View style={{ flexDirection: 'column', flex: 1, backgroundColor: "#FFFFFF", borderRadius: 12, margin: 10, padding: 5}}>
+            <View>
+                <Text
+                    style={{
+                        margin: 5,
+                        fontFamily: 'Roboto',
+                        fontStyle: 'normal',
+                        fontWeight: 'bold',
+                        fontSize: 14,
+                        lineHeight: 14,
+                        color: '#000000',
+                    }}>
+                    Ngày đặt: {orderitem.time} giờ, Ngày {orderitem.date}
+                </Text>
+            </View>
+            <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1 }} />
+            <View>
+                <FlatList
+                    listKey={(item, index) => 'D' + index.toString()}
+                    data={orderitem.listorder}
+                    renderItem={({ item }) => (
+                        <FoodItem
+                            fooditem={item}
+                        />
+                    )}
+                    keyExtractor={item => item.id}
+                />
+            </View>
+            <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1 }} />
+            <View style = {{flexDirection: "row"}}>
+                <Text style = {{flex: 0.8}}>Tổng:</Text>
+                <Text style={{ flex: 0.2 , fontSize: 15, fontWeight: "bold"}}>{TotalCost(orderitem.listorder)}Đ</Text>
+            </View>
+        </View>
+    );
+}
+
+function FoodItem({fooditem}){
+    return(
+        <View style = {{flexDirection: "row", margin: 10}}>
+            <Text style = {{flex: 0.7}}>{fooditem.name}</Text>
+            <Text style={{ flex: 0.1 }}>x{fooditem.count}</Text>
+            <Text style={{ flex: 0.2 }}>{fooditem.price * fooditem.count}Đ</Text>
+        </View>
+    );
+}
+
+function TotalCost(listorder){
+    var ret = 0
+    for(var i = 0; i< listorder.length; i++){
+        ret += listorder[i].price * listorder[i].count
+    }
+    return ret;
+}
 
 function mapStateToProps(state) {
     return {
@@ -572,4 +596,4 @@ function dispatchToProps(dispatch) {
     }, dispatch);
 }
 
-export default connect(mapStateToProps, dispatchToProps)(PaymentComponent);
+export default connect(mapStateToProps, dispatchToProps)(PaymentSchedule)

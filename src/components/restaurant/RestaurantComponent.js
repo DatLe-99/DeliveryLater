@@ -175,8 +175,9 @@ export default class RestaurantComponent extends Component{
                           account: this.state.account,
                           totalprice: this.state.totalprice,
                           totalitem: this.state.totalitem,
-                          restaurant: this.state.listData,
-                        })}
+                          listData: this.state.listData,
+                          restaurant: this.props.navigation.getParam("restaurant"),
+          })}
                         goToPayment = {this.goToPayment}
                     />
                 }

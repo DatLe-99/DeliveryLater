@@ -38,33 +38,93 @@ export default class CalendarComponent extends Component {
       isModalVisible: false,
       address: this.props.navigation.getParam('address'),
       account: this.props.navigation.getParam('account'),
-      restaurant: this.props.navigation.getParam('restaurant'),
+      listData: this.props.navigation.getParam('listData'),
       listorder: [],
+      listschedule: [],
+      tmpprice: 0,
+      tmpitem: 0,
       totalitem: 0,
       totalprice: 0,
     };
-    console.log(this.state.restaurant)
+    console.log(this.state.listData)
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
     var selected = {date: selectedDay, time: this.state.schedual.time};
-
-    this.setState({schedual: selected});
+    this.setState({
+      schedual: selected,
+      listorder: [],
+      tmpitem: 0,
+      tmpprice: 0,
+    });
   };
+
+  addlistordertoSchedule (schedule, listorder){
+    var list = this.state.listschedule;
+    list.push({
+      date: schedule.date,
+      time: schedule.time,
+      listorder: listorder,
+    })
+    this.setState({
+      listschedule: list
+    })
+    console.log(list)
+  }
+
+  checkSchedule = (date, time) => {
+    var tmp = this.state.listschedule
+    for(var i =0; i< tmp.length; i++){
+      if(tmp[i].date == date && tmp[i].time == time){
+        return false;
+      }
+    }
+    return true;
+  }
 
   orders() {
     if (this.state.schedual.time) {
+      if(this.state.listorder.length == 0){
+        ToastAndroid.show("Bạn chưa chọn món", ToastAndroid.SHORT);
+        return;
+      }
+      if (!this.checkSchedule(this.state.schedual.date, this.state.schedual.time)){
+        ToastAndroid.show("Bạn đã lên lịch vào khung giờ này rồi. Vui lòng chọn giờ khác", ToastAndroid.SHORT);
+        return;
+      }
       console.log(this.state.schedual);
-      ToastAndroid.show(this.state.schedual, ToastAndroid.LONG);
-      this.setState({isModalVisible: true});
+      console.log(this.state.listorder);
+      this.addlistordertoSchedule(this.state.schedual,this.state.listorder);
+      this.setState({
+        listorder: [],
+        tmpitem: 0,
+        tmpprice: 0,
+      })
+      ToastAndroid.show("Đã lên lịch vào lúc "+this.state.schedual.time + " giờ ngày " + this.state.schedual.date, ToastAndroid.LONG);
+      this.state.schedual.time = null
     }
+    else
+      ToastAndroid.show("Bạn chưa chọn giờ", ToastAndroid.SHORT);
   }
   changetime(time) {
     console.log(moment(time, 'HH:mm', true));
-    if (moment(time, 'HH:mm', true) != null) {
+
+    const t = moment()
+      .add(2, 'minute')
+      .format("HH:mm");
+    const d = moment()
+      .add(2, 'day')
+      .format("YYYY-MM-DD");
+    const cur = moment(t, 'HH:mm', true)
+    
+    if ((moment(time, 'HH:mm', true) != null && moment(time, 'HH:mm', true) > cur) || this.state.schedual.date.substr(8,2) > moment().get('date')) {
       var selected = {date: this.state.schedual.date, time: time};
       this.setState({schedual: selected});
-      ToastAndroid.show(time, ToastAndroid.LONG);
+      ToastAndroid.show(time, ToastAndroid.SHORT);
+    }
+    else{
+      ToastAndroid.show("Thời gian này đã trôi qua", ToastAndroid.SHORT)
+      this.state.schedual.time = null
     }
   }
 
@@ -78,6 +138,8 @@ export default class CalendarComponent extends Component {
                 this.setState({
                   totalprice: item.price + this.state.totalprice,
                   totalitem: 1 + this.state.totalitem,
+                  tmpprice: item.price + this.state.totalprice,
+                  tmpitem: 1 + this.state.totalitem,
                   listorder: tmp,
                 });
                 return;
@@ -87,6 +149,8 @@ export default class CalendarComponent extends Component {
         this.setState({
           totalprice: item.price + this.state.totalprice,
           totalitem: 1 + this.state.totalitem,
+          tmpprice: item.price + this.state.totalprice,
+          tmpitem: 1 + this.state.totalitem,
           listorder: tmp,
         });
       }
@@ -106,6 +170,8 @@ export default class CalendarComponent extends Component {
             this.setState({
               totalprice: - item.price + this.state.totalprice,
               totalitem: - 1 + this.state.totalitem,
+              tmpprice: - item.price + this.state.totalprice,
+              tmpitem: - 1 + this.state.totalitem,
               listorder: tmp,
             });
             return;
@@ -113,12 +179,48 @@ export default class CalendarComponent extends Component {
         }
       }
 
+  CompleteSchedule (){
+    if(this.state.listschedule.length == 0){
+      ToastAndroid.show("Bạn chưa đặt lịch bất kỳ đơn nào", ToastAndroid.SHORT);
+    }
+    else{
+      this.props.navigation.navigate("PaymentSchedule",{
+        listorder: this.state.listschedule,
+        address: this.state.address,
+        account: this.state.account,
+        totalprice: this.state.totalprice,
+        totalitem: this.state.totalitem,
+        restaurant: this.props.navigation.getParam("restaurant"),
+        type: "schedule",
+      })
+    }
+  }
+
   render() {
     return (
-      <View>
+      <View
+        style = {{flex: 1}}
+      >
         <HeaderCalendar
           onBack={() => this.props.navigation.navigate('Restaurant')}
         />
+        <View
+          style={{
+            backgroundColor: '#F34F',
+            borderRadius: 21,
+            margin: 5,
+            alignSelf: "flex-end",
+            justifyContent: "center"
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => this.CompleteSchedule()}
+          >
+            <Text
+              style = {styles.text, {color: "#FFFFFF", alignSelf:"center", fontWeight: "bold", padding: 5}}
+            >Hoàn tất đăt lịch</Text>
+          </TouchableOpacity>
+        </View>
         <Calendar
           // Initially visible month. Default = Date()
           //current={'2012-03-01'}
@@ -163,13 +265,13 @@ export default class CalendarComponent extends Component {
           markedDates={this.state.markdate}
         />
         <OrderList
-          onPress={() => this.orders()}
+          PutSchedule={() => this.orders()}
           date={this.state.schedual.date}
           onChangeTime={time => this.changetime(time)}
         />
-
         <FlatList
-          data={this.state.restaurant.item.Categories}
+          style = {{marginBottom: WINDOW_SIZE.HEIGHT/25}}
+          data={this.state.listData.item.Categories}
           listKey={(item, index) => 'D' + index.toString()}
           renderItem={({item}) => (
             <CategoryItem
@@ -182,6 +284,38 @@ export default class CalendarComponent extends Component {
           )}
           keyExtractor={item => item.id}
         />
+        <OrderedBar
+          totalitem={this.state.tmpitem}
+          totalprice={this.state.tmpprice}
+        />
+      </View>
+    );
+  }
+}
+
+class OrderedBar extends Component {
+  render() {
+    return (
+      <View
+        style={{
+          flexDirection: 'row-reverse',
+          position: 'absolute',
+          height: WINDOW_SIZE.HEIGHT/25 ,
+          bottom: 0,
+          backgroundColor: "#f2f2f2",
+          borderRadius: 10,
+        }}>
+        <TouchableOpacity
+          style={{
+            // flex: 1, 
+            // alignSelf: 'center', 
+            // marginLeft: 10
+          }}>
+          <Text
+            style={{
+              padding: 10,
+            }}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -207,6 +341,7 @@ class HeaderCalendar extends Component {
         </TouchableOpacity>
         <View
           style={{
+            height: WINDOW_SIZE.HEIGHT/20,
             flex: 0.8,
             borderRadius: 20,
             borderWidth: 1,
@@ -225,7 +360,7 @@ class HeaderCalendar extends Component {
               textAlign: 'center',
               color: '#000000',
             }}>
-            Schedualer
+            Đặt lịch
           </Text>
         </View>
       </View>
@@ -294,7 +429,7 @@ class OrderList extends Component {
                 (styles.text,
                 {
                   color: '#000000',
-                  fontWeight: 'bold',
+                  fontWeight: 'normal',
                   width: 100,
                   height: 30,
                   fontSize: 16,
@@ -302,7 +437,7 @@ class OrderList extends Component {
                   textAlign: 'center',
                 })
               }>
-              Pick time
+              Chọn giờ
             </Text>
           </TouchableOpacity>
           <TimePicker
@@ -314,7 +449,7 @@ class OrderList extends Component {
           />
         </View>
         <TouchableOpacity
-          onPress={this.props.onPress}
+          onPress={this.props.PutSchedule}
           style={{
             width: 208,
             heigth: 42,
@@ -335,7 +470,7 @@ class OrderList extends Component {
                 textAlign: 'center',
               })
             }>
-            Order
+            Đặt hôm nay
           </Text>
         </TouchableOpacity>
       </View>
