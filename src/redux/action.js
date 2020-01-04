@@ -5,6 +5,7 @@ import addressAction from './address/action';
 import updateAction from './update/action';
 import recommendAction from './recommend/action';
 import newestAction from './neweststore/action';
+import orderAction from './addorder/action'
 
 export {signInAction};
 export {signUpAction};
@@ -18,3 +19,5 @@ export {updateAction};
 export {recommendAction};
 
 export {newestAction};
+
+export {orderAction};

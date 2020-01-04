@@ -28,36 +28,58 @@ import BottomBarComponent from '../bottomBar/BottomBarComponent';
 
 import faker from 'faker';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+import {orderAction} from '../../redux/action'
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
-export default class PaymentComponent extends Component {
+function cloneData(listorder){
+    const cloneData = [];
+    for (var i = 0; i < listorder.length; i += 1) {
+      cloneData.push({
+        type: 'NORMAL',
+        item: {
+          ID: listorder[i].ID,
+          name: listorder[i].name,
+          price: listorder[i].price,
+          count: listorder[i].count,
+        },
+      });
+    }
+    return cloneData
+}
+
+function listOrdersendRequest(listorder){
+    var sendData = [];
+    for (var i = 0; i< listorder.length; i++){
+        sendData.push({
+            ItemId: listorder[i].ID,
+            amount: listorder[i].count,
+            price: listorder[i].price,
+        })
+    }
+    return sendData
+}
+
+
+class PaymentComponent extends Component {
     constructor(props) {
         super(props);
-    
-        const fakeData = [];
-        for(i = 0; i < 10; i+= 1) {
-          fakeData.push({
-            type: 'NORMAL',
-            item: {
-              id: i,
-              nameProduct: faker.commerce.productName(),
-              size: 'L',
-              numberProduct: faker.random.number(10),
-              price: faker.commerce.price(),
-            },
-          });
-        }
         this.state = {
-          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
+          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(cloneData(this.props.navigation.getParam("listorder"))),
+          listorder: this.props.navigation.getParam("listorder"),
+          address: this.props.navigation.getParam("address"),
+          account: this.props.navigation.getParam("account"),
+          restaurant: this.props.navigation.getParam("restaurant"),
+          date: new Date(),
+          isLoading: false,
         };
     
         this.layoutProvider = new LayoutProvider((i) => {
-          return this.state.list.getDataForIndex(i).type;
+          return this.state.list.getDataForIndex(i).type
         }, (type, dim) => {
           switch (type) {
-            case 'NORMAL': 
+            case "NORMAL": 
                 dim.width = SCREEN_WIDTH;
                 dim.height = SCREEN_HEIGHT/12;
               break;
@@ -68,17 +90,53 @@ export default class PaymentComponent extends Component {
           };
         })
       }
+
+    componentDidMount(){
+          console.log(this.state.listorder)
+      }
     
-      rowRenderer = (type, data) => {
-        const {nameProduct, size, numberProduct, price} = data.item;
+    rowRenderer = (type, data) => {
+        const {ID, name, price, count} = data.item;
         return (
             <InformationBar 
-                text1 = {nameProduct + ' (' + size + ')' + ' x' + numberProduct}
-                text2 = {price + ' VNĐ'}
+                text1 = {name + ' x ' + count}
+                text2 = {price*count + ' VNĐ'}
             />
            
         )
       }
+    
+
+    CheckOut = () => {
+        if (!this.state.isLoading) {
+            this.setState({ isLoading: true });
+            this.props
+                .orderAction(
+                    [
+                        {
+                            AccountId: this.state.account.ID,
+                            created: "",
+                            deadline: "",
+                            address: this.state.address,
+                            orderitems: listOrdersendRequest(this.state.listorder)    
+                        },
+                    ]              
+                )
+                .then(() => {
+                    this.setState({ isLoading: false });
+                    if (this.props.orderData.success) {
+                        this.setState({
+                            isLoading: false,
+                        });
+                        console.log(this.props.orderData.dataRes);
+                        this.props.navigation.navigate("UpcomingOrder")
+                    } else {
+                        this.setState({ isLoading: false });
+                        this.alertMessage(this.props.orderData.errorMessage);
+                    }
+                });
+        }
+    }
     render(){
         return(
             <View
@@ -93,9 +151,9 @@ export default class PaymentComponent extends Component {
                         flexDirection: 'row',
                     }}>
                     <UserInfo 
-                        text1 = 'Dat Le'
-                        text2 = '0356222105'
-                        text3 = '227 Nguyen Van Cu, P.4, Q.5, TP.HCM'
+                        text1 = {this.state.account.name}
+                        text2 = {this.state.account.phone}
+                        text3 = {this.state.address}
                         text4 = '100.000 km'
                     />
                 
@@ -137,7 +195,7 @@ export default class PaymentComponent extends Component {
                     <Text
                         style = {{
                             padding: 10,
-                        }}>Giao ngay - 19:20 Hôm nay 08/12/2019</Text>
+                        }}>Giao ngay - 30' nữa, Hôm nay {this.state.date.getDate()}/{this.state.date.getMonth()+1}/{this.state.date.getFullYear()}</Text>
                     <TouchableOpacity
                         style = {{
                             position: 'absolute',
@@ -166,8 +224,8 @@ export default class PaymentComponent extends Component {
                     }}>
 
                     <Storename 
-                        storeName = 'Phuc Long Coffee & Tea'
-                        storeAddress = '29 Ngo Duc Ke, Q.1, TP.HCM'
+                        storeName = {this.state.restaurant.name}
+                        storeAddress = {this.state.restaurant.store_location.address}
 
                     />
                 </View>
@@ -179,7 +237,8 @@ export default class PaymentComponent extends Component {
                 />
 
                 <Total 
-                    text = '4 phần - 215.000 VNĐ'
+                    CheckOut = {this.CheckOut}
+                    total = {this.props.navigation.getParam("totalitem") + " phần - " + this.props.navigation.getParam("totalprice") + "đ"}
                 />
             </View>  
         );
@@ -355,8 +414,9 @@ class Total extends Component {
                         padding: 10,
                         marginLeft: 20,
                         textAlignVertical: 'center',
-                    }}>{this.props.text}</Text>
+                    }}>{this.props.total}</Text>
                 <TouchableOpacity
+                    onPress= {this.props.CheckOut}
                     style = {{
                         position: 'absolute',
                         right: 0,
@@ -399,3 +459,17 @@ const styles = StyleSheet.create({
         padding: 15,
     },
   });
+
+function mapStateToProps(state) {
+    return {
+        orderData: state.OrderReducer,
+    };
+}
+
+function dispatchToProps(dispatch) {
+    return bindActionCreators({
+        orderAction,
+    }, dispatch);
+}
+
+export default connect(mapStateToProps, dispatchToProps)(PaymentComponent);
