@@ -28,11 +28,12 @@ import BottomBarComponent from '../bottomBar/BottomBarComponent';
 
 import faker from 'faker';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
-import {orderAction} from '../../redux/action'
+import {orderAction, updateAction, addressAction} from '../../redux/action'
+import RNGooglePlaces from 'react-native-google-places';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-
+//2020-01-04T10:14:57+07:00
 function cloneData(listorder){
     const cloneData = [];
     for (var i = 0; i < listorder.length; i += 1) {
@@ -49,6 +50,19 @@ function cloneData(listorder){
     return cloneData
 }
 
+function estimateDeliveryTime(distance){
+    var d = new Date()
+    var hour = d.getHours()
+    var minute = d.getMinutes()
+    var second = d.getSeconds()
+    var estimatetime = parseInt(distance / 30);
+    if(minute + estimatetime >= 60){
+        hour = hour + 1
+        minute = (minute + estimatetime) % 60
+    }
+    return {hour: hour, minute: minute, second: second}
+}
+
 function listOrdersendRequest(listorder){
     var sendData = [];
     for (var i = 0; i< listorder.length; i++){
@@ -61,6 +75,39 @@ function listOrdersendRequest(listorder){
     return sendData
 }
 
+function formatYYYYMMDD(){
+    var today = new Date()
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1;
+    var yyyy = today.getFullYear();
+    // if(noworlater === 'now'){
+        var hr = today.getHours();
+        var mi = today.getMinutes();
+        var se = today.getSeconds();
+    // }
+    // else{
+    //     var esti = estimateDeliveryTime(distance)
+    //     var hr = esti.hour
+    //     var mi = esti.minute
+    //     var se = esti.second
+    // }
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+    if (hr < 10){
+        hr = '0' + hr;
+    }
+    if (mi < 10) {
+        mi = '0' + mi
+    }
+    if (se < 10) {
+        se = '0' + se
+    }
+    return yyyy + '-' + mm + '-' + dd + "T" + hr + ":" + mi + ":" + se + "+07:00";
+}
 
 class PaymentComponent extends Component {
     constructor(props) {
@@ -71,6 +118,7 @@ class PaymentComponent extends Component {
           address: this.props.navigation.getParam("address"),
           account: this.props.navigation.getParam("account"),
           restaurant: this.props.navigation.getParam("restaurant"),
+          distance: this.props.navigation.getParam("restaurant").distance,
           date: new Date(),
           isLoading: false,
         };
@@ -106,17 +154,22 @@ class PaymentComponent extends Component {
         )
       }
     
-
-    CheckOut = () => {
+    //2020-01-04T10:14:57+07:00
+    CheckOut = (distance) => {
+        if(distance > 20){
+            ToastAndroid.show("Xin lỗi. Bạn chỉ có thể đặt trong bán kính 20km", ToastAndroid.SHORT)
+            return;
+        }
         if (!this.state.isLoading) {
             this.setState({ isLoading: true });
+            var date = this.state.date;
             this.props
                 .orderAction(
                     [
                         {
                             AccountId: this.state.account.ID,
-                            created: "",
-                            deadline: "",
+                            created: formatYYYYMMDD(),
+                            deadline: formatYYYYMMDD(),
                             address: this.state.address,
                             orderitems: listOrdersendRequest(this.state.listorder)    
                         },
@@ -137,6 +190,40 @@ class PaymentComponent extends Component {
                 });
         }
     }
+
+    openSearchModal() {
+        RNGooglePlaces.openAutocompleteModal()
+            .then(place => {
+                this.setState({
+                    address: place.address,
+                })
+                if (!this.state.isLoading) {
+                    this.setState({ isLoading: true });
+                    console.log(place);
+                    this.props
+                        .updateAction({
+                            ID: this.state.account.ID,
+                            account_location: {
+                                account_id: this.state.account.ID,
+                                address: this.state.address,
+                                lat: place.location.latitude,
+                                lng: place.location.longitude,
+                            },
+                        })
+                        .then(() => {
+                            this.setState({ isLoading: false });
+                            if (this.props.updatedData.success) {
+                                this.setState({ isLoading: false });
+                                console.log(this.props.updatedData.dataRes);
+                            } else {
+                                this.setState({ isLoading: false });
+                                this.alertMessage(this.props.updatedData.errorMessage);
+                            }
+                        });
+                }
+            })
+            .catch(error => console.log(error.message));
+    }
     render(){
         return(
             <View
@@ -151,10 +238,11 @@ class PaymentComponent extends Component {
                         flexDirection: 'row',
                     }}>
                     <UserInfo 
+                        openSearchModal = {() => this.openSearchModal()}
                         text1 = {this.state.account.name}
                         text2 = {this.state.account.phone}
                         text3 = {this.state.address}
-                        text4 = '100.000 km'
+                        text4={this.state.distance + " km"} 
                     />
                 
                     <TouchableOpacity
@@ -195,7 +283,7 @@ class PaymentComponent extends Component {
                     <Text
                         style = {{
                             padding: 10,
-                        }}>Giao ngay - 30' nữa, Hôm nay {this.state.date.getDate()}/{this.state.date.getMonth()+1}/{this.state.date.getFullYear()}</Text>
+                        }}>Giao ngay - {estimateDeliveryTime(this.state.distance).hour}:{estimateDeliveryTime(this.state.distance).minute}, Hôm nay {this.state.date.getDate()}/{this.state.date.getMonth()+1}/{this.state.date.getFullYear()}</Text>
                     <TouchableOpacity
                         style = {{
                             position: 'absolute',
@@ -237,7 +325,7 @@ class PaymentComponent extends Component {
                 />
 
                 <Total 
-                    CheckOut = {this.CheckOut}
+                    CheckOut = {() => this.CheckOut(this.state.distance)}
                     total = {this.props.navigation.getParam("totalitem") + " phần - " + this.props.navigation.getParam("totalprice") + "đ"}
                 />
             </View>  
@@ -293,10 +381,15 @@ class UserInfo extends Component {
                 <Text
                     style = {styles.margin}>
                 {this.props.text2}</Text>
+                <TouchableOpacity
+                    onPress = {this.props.openSearchModal}
+                >
+                    <Text
+                        style={styles.margin}>
+                        {this.props.text3}
+                    </Text>
+                </TouchableOpacity>
                 
-                <Text
-                    style = {styles.margin}>
-                {this.props.text3}</Text>
                 <Text
                     style = {styles.margin}>
                 {this.props.text4}</Text>
@@ -463,12 +556,16 @@ const styles = StyleSheet.create({
 function mapStateToProps(state) {
     return {
         orderData: state.OrderReducer,
+        accountData: state.UpdateReducer,
+        addressData: state.AddressReducer,
     };
 }
 
 function dispatchToProps(dispatch) {
     return bindActionCreators({
         orderAction,
+        updateAction,
+        addressAction,
     }, dispatch);
 }
 

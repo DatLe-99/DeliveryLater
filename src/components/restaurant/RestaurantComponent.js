@@ -153,7 +153,14 @@ export default class RestaurantComponent extends Component{
                         count = {this.state.listorder}
                         totalprice = {this.state.totalprice}
                         totalitem = {this.state.totalitem}
-                        Setschedule = {() => this.props.navigation.navigate("Calendar")}
+                        Setschedule = {() => this.props.navigation.navigate("Calendar",{
+                          listorder: this.state.listorder,
+                          address: this.state.address,
+                          account: this.state.account,
+                          totalprice: this.state.totalprice,
+                          totalitem: this.state.totalitem,
+                          restaurant: this.props.navigation.getParam("restaurant")
+                        })}
                         goToPayment = {this.goToPayment}
                     />
                 }
