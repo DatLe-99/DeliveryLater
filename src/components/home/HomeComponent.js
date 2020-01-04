@@ -67,7 +67,6 @@ import RNGooglePlaces from 'react-native-google-places';
 class HomeComponent extends Component {
   constructor(props) {
     super(props);
-    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.state = {
       searchQuery: '',
       isLoading: false,
@@ -82,21 +81,6 @@ class HomeComponent extends Component {
       tabindex: 0, //[Goi y, Gan toi, Vua dat, Moi]
     };
     //this.index = 0
-  }
-  componentWillMount() {
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
-  }
-  componentWillUnmount() {
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
-  }
-  handleBackButtonClick() {
-    this.exitApp();
   }
 
   async componentDidMount() {
