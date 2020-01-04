@@ -13,6 +13,20 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import {orderAction} from '../../redux/action';
 
+
+function listOrdersendRequest(listorder) {
+  var sendData = [];
+  for (var i = 0; i < listorder.length; i++) {
+    if(listorder[i].isSelect){
+    sendData.push({
+      ItemId: listorder[i].ID,
+      amount: listorder[i].count,
+      price: listorder[i].price,
+    });}
+  }
+  return sendData;
+}
+
 class SchedualerComponent extends Component {
   constructor(props) {
     super(props);
@@ -22,38 +36,82 @@ class SchedualerComponent extends Component {
       orderlist: this.props.navigation.getParam('listorder'),
       address: this.props.navigation.getParam('address'),
       account: this.props.navigation.getParam('account'),
-
+      restaurant: this.props.navigation.getParam('restaurant'),
       currentFoodItem: {},
+      tmporderlist: [],
     };
     console.log(this.state.orderlist);
     this.state.orderlist.forEach(function(element) {
       element.datetime = moment();
+      element.isSelect = false;
+      element.selectedClass = styles.list;
     });
     console.log(this.state.orderlist);
   }
-  showDatePicker = fooditem => {
-    console.log(fooditem);
-    this.setState({isDatePickerVisible: true, currentFoodItem: fooditem});
+  showDatePicker = () => {
+    this.setState({isDatePickerVisible: true});
   };
   hideDatePicker() {
     this.setState({isDatePickerVisible: false});
   }
 
   handleConfirm(datetime) {
-    console.log('A time has been picked: ', datetime);
-    var tmp = this.state.orderlist;
-    console.log(this.state.currentFoodItem);
-    for (var i = 0; i < tmp.length; i++) {
-      if (tmp[i].name == this.state.currentFoodItem.name) {
-        tmp[i].datetime = moment(datetime);
-        console.log(tmp[i].datetime);
-        this.hideDatePicker();
-        this.setState({orderlist: tmp});
-        return;
-      }
-    }
+    this.CheckOut(this.state.restaurant.distance,datetime)
+    this.hideDatePicker;
   }
-
+  CheckOut = (distance,datetime) => {
+    if (distance > 20) {
+      ToastAndroid.show(
+        'Xin lỗi. Bạn chỉ có thể đặt trong bán kính 20km',
+        ToastAndroid.SHORT,
+      );
+      return;
+    }
+    if (!this.state.isLoading) {
+      this.setState({isLoading: true});
+      var date = this.state.date;
+      this.props
+        .orderAction([
+          {
+            AccountId: this.state.account.ID,
+            created: moment().format(),
+            deadline: moment(datetime).format(),
+            address: this.state.address,
+            orderitems: listOrdersendRequest(this.state.orderlist),
+          },
+        ])
+        .then(() => {
+          this.setState({isLoading: false});
+          if (this.props.orderData.success) {
+            this.setState({
+              isLoading: false,
+            });
+            console.log(this.props.orderData.dataRes);
+            this.props.navigation.navigate('UpcomingOrder');
+          } else {
+            this.setState({isLoading: false});
+            this.alertMessage(this.props.orderData.errorMessage);
+          }
+        });
+    }
+  };
+  selectItem = item => {
+    item.isSelect = !item.isSelect;
+    item.selectedClass = item.isSelect ? styles.selected : styles.list;
+    // const index = this.state.orderlist.findIndex(ID => item.ID === ID);
+    var tmp = this.state.orderlist;
+    // console.log(index)
+    for (var i = 0; i < tmp.length; i++) {
+      if (item.ID === tmp[i].ID) {
+        console.log(item.ID);
+        tmp[i] = item;
+        this.setState({
+          orderlist: tmp,
+        });
+      }
+      console.log(this.state.orderlist);
+    }
+  };
   render() {
     return (
       <View>
@@ -61,10 +119,38 @@ class SchedualerComponent extends Component {
         <FlatList
           listKey={(item, index) => 'D' + index.toString()}
           data={this.state.orderlist}
-          renderItem={({item}) => <FoodItem fooditem={item} />}
+          renderItem={({item}) => (
+            <FoodItem
+              fooditem={item}
+              onPressItem={() => this.selectItem(item)}
+            />
+          )}
           keyExtractor={item => item.id}
           height={500}
         />
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: 'rgba(243,79,8,0.8)',
+            borderRadius: 10,
+            alignSelf: 'stretch',
+            justifyContent: 'center',
+            height: WINDOW_SIZE.HEIGHT / 20,
+          }}
+          onPress={this.showDatePicker()}>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              fontWeight: 'bold',
+              fontSize: 14,
+              lineHeight: 14,
+              color: '#FFFFFF',
+              textAlign: 'center',
+            }}>
+            Lên lịch
+          </Text>
+        </TouchableOpacity>
 
         <DateTimePickerModal
           isVisible={this.state.isDatePickerVisible}
@@ -72,32 +158,6 @@ class SchedualerComponent extends Component {
           onConfirm={datetime => this.handleConfirm(datetime)}
           onCancel={() => this.hideDatePicker()}
         />
-
-        <View>
-          <TouchableOpacity
-            onPress={}
-            style={{
-              backgroundColor: '#2D87E2',
-              borderRadius: 10,
-              flex: 0.5,
-              alignSelf: 'stretch',
-              justifyContent: 'center',
-              marginRight: 10,
-            }}>
-            <Text
-              style={{
-                fontFamily: 'Roboto',
-                fontStyle: 'normal',
-                fontWeight: 'bold',
-                fontSize: 14,
-                lineHeight: 14,
-                color: '#FFFFFF',
-                textAlign: 'center',
-              }}>
-              Lên lịch
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   }
@@ -126,11 +186,81 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center',
   },
+  container: {
+    flex: 1,
+    backgroundColor: '#192338',
+    paddingVertical: 50,
+    position: 'relative',
+  },
+
+  title: {
+    fontSize: 20,
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+
+  list: {
+    paddingVertical: 5,
+    margin: 3,
+    flexDirection: 'row',
+    backgroundColor: '#192338',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    zIndex: -1,
+  },
+
+  lightText: {
+    color: '#f7f7f7',
+    width: 200,
+    paddingLeft: 15,
+    fontSize: 12,
+  },
+
+  line: {
+    height: 0.5,
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+
+  icon: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    left: 290,
+    zIndex: 1,
+  },
+
+  numberBox: {
+    position: 'absolute',
+    bottom: 75,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    left: 330,
+    zIndex: 3,
+    backgroundColor: '#e3e3e3',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  number: {fontSize: 14, color: '#000'},
+
+  selected: {backgroundColor: '#FA7B5F'},
 });
 
-function FoodItem({fooditem}) {
+function FoodItem({fooditem, onPressItem}) {
   return (
-    <View>
+    <TouchableOpacity
+      onPress={onPressItem}
+      style={[styles.list, fooditem.selectedClass]}>
       <View
         style={{
           flexDirection: 'row',
@@ -218,7 +348,7 @@ function FoodItem({fooditem}) {
           marginTop: 5,
         }}
       />
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -318,5 +448,7 @@ function dispatchToProps(dispatch) {
     dispatch,
   );
 }
+
+
 
 export default connect(mapStateToProps, dispatchToProps)(SchedualerComponent);

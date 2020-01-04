@@ -118,7 +118,7 @@ class PaymentComponent extends Component {
           address: this.props.navigation.getParam("address"),
           account: this.props.navigation.getParam("account"),
           restaurant: this.props.navigation.getParam("restaurant"),
-          distance: this.props.navigation.getParam("restaurant").distance,
+          distance: this.props.navigation.getParam("restaurant").distance.toFixed(2),
           date: new Date(),
           isLoading: false,
         };

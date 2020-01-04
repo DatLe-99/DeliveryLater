@@ -7,7 +7,6 @@ import {
   Text,
   StyleSheet,
   Image,
-  Icon,
   ToastAndroid,
   CheckBox,
 } from 'react-native';
@@ -37,7 +36,14 @@ export default class CalendarComponent extends Component {
       schedual: {date: today},
       orderlist: this.props.navigation.getParam('listorder'),
       isModalVisible: false,
+      address: this.props.navigation.getParam('address'),
+      account: this.props.navigation.getParam('account'),
+      restaurant: this.props.navigation.getParam('restaurant'),
+      listorder: [],
+      totalitem: 0,
+      totalprice: 0,
     };
+    console.log(this.state.restaurant)
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
@@ -61,9 +67,51 @@ export default class CalendarComponent extends Component {
       ToastAndroid.show(time, ToastAndroid.LONG);
     }
   }
-  closeModal() {
-    this.setState({isModalVisible: false});
-  }
+
+  AddItemFood = (item) =>{
+        // ToastAndroid.show(item.name,ToastAndroid.SHORT)
+        // var orderItem = [{name: item.name, price: item.price, count: 1}]
+        var tmp = this.state.listorder;
+        for(var i = 0; i < tmp.length; i++){
+            if( item.ID == tmp[i].ID){
+                tmp[i].count += 1;
+                this.setState({
+                  totalprice: item.price + this.state.totalprice,
+                  totalitem: 1 + this.state.totalitem,
+                  listorder: tmp,
+                });
+                return;
+            }
+        }
+        tmp.push({ID: item.ID, name: item.name, price: item.price, count: 1})
+        this.setState({
+          totalprice: item.price + this.state.totalprice,
+          totalitem: 1 + this.state.totalitem,
+          listorder: tmp,
+        });
+      }
+    MinusItemFood = (item) =>{
+        // ToastAndroid.show(item.name,ToastAndroid.SHORT)
+        // var orderItem = [{name: item.name, price: item.price, count: 1}]
+        if(this.state.totalitem <= 0){
+            return;
+        }
+        var tmp = this.state.listorder;
+        for (var i = 0; i < tmp.length; i++) {
+          if (item.ID == tmp[i].ID) {
+            tmp[i].count -= 1;
+            if(tmp[i].count == 0){
+                tmp.splice(i)
+            }
+            this.setState({
+              totalprice: - item.price + this.state.totalprice,
+              totalitem: - 1 + this.state.totalitem,
+              listorder: tmp,
+            });
+            return;
+          }
+        }
+      }
 
   render() {
     return (
@@ -119,82 +167,24 @@ export default class CalendarComponent extends Component {
           date={this.state.schedual.date}
           onChangeTime={time => this.changetime(time)}
         />
-        <Modal isVisible={this.state.isModalVisible}>
-          <View style={{flex: 1}}>
-            <TouchableOpacity
-              onPress={() => this.closeModal()}></TouchableOpacity>
-            <FlatList
-              data={this.state.orderlist}
-              listKey={(item, index) => 'D' + index.toString()}
-              renderItem={({item}) => <OrderItem fooditem={item} />}
-              keyExtractor={item => item.ID}
+
+        <FlatList
+          data={this.state.restaurant.item.Categories}
+          listKey={(item, index) => 'D' + index.toString()}
+          renderItem={({item}) => (
+            <CategoryItem
+              cate={item}
+              AddItemFood={this.AddItemFood}
+              MinusItemFood={this.MinusItemFood}
+              count={this.state.listorder}
+              AddItemFood={this.AddItemFood}
             />
-          </View>
-        </Modal>
+          )}
+          keyExtractor={item => item.id}
+        />
       </View>
     );
   }
-}
-
-function OrderItem(fooditem) {
-  return (
-    <View>
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop: 5,
-          borderRadius: 12,
-          backgroundColor: '#C4C4C4',
-          alignItems: 'center',
-          marginLeft: 30,
-          marginRight: 30,
-        }}>
-        <Image
-          style={{borderRadius: 10, width: 30, height: 30, margin: 5}}
-          source={require('../../media/images/test.jpg')}
-        />
-        <View style={{flexDirection: 'column', flex: 0.9}}>
-          <Text
-            style={{
-              fontFamily: 'Roboto',
-              fontStyle: 'normal',
-              fontWeight: 'bold',
-              fontSize: 12,
-              lineHeight: 12,
-              alignItems: 'center',
-              color: '#000000',
-              opacity: 0.5,
-            }}>
-            {fooditem.name}
-          </Text>
-          <Text
-            style={{
-              fontFamily: 'Roboto',
-              fontStyle: 'normal',
-              fontWeight: '300',
-              fontSize: 12,
-              lineHeight: 12,
-              alignItems: 'center',
-              color: '#000000',
-              opacity: 0.5,
-            }}>
-            {fooditem.price}
-          </Text>
-        </View>
-        <CheckBox />
-      </View>
-
-      <View
-        style={{
-          borderBottomColor: '#000000',
-          borderBottomWidth: 1,
-          marginLeft: 30,
-          marginRight: 30,
-          marginTop: 5,
-        }}
-      />
-    </View>
-  );
 }
 
 class HeaderCalendar extends Component {
@@ -377,3 +367,130 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+function FoodItem({fooditem, AddItemFood, MinusItemFood, count}) {
+  return (
+    <View>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 5,
+          borderRadius: 12,
+          backgroundColor: '#C4C4C4',
+          alignItems: 'center',
+          marginLeft: 30,
+          marginRight: 30,
+        }}>
+        <Image
+          style={{borderRadius: 10, width: 30, height: 30, margin: 5}}
+          source={require('../../media/images/test.jpg')}
+        />
+        <View style={{flexDirection: 'column', flex: 0.8}}>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              fontWeight: 'bold',
+              fontSize: 12,
+              lineHeight: 12,
+              alignItems: 'center',
+              color: '#000000',
+              opacity: 0.5,
+            }}>
+            {fooditem.name}
+          </Text>
+          <Text
+            style={{
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              fontWeight: '300',
+              fontSize: 12,
+              lineHeight: 12,
+              alignItems: 'center',
+              color: '#000000',
+              opacity: 0.5,
+            }}>
+            {fooditem.price}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            flex: 1,
+            margin: 10,
+          }}>
+          <TouchableOpacity
+            onPress={() => MinusItemFood(fooditem)}
+            style={{flex: 0.1, alignSelf: 'center', alignContent: 'flex-end'}}>
+            <IconAntDesign name="minuscircle" size={15} color="#900" />
+          </TouchableOpacity>
+          <Text> {countFoodItem(fooditem, count)} </Text>
+          <TouchableOpacity
+            onPress={() => AddItemFood(fooditem)}
+            style={{flex: 0.1, alignSelf: 'center', alignContent: 'flex-end'}}>
+            <IconAntDesign name="pluscircle" size={15} color="#900" />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View
+        style={{
+          borderBottomColor: '#000000',
+          borderBottomWidth: 1,
+          marginLeft: 30,
+          marginRight: 30,
+          marginTop: 5,
+        }}
+      />
+    </View>
+  );
+}
+
+function CategoryItem({cate, AddItemFood, MinusItemFood, count}) {
+  console.log(AddItemFood)
+  return (
+    <View style={{flexDirection: 'column', flex: 1}}>
+      <View>
+        <Text
+          style={{
+            margin: 5,
+            fontFamily: 'Roboto',
+            fontStyle: 'normal',
+            fontWeight: 'bold',
+            fontSize: 14,
+            lineHeight: 14,
+            color: '#000000',
+          }}>
+          Phân loại: {cate.name}
+        </Text>
+      </View>
+      <View style={{borderBottomColor: '#000000', borderBottomWidth: 1}} />
+      <View>
+        <FlatList
+          listKey={(item, index) => 'D' + index.toString()}
+          data={cate.Items}
+          renderItem={({item}) => (
+            <FoodItem
+              fooditem={item}
+              AddItemFood={AddItemFood}
+              MinusItemFood={MinusItemFood}
+              count={count}
+            />
+          )}
+          keyExtractor={item => item.id}
+        />
+      </View>
+    </View>
+  );
+}
+
+function countFoodItem(item, listorder) {
+  var tmp = listorder;
+  for (var i = 0; i < tmp.length; i++) {
+    if (item.ID == tmp[i].ID) {
+      return tmp[i].count;
+    }
+  }
+  return 0;
+};

@@ -47,7 +47,7 @@ const RootNavigator = createStackNavigator(
     },
 
     Calendar: {
-      screen: SchedualerComponent,
+      screen: CalendarComponent,
       navigationOptions: {
         gesturesEnabled: false,
       },
