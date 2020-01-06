@@ -403,7 +403,7 @@ class HomeComponent extends Component {
           parentCallbackIndex={this.parentCallbackIndex}
           newestStore={() => this.newestStore()}
         />
-        <View style={{flex: 5, marginTop: 10}}>
+        <View style={{flex: 0.85, marginTop: 10}}>
           <FlatList
             data={this.state.currentData}
             listKey={(item, index) => 'D' + index.toString()}

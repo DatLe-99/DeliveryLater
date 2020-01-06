@@ -57,9 +57,11 @@ export default class BottomBarComponent extends Component {
           style = {{
             width: '100%',
             position: 'absolute',
+            height: WINDOW_SIZE.HEIGHT/15,
             bottom: 0,
              // flex: 1,
             flexDirection: 'row',
+            alignItems: "center",
               //justifyContent: 'flex-end',
             backgroundColor: '#fff',
             shadowColor: "#fff",
