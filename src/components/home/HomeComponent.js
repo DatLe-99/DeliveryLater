@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Keyboard,
   BackHandler,
+  DeviceEventEmitter,
   TextInput,
   Dimensions,
   ToastAndroid,
@@ -44,6 +45,7 @@ import IconAwesome from 'react-native-vector-icons/FontAwesome';
 import SegmentedControlTab from 'react-native-segmented-control-tab';
 import TabNavigator from 'react-native-tab-navigator';
 import RNGooglePlaces from 'react-native-google-places';
+import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box'
 
 // export async function request_device_location_runtime_permission(){
 //   try{
@@ -83,18 +85,109 @@ class HomeComponent extends Component {
     //this.index = 0
   }
 
+  async requestLocationPermission() {
+    const chckLocationPermission = PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (chckLocationPermission === PermissionsAndroid.RESULTS.GRANTED) {
+      alert("You've access for the location");
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          // alert("You've access for the location");
+        } else {
+          alert("Xin lỗi bạn cần cung cấp quyền truy cập vị trí để sử dụng Delivery Later");
+          BackHandler.exitApp();
+        }
+      } catch (err) {
+        alert(err);
+      }
+    }
+  }
+
+  async componentWillMount() {
+    await requestLocationPermission();
+  }
+
   async componentDidMount() {
-    RNGooglePlaces.getCurrentPlace()
-      .then(results => {
-        console.log(results);
-        this.setState({
-          latitude: results[0].location.latitude,
-          longitude: results[0].location.longitude,
-          address: results[0].address,
-        });
+    if (Platform.OS === 'android') {
+      await this.requestLocationPermission();
+      LocationServicesDialogBox.checkLocationServicesIsEnabled({
+        message:
+          "<h2>Bật vị trí</h2>Để sử dụng Delivery Later. Bạn cần bật GPS<br/><br/>Chúng tôi cần Wifi/3G/4G và GPS để đạt được trải nghiệm tốt nhất<br/><br/>",
+        ok: 'YES',
+        cancel: 'NO',
+        enableHighAccuracy: true, // true => GPS AND NETWORK PROVIDER, false => GPS OR NETWORK PROVIDER
+        showDialog: true, // false => Opens the Location access page directly
+        openLocationServices: true, // false => Directly catch method is called if location services are turned off
+        preventOutSideTouch: true, //true => To prevent the location services popup from closing when it is clicked outside
+        preventBackClick: true, //true => To prevent the location services popup from closing when it is clicked back button
+        providerListener: true, // true ==> Trigger "locationProviderStatusChange" listener when the location state changes
       })
-      .catch(error => console.log(error.message));
-    this.recommendStore();
+        .then(
+          function(success) {
+            RNGooglePlaces.getCurrentPlace()
+              .then(results => {
+                console.log(results);
+                this.setState({
+                  latitude: results[0].location.latitude,
+                  longitude: results[0].location.longitude,
+                  address: results[0].address,
+                });
+                if (!this.state.isLoading) {
+                  this.setState({isLoading: true});
+                  this.props
+                    .updateAction({
+                      ID: this.state.accountData.ID,
+                      account_location: {
+                        account_id: this.state.accountData.ID,
+                        address: this.state.address,
+                        lat: this.state.latitude,
+                        lng: this.state.longitude,
+                      },
+                    })
+                    .then(() => {
+                      this.setState({isLoading: false});
+                      if (this.props.updatedData.success) {
+                        this.setState({isLoading: false});
+                        if (this.state.tabindex == 0) {
+                          this.recommendStore();
+                        } else if (this.state.tabindex == 1) {
+                          this.NearMe();
+                        } else if (this.state.tabindex == 3) {
+                          this.newestStore();
+                        }
+                        console.log(this.props.updatedData.dataRes);
+                      } else {
+                        this.setState({isLoading: false});
+                        this.alertMessage(this.props.updatedData.errorMessage);
+                      }
+                    });
+                }
+              })
+              .catch(error => console.log(error.message));
+          }.bind(this),
+        )
+        .catch(error => {
+          console.log(error.message);
+          BackHandler.exitApp();
+        });
+
+      // BackHandler.addEventListener('hardwareBackPress', () => {
+      //   //(optional) you can use it if you need it
+      //   LocationServicesDialogBox.forceCloseDialog();
+      // });
+
+      // DeviceEventEmitter.addListener('locationProviderStatusChange', function(
+      //   status,
+      // ) {
+      //   // only trigger when "providerListener" is enabled
+      //   console.log(status); //  status => {enabled: false, status: "disabled"} or {enabled: true, status: "enabled"}
+      // });
+    }
   }
 
   onPressNoti = () => {

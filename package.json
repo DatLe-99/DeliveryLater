@@ -18,6 +18,7 @@
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-24h-timepicker": "^1.1.0",
+    "react-native-android-location-services-dialog-box": "^2.8.2",
     "react-native-calendars": "^1.220.0",
     "react-native-geocoding": "^0.4.0",
     "react-native-geolocation-service": "^3.1.0",
