@@ -92,9 +92,6 @@ export default class RestaurantComponent extends Component{
     MinusItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
-        if(this.state.totalitem <= 0){
-            return;
-        }
         var tmp = this.state.listorder;
         for (var i = 0; i < tmp.length; i++) {
           if (item.ID == tmp[i].ID) {
@@ -107,10 +104,9 @@ export default class RestaurantComponent extends Component{
               totalitem: - 1 + this.state.totalitem,
               listorder: tmp,
             });
-            return;
           }
         }
-      }
+  }
     goToPayment = () => {
       if(this.state.totalitem == 0){
         ToastAndroid.show("Đơn hàng của bạn đang rỗng. Vui lòng chọn món ăn", ToastAndroid.SHORT)
@@ -625,7 +621,7 @@ function CategoryItem({cate, AddItemFood, MinusItemFood, count}) {
 function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
     return(
             <View>
-                <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "#C4C4C4", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
+        <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "rgba(196, 196, 196, 0.6)", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
                     <Image style={{ borderRadius: 10, width: 30, height: 30, margin: 5 }}
                         source={require("../../media/images/test.jpg")}
                     />

@@ -46,7 +46,7 @@ function RestaurantItem({ res }) {
                     <View style={{ flex: 0.15 }}>
                         <View style={{ flexDirection: 'column', flex: 1, alignItems: "center", justifyContent: "center" }}>
                             <View style={{ flex: 0.6 }}></View>
-                            <Text style={{ flex: 0.2, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>2.5 km</Text>
+                            <Text style={{ flex: 0.2, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>{res.distance.toFixed(2)} km</Text>
                             <View style={{ flex: 0.2, alignSelf: "center" }}>
                                 <View style={{ flexDirection: 'row', flex: 1, alignContent: "center", justifyContent: "center" }}>
                                     <Text style={{ marginRight: 5, fontFamily: 'Verdana', fontSize: 11, fontWeight: 'normal', fontStyle: 'normal', color: 'rgba(0,0,0,0.7)' }}>>30p</Text>
@@ -75,7 +75,7 @@ function RestaurantItem({ res }) {
 function FoodItemInRestaurant({ item }) {
     return (
         <View>
-            <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "#C4C4C4", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
+            <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "rgba(196, 196, 196, 0.6)", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
                 <Image style={{ borderRadius: 10, width: 30, height: 30, margin: 5 }}
                     source={require("../../media/images/test.jpg")}
                 />

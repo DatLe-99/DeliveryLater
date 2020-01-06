@@ -25,7 +25,7 @@ import Modal from 'react-native-modal';
 const format = 'YYYY-MM-DD';
 const today = moment().format(format);
 const maxDate = moment()
-  .add(2, 'months')
+  .add(1, 'months')
   .format(format);
 
 export default class CalendarComponent extends Component {
@@ -45,6 +45,7 @@ export default class CalendarComponent extends Component {
       tmpitem: 0,
       totalitem: 0,
       totalprice: 0,
+      _markedDates: '',
     };
     console.log(this.state.listData)
   }
@@ -56,8 +57,26 @@ export default class CalendarComponent extends Component {
       listorder: [],
       tmpitem: 0,
       tmpprice: 0,
+      totalitem: this.state.totalitem - this.state.tmpitem,
+      totalprice: this.state.totalprice - this.state.tmpprice,
+      _markedDates: selectedDay,
     });
+    // let marked = true;
+    // let markedDates = {}
+    // if (this.state._markedDates[selectedDay]) {
+    //   // Already in marked dates, so reverse current marked state
+    //   marked = !this.state._markedDates[selectedDay].marked;
+    //   markedDates = this.state._markedDates[selectedDay];
+    // }
+    // markedDates = { ...markedDates, ...{ marked } };
+
+    // const updatedMarkedDates = { ...this.state._markedDates, ...{ [selectedDay]: markedDates } }
+
+    // Triggers component to render again, picking up the new state
+    // this.setState({ _markedDates: markedDates });
   };
+
+  
 
   addlistordertoSchedule (schedule, listorder){
     var list = this.state.listschedule;
@@ -138,8 +157,8 @@ export default class CalendarComponent extends Component {
                 this.setState({
                   totalprice: item.price + this.state.totalprice,
                   totalitem: 1 + this.state.totalitem,
-                  tmpprice: item.price + this.state.totalprice,
-                  tmpitem: 1 + this.state.totalitem,
+                  tmpprice: item.price + this.state.tmpprice,
+                  tmpitem: 1 + this.state.tmpitem,
                   listorder: tmp,
                 });
                 return;
@@ -149,17 +168,14 @@ export default class CalendarComponent extends Component {
         this.setState({
           totalprice: item.price + this.state.totalprice,
           totalitem: 1 + this.state.totalitem,
-          tmpprice: item.price + this.state.totalprice,
-          tmpitem: 1 + this.state.totalitem,
+          tmpprice: item.price + this.state.tmpprice,
+          tmpitem: 1 + this.state.tmpitem,
           listorder: tmp,
         });
       }
     MinusItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
-        if(this.state.totalitem <= 0){
-            return;
-        }
         var tmp = this.state.listorder;
         for (var i = 0; i < tmp.length; i++) {
           if (item.ID == tmp[i].ID) {
@@ -170,8 +186,8 @@ export default class CalendarComponent extends Component {
             this.setState({
               totalprice: - item.price + this.state.totalprice,
               totalitem: - 1 + this.state.totalitem,
-              tmpprice: - item.price + this.state.totalprice,
-              tmpitem: - 1 + this.state.totalitem,
+              tmpprice: - item.price + this.state.tmpprice,
+              tmpitem: - 1 + this.state.tmpitem,
               listorder: tmp,
             });
             return;
@@ -207,7 +223,7 @@ export default class CalendarComponent extends Component {
         <View
           style={{
             backgroundColor: '#F34F',
-            borderRadius: 21,
+            borderRadius: 10,
             margin: 5,
             alignSelf: "flex-end",
             justifyContent: "center"
@@ -222,9 +238,24 @@ export default class CalendarComponent extends Component {
           </TouchableOpacity>
         </View>
         <Calendar
+          theme ={{
+            dayTextColor: '#5FD662',  
+            todayTextColor: '#FF5D4E',  
+            selectedDayTextColor: 'yellow',
+            selectedDayBackgroundColor: 'pink',
+            //calendarBackground: "yellow",
+            monthTextColor: "#FF9330",
+            textMonthFontWeight: "bold",
+            textMonthFontSize: 18,
+            textDayFontSize: 16,
+            textDayFontWeight: "normal"
+          }}
           // Initially visible month. Default = Date()
           //current={'2012-03-01'}
+          // markedDates={{ [selected]: { selected: true, disableTouchEvent: true, selectedDotColor: 'orange' } }}
           // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
+          
+          markedDates={{ [this.state._markedDates]: { selected: true, disableTouchEvent: true, selectedDotColor: 'pink' } }}
           minDate={today}
           // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
           maxDate={maxDate}
@@ -238,7 +269,7 @@ export default class CalendarComponent extends Component {
             console.log('selected day', day);
           }}
           // Month format in calendar title. Formatting values: http://arshaw.com/xdate/#Formatting
-          monthFormat={'yyyy MM'}
+          // monthFormat={'yyyy MM'}
           // Handler which gets executed when visible month changes in calendar. Default = undefined
           onMonthChange={month => {
             console.log('month changed', month);
@@ -257,17 +288,17 @@ export default class CalendarComponent extends Component {
           // Hide day names. Default = false
           hideDayNames={true}
           // Show week numbers to the left. Default = false
-          showWeekNumbers={true}
+          // showWeekNumbers={true}
           // Handler which gets executed when press arrow icon left. It receive a callback can go back month
           onPressArrowLeft={substractMonth => substractMonth()}
           // Handler which gets executed when press arrow icon left. It receive a callback can go next month
           onPressArrowRight={addMonth => addMonth()}
-          markedDates={this.state.markdate}
         />
         <OrderList
           PutSchedule={() => this.orders()}
           date={this.state.schedual.date}
           onChangeTime={time => this.changetime(time)}
+          timeChoosen = {this.state.schedual.time}
         />
         <FlatList
           style = {{marginBottom: WINDOW_SIZE.HEIGHT/25}}
@@ -307,13 +338,12 @@ class OrderedBar extends Component {
         }}>
         <TouchableOpacity
           style={{
-            // flex: 1, 
-            // alignSelf: 'center', 
-            // marginLeft: 10
+            alignSelf: 'center', 
           }}>
           <Text
             style={{
               padding: 10,
+              textAlign: "center"
             }}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
         </TouchableOpacity>
       </View>
@@ -386,17 +416,19 @@ class OrderList extends Component {
   }
   render() {
     return (
-      <View style={{flexDirection: 'column', backgroundColor: '#c4c4c4'}}>
+      <View style={{ flexDirection: 'column', backgroundColor: '#5FD662'}}>
         <Text
           style={{
             fontFamily: 'Verdana',
-            fontSize: 20,
-            lineHeight: 30,
+            fontSize: 18,
+            lineHeight: 18,
             alignItems: 'center',
             alignContent: 'center',
             color: '#000000',
+            fontWeight: "bold",
+            padding: 10,
           }}>
-          {'Date:  ' + this.props.date}
+          {'Ngày: ' + this.props.date}
         </Text>
         <View
           style={{
@@ -404,24 +436,26 @@ class OrderList extends Component {
             height: 30,
             borderRadius: 0,
             flexDirection: 'row',
+            margin: 5
           }}>
           <Text
             style={{
               fontFamily: 'Verdana',
-              fontSize: 20,
-              lineHeight: 30,
+              fontSize: 16,
+              lineHeight: 20,
               alignItems: 'center',
               alignContent: 'center',
               color: '#000000',
+              padding: 5
             }}>
-            {'Time:  '}
+            {'Chọn giờ:  '}
           </Text>
           <TouchableOpacity
             onPress={() => this.TimePicker.open()}
             style={{
               width: 100,
               heigth: 30,
-              backgroundColor: '#ffffffff',
+              backgroundColor: '#ffffff',
               borderRadius: 10,
             }}>
             <Text
@@ -437,7 +471,7 @@ class OrderList extends Component {
                   textAlign: 'center',
                 })
               }>
-              Chọn giờ
+              {this.props.timeChoosen}
             </Text>
           </TouchableOpacity>
           <TimePicker
@@ -451,20 +485,20 @@ class OrderList extends Component {
         <TouchableOpacity
           onPress={this.props.PutSchedule}
           style={{
-            width: 208,
-            heigth: 42,
-            backgroundColor: '#F34F08',
-            borderRadius: 21,
+            width: 130,
+            heigth: 35,
+            backgroundColor: '#FCFC',
+            borderRadius: 15,
             margin: 5,
           }}>
           <Text
             style={
               (styles.text,
               {
-                color: '#000000',
+                color: '#c4c',
                 fontWeight: 'bold',
-                width: 208,
-                height: 42,
+                width: 130,
+                height: 35,
                 fontSize: 16,
                 textAlignVertical: 'center',
                 textAlign: 'center',
@@ -511,7 +545,7 @@ function FoodItem({fooditem, AddItemFood, MinusItemFood, count}) {
           flexDirection: 'row',
           marginTop: 5,
           borderRadius: 12,
-          backgroundColor: '#C4C4C4',
+          backgroundColor: 'rgba(196, 196, 196, 0.6)',
           alignItems: 'center',
           marginLeft: 30,
           marginRight: 30,
