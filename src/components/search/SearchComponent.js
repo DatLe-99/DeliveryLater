@@ -89,10 +89,6 @@ function FoodItemInRestaurant({ item }) {
 
                     >{item.price}</Text>
                 </View>
-                <TouchableOpacity
-                    style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
-                    <Icon name="pluscircle" size={15} color="#900" />
-                </TouchableOpacity>
             </View>
             <View style={{ borderBottomColor: '#000000', borderBottomWidth: 1, marginLeft: 30, marginRight: 30, marginTop: 5 }} />
         </View>

@@ -136,7 +136,7 @@ export default class CalendarComponent extends Component {
       .format("YYYY-MM-DD");
     const cur = moment(t, 'HH:mm', true)
     
-    if ((moment(time, 'HH:mm', true) != null && moment(time, 'HH:mm', true) > cur) || this.state.schedual.date.substr(8,2) > moment().get('date')) {
+    if ((moment(time, 'HH:mm', true) != null && moment(time, 'HH:mm', true) > cur ) || this.state.schedual.date.substr(8,2) > moment().get('date')) {
       var selected = {date: this.state.schedual.date, time: time};
       this.setState({schedual: selected});
       ToastAndroid.show(time, ToastAndroid.SHORT);
@@ -454,9 +454,11 @@ class OrderList extends Component {
             onPress={() => this.TimePicker.open()}
             style={{
               width: 100,
-              heigth: 30,
+              heigth: 20,
               backgroundColor: '#ffffff',
               borderRadius: 10,
+              alignContent: "center",
+              justifyContent: "center"
             }}>
             <Text
               style={
@@ -465,9 +467,8 @@ class OrderList extends Component {
                   color: '#000000',
                   fontWeight: 'normal',
                   width: 100,
-                  height: 30,
+                  height: 20,
                   fontSize: 16,
-                  textAlignVertical: 'center',
                   textAlign: 'center',
                 })
               }>
@@ -486,7 +487,7 @@ class OrderList extends Component {
           onPress={this.props.PutSchedule}
           style={{
             width: 130,
-            heigth: 35,
+            heigth: 30,
             backgroundColor: '#FCFC',
             borderRadius: 15,
             margin: 5,
@@ -498,7 +499,7 @@ class OrderList extends Component {
                 color: '#c4c',
                 fontWeight: 'bold',
                 width: 130,
-                height: 35,
+                height: 30,
                 fontSize: 16,
                 textAlignVertical: 'center',
                 textAlign: 'center',
@@ -551,7 +552,7 @@ function FoodItem({fooditem, AddItemFood, MinusItemFood, count}) {
           marginRight: 30,
         }}>
         <Image
-          style={{borderRadius: 10, width: 30, height: 30, margin: 5}}
+          style={{borderRadius: 10, width: 70, height: 70, margin: 5}}
           source={require('../../media/images/test.jpg')}
         />
         <View style={{flexDirection: 'column', flex: 0.8}}>
@@ -587,19 +588,19 @@ function FoodItem({fooditem, AddItemFood, MinusItemFood, count}) {
             flexDirection: 'row',
             justifyContent: 'flex-end',
             alignItems: 'center',
-            flex: 1,
+            flex: 0.4,
             margin: 10,
           }}>
           <TouchableOpacity
             onPress={() => MinusItemFood(fooditem)}
-            style={{flex: 0.1, alignSelf: 'center', alignContent: 'flex-end'}}>
-            <IconAntDesign name="minuscircle" size={15} color="#900" />
+            style={{flex: 0.3, alignSelf: 'center', alignContent: 'flex-end'}}>
+            <IconAntDesign name="minuscircle" size={22} color="#1177DE" />
           </TouchableOpacity>
-          <Text> {countFoodItem(fooditem, count)} </Text>
+          <Text style = {{flex: 0.4, textAlign: "center"}}> {countFoodItem(fooditem, count)} </Text>
           <TouchableOpacity
             onPress={() => AddItemFood(fooditem)}
-            style={{flex: 0.1, alignSelf: 'center', alignContent: 'flex-end'}}>
-            <IconAntDesign name="pluscircle" size={15} color="#900" />
+            style={{flex: 0.3, alignSelf: 'center', alignContent: 'flex-end'}}>
+            <IconAntDesign name="pluscircle" size={22} color="#1177DE" />
           </TouchableOpacity>
         </View>
       </View>

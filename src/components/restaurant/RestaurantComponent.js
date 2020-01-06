@@ -510,7 +510,7 @@ class OrderedBar extends Component{
 
                 <TouchableOpacity
                     onPress = {this.props.Setschedule}
-                    style={{ backgroundColor: "#2D87E2", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
+                    style={{ backgroundColor: "#5FD662", borderRadius: 10, flex: 0.5, alignSelf: 'stretch', justifyContent: 'center', marginRight: 10}}>
                     <Text style={{ 
                         fontFamily: 'Roboto', 
                         fontStyle: 'normal', 
@@ -623,7 +623,7 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
     return(
             <View>
         <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "rgba(196, 196, 196, 0.6)", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
-                    <Image style={{ borderRadius: 10, width: 30, height: 30, margin: 5 }}
+                    <Image style={{ borderRadius: 10, width: 70, height: 70, margin: 5 }}
                         source={require("../../media/images/test.jpg")}
                     />
                     <View style={{ flexDirection: 'column', flex: 0.8 }}>
@@ -636,18 +636,18 @@ function FoodItem({ fooditem, AddItemFood, MinusItemFood, count}) {
 
                         >{fooditem.price}</Text>
                     </View>
-                    <View style = {{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', flex: 1, margin: 10}}>
+                    <View style = {{flexDirection: 'row', justifyContent: 'center', alignItems: "center", flex: 0.4, margin: 10}}>
                         <TouchableOpacity
                         onPress={() => MinusItemFood(fooditem)}
-                        style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
-                        <Icon name="minuscircle" size={15} color= "#900" />
-                    </TouchableOpacity>
-                    <Text> {countFoodItem(fooditem, count)} </Text>
-                    <TouchableOpacity
-                        onPress={() => AddItemFood(fooditem)}
-                        style={{ flex: 0.1, alignSelf: "center", alignContent: "flex-end" }}>
-                        <Icon name="pluscircle" size={15} color= "#900" />
-                    </TouchableOpacity>
+                        style={{ flex: 0.3}}>
+                        <Icon name="minuscircle" size={22} color= "#1177DE" />
+                        </TouchableOpacity>
+                        <Text style = {{flex: 0.4, textAlign: "center"}}> {countFoodItem(fooditem, count)} </Text>
+                        <TouchableOpacity
+                            onPress={() => AddItemFood(fooditem)}
+                            style={{ flex: 0.3}}>
+                            <Icon name="pluscircle" size={22} color= "#1177DE" />
+                        </TouchableOpacity>
                     </View>
 
                 </View>
