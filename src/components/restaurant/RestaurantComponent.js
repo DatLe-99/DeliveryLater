@@ -72,7 +72,7 @@ export default class RestaurantComponent extends Component{
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
         var tmp = this.state.listorder;
         for(var i = 0; i < tmp.length; i++){
-            if( item.ID == tmp[i].ID){
+            if( item.ID === tmp[i].ID){
                 tmp[i].count += 1;
                 this.setState({
                   totalprice: item.price + this.state.totalprice,
@@ -94,7 +94,7 @@ export default class RestaurantComponent extends Component{
         // var orderItem = [{name: item.name, price: item.price, count: 1}]
         var tmp = this.state.listorder;
         for (var i = 0; i < tmp.length; i++) {
-          if (item.ID == tmp[i].ID) {
+          if (item.ID === tmp[i].ID) {
             tmp[i].count -= 1;
             if(tmp[i].count == 0){
                 tmp.splice(i)
@@ -104,6 +104,7 @@ export default class RestaurantComponent extends Component{
               totalitem: - 1 + this.state.totalitem,
               listorder: tmp,
             });
+            return;
           }
         }
   }
