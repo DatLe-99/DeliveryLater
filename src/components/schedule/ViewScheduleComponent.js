@@ -44,33 +44,33 @@ class ViewScheduleComponent extends Component {
       _markedDates: '',
       isLoading: false,
       orderData: [],
-      previousDay: ""
+      previousDay: "",
+      selectedDate: '',
     };
   }
   onDaySelect = day => {
     const selectedDay = moment(day.dateString).format(format);
     var selected = {date: selectedDay, time: this.state.schedual.time};
 
-    let marked = true;
-    let markedDates = {};
+    // let marked = true;
+    // let markedDates = {};
 
-    markedDates = this.state._markedDates[selectedDay];
-    markedDates = {
-      ...markedDates,
-      ...{marked},
-      dotColor: 'red',
-    };
+    // markedDates = this.state._markedDates[selectedDay];
+    // markedDates = {
+    //   ...markedDates,
+    //   ...{marked},
+    //   selected: true,
+    // };
 
-    const updatedMarkedDates = {
-      ...this.state._markedDates,
-      ...{[selectedDay]: markedDates},
-    };
-
+    // const updatedMarkedDates = {
+    //   ...this.state._markedDates,
+    //   ...{[selectedDay]: markedDates},
+    // };
 
     this.setState({
       schedual: selected,
-      _markedDates: updatedMarkedDates,
-      previousDay: day,
+      // _markedDates: updatedMarkedDates,
+      selectedDate: selectedDay,
     });
 
     if (!this.state.isLoading) {
@@ -110,7 +110,7 @@ class ViewScheduleComponent extends Component {
         let marked = true;
         let markedDates = {};
         markedDates = this.state._markedDates[selectedDay];
-        markedDates = {...markedDates, ...{marked}, dotColor: "#fcfc", selected: true};
+        markedDates = { ...markedDates, ...{ marked }, dotColor: "red"};
         const updatedMarkedDates = {
           ..._markedDates,
           ...{[selectedDay]: markedDates},
@@ -171,7 +171,10 @@ class ViewScheduleComponent extends Component {
           //   },
           // }}
           // markedDates={{'2020-01-08': {selected: true, marked: true, selectedColor: 'blue'}}}
-          markedDates={this.state._markedDates}
+          markedDates={{
+            ...this.state._markedDates, 
+            ...{[this.state.selectedDate]: { selected: true, disableTouchEvent: true, selectedDotColor: 'pink' }}
+          }}
           minDate={today}
           // Maximum date that can be selected, dates after maxDate will be grayed out. Default = undefined
           maxDate={maxDate}
@@ -350,7 +353,7 @@ function ScheduleOrderItem({order}) {
       <View>
         <Text
           style = {{padding: 10}}>
-          {order.TotalItem} phần - {order.TotalPrice}
+          {order.TotalItem} phần - {order.TotalPrice}đ
         </Text>
       </View>
     </View>
