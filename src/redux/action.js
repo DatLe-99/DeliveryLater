@@ -6,6 +6,8 @@ import updateAction from './update/action';
 import recommendAction from './recommend/action';
 import newestAction from './neweststore/action';
 import orderAction from './addorder/action'
+import updateaddressorderAction from './updateaddressorder/action'
+import viewscheduleAction from './viewschedule/action'
 
 export {signInAction};
 export {signUpAction};
@@ -21,3 +23,7 @@ export {recommendAction};
 export {newestAction};
 
 export {orderAction};
+
+export {updateaddressorderAction};
+
+export {viewscheduleAction};

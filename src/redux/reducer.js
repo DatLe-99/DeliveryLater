@@ -8,6 +8,8 @@ import UpdateReducer from './update/reducer'
 import RecommendReducer from './recommend/reducer'
 import NewestReducer from './neweststore/reducer'
 import OrderReducer from './addorder/reducer'
+import UpdateaddressorderReducer from './updateaddressorder/reducer'
+import ViewscheduleReducer from './viewschedule/reducer'
 
 export default combineReducers({
   form: reduxFormReducer,
@@ -19,4 +21,6 @@ export default combineReducers({
   RecommendReducer,
   NewestReducer,
   OrderReducer,
+  UpdateaddressorderReducer,
+  ViewscheduleReducer,
 });

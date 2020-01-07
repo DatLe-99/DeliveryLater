@@ -28,12 +28,21 @@ import BottomBarComponent from '../bottomBar/BottomBarComponent';
 
 import faker from 'faker';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
-import {orderAction, updateAction, addressAction} from '../../redux/action'
+import {orderAction, addressAction, updateaddressorderAction} from '../../redux/action'
 import RNGooglePlaces from 'react-native-google-places';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 //2020-01-04T10:14:57+07:00
+function getOrderPriceItem(order) {
+  var price = 0;
+  var item = 0;
+  for (var i = 0; i < order.length; i++) {
+    price += order[i].price * order[i].count;
+    item += order[i].count;
+  }
+  return {price: price, item: item};
+}
 function cloneData(listorder){
     const cloneData = [];
     for (var i = 0; i < listorder.length; i += 1) {
@@ -71,6 +80,7 @@ function listOrdersendRequest(listorder){
     for (var i = 0; i< listorder.length; i++){
         sendData.push({
             ItemId: listorder[i].ID,
+            name: listorder[i].name,
             amount: listorder[i].count,
             price: listorder[i].price,
         })
@@ -167,30 +177,33 @@ class PaymentComponent extends Component {
             this.setState({ isLoading: true });
             var date = this.state.date;
             this.props
-                .orderAction(
-                    [
-                        {
-                            AccountId: this.state.account.ID,
-                            created: formatYYYYMMDD(),
-                            deadline: formatYYYYMMDD(),
-                            address: this.state.address,
-                            orderitems: listOrdersendRequest(this.state.listorder)    
-                        },
-                    ]              
-                )
-                .then(() => {
-                    this.setState({ isLoading: false });
-                    if (this.props.orderData.success) {
-                        this.setState({
-                            isLoading: false,
-                        });
-                        console.log(this.props.orderData.dataRes);
-                        this.props.navigation.navigate("UpcomingOrder")
-                    } else {
-                        this.setState({ isLoading: false });
-                        this.alertMessage(this.props.orderData.errorMessage);
-                    }
-                });
+              .orderAction([
+                {
+                  AccountId: this.state.account.ID,
+                  StoreId: this.state.restaurant.ID,
+                  StoreName: this.state.restaurant.name,
+                  ReceiveAddress: this.state.address,
+                  TotalItem: getOrderPriceItem(this.state.listorder).item,
+                  TotalPrice: getOrderPriceItem(this.state.listorder).price,
+                  created: formatYYYYMMDD(),
+                  deadline: formatYYYYMMDD(),
+                  address: this.state.restaurant.store_location.address,
+                  orderitems: listOrdersendRequest(this.state.listorder),
+                },
+              ])
+              .then(() => {
+                this.setState({isLoading: false});
+                if (this.props.orderData.success) {
+                  this.setState({
+                    isLoading: false,
+                  });
+                  console.log(this.props.orderData.dataRes);
+                  this.props.navigation.navigate('UpcomingOrder');
+                } else {
+                  this.setState({isLoading: false});
+                  this.alertMessage(this.props.orderData.errorMessage);
+                }
+              });
         }
     }
 
@@ -204,25 +217,27 @@ class PaymentComponent extends Component {
                     this.setState({ isLoading: true });
                     console.log(place);
                     this.props
-                        .updateAction({
-                            ID: this.state.account.ID,
-                            account_location: {
-                                account_id: this.state.account.ID,
-                                address: this.state.address,
-                                lat: place.location.latitude,
-                                lng: place.location.longitude,
-                            },
-                        })
-                        .then(() => {
-                            this.setState({ isLoading: false });
-                            if (this.props.updatedData.success) {
-                                this.setState({ isLoading: false });
-                                console.log(this.props.updatedData.dataRes);
-                            } else {
-                                this.setState({ isLoading: false });
-                                this.alertMessage(this.props.updatedData.errorMessage);
-                            }
-                        });
+                      .updateaddressorderAction({
+                        lat1: place.location.latitude,
+                        lng1: place.location.longitude,
+                        lat2: this.state.restaurant.store_location.Lat,
+                        lng2: this.state.restaurant.store_location.Lng,
+                      })
+                      .then(() => {
+                        this.setState({isLoading: false});
+                        if (this.props.distanceData.dataRes) {
+                          this.setState({isLoading: false});
+                          this.setState({
+                            distance: this.props.distanceData.dataRes.toFixed(2),
+                          });
+                          console.log(this.props.distanceData.dataRes);
+                        } else {
+                          this.setState({isLoading: false});
+                          this.alertMessage(
+                            this.props.distanceData.errorMessage,
+                          );
+                        }
+                      });
                 }
             })
             .catch(error => console.log(error.message));
@@ -558,17 +573,18 @@ const styles = StyleSheet.create({
 
 function mapStateToProps(state) {
     return {
-        orderData: state.OrderReducer,
-        accountData: state.UpdateReducer,
-        addressData: state.AddressReducer,
+      orderData: state.OrderReducer,
+      accountData: state.UpdateReducer,
+      addressData: state.AddressReducer,
+      distanceData: state.UpdateaddressorderReducer,
     };
 }
 
 function dispatchToProps(dispatch) {
     return bindActionCreators({
         orderAction,
-        updateAction,
         addressAction,
+        updateaddressorderAction,
     }, dispatch);
 }
 

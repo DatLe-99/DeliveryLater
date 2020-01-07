@@ -98,23 +98,29 @@ function FoodItemInRestaurant({ item }) {
 class SearchComponent extends Component {
     constructor(props) {
         super(props);
-        this.state ={
-            listRestaurant: '',
-            searchQuery: '',
-            isLoading: false,
-            refreshing: false,
-            address: this.props.navigation.getParam('address'),
-            account: this.props.navigation.getParam('account'),
-        }
+        this.state = {
+          listRestaurant: '',
+          searchQuery: '',
+          isLoading: false,
+          refreshing: false,
+          address: this.props.navigation.getParam('address'),
+          account: this.props.navigation.getParam('account'),
+          lat: this.props.navigation.getParam('lat'),
+          lng: this.props.navigation.getParam('lng'),
+        };
         this.data = this.props.navigation.getParam('listRestaurant')
     }
 
     pressReturnSearchKey = () => {
         if (!this.state.isLoading) {
             this.setState({ isLoading: true });
+            console.log(this.state.lat)
+            console.log(this.state.lng)
             this.props
                 .searchAction({
                     name: this.state.searchQuery,
+                    lat: this.state.lat,
+                    lng: this.state.lng,
                 })
                 .then(() => {
                     this.setState({ isLoading: false });
@@ -122,6 +128,7 @@ class SearchComponent extends Component {
                         this.setState({ isLoading: false });
                         this.setState({refreshing: true})
                         this.onRefresh(true)
+                        console.log(this.props.searchData.dataRes)
                         
                     } else {
                         this.alertMessage(this.props.searchData.errorMessage);

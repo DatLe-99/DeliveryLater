@@ -200,6 +200,8 @@ class HomeComponent extends Component {
       this.props
         .searchAction({
           name: this.state.searchQuery,
+          lat: this.state.latitude,
+          lng: this.state.longitude,
         })
         .then(() => {
           this.setState({isLoading: false});
@@ -209,6 +211,8 @@ class HomeComponent extends Component {
               listRestaurant: this.props.searchData.dataRes.store,
               account: this.state.accountData,
               address: this.state.address,
+              lat: this.state.latitude,
+              lng: this.state.longitude,
             });
           } else {
             this.setState({isLoading: false});
@@ -434,7 +438,9 @@ class HomeComponent extends Component {
           selectedTab="home"
           onPressHome={() => this.props.navigation.navigate('Home')}
           onPressUpcomingOrder={() =>
-            this.props.navigation.navigate('UpcomingOrder')
+            this.props.navigation.navigate('UpcomingOrder', {
+              account: this.state.accountData,
+            })
           }
           onPressHistory={() => this.props.navigation.navigate('History')}
           onPressProfile={() => this.props.navigation.navigate('Profile')}

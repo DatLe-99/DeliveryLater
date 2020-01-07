@@ -8,3 +8,5 @@ export const UPDATE = DOMAIN_URL + 'api/accounts/update';
 export const RECOMMEND = DOMAIN_URL + 'api/stores/highestRateStore'
 export const NEWEST = DOMAIN_URL + 'api/stores/newestStore';
 export const ORDER = DOMAIN_URL + 'api/orders/new';
+export const UPDATEADDRESSORDER = DOMAIN_URL + 'api/orders/distance'
+export const VIEWSCHEDULE = DOMAIN_URL + 'api/orders/dateOrder'

@@ -136,7 +136,7 @@ export default class CalendarComponent extends Component {
       .format("YYYY-MM-DD");
     const cur = moment(t, 'HH:mm', true)
     
-    if ((moment(time, 'HH:mm', true) != null && moment(time, 'HH:mm', true) > cur ) || this.state.schedual.date.substr(8,2) > moment().get('date')) {
+    if ((moment(time, 'HH:mm', true) != null && moment(time, 'HH:mm', true).diff(cur,'minutes')>0 ) || this.state.schedual.date.substr(8,2) > moment().get('date')) {
       var selected = {date: this.state.schedual.date, time: time};
       this.setState({schedual: selected});
       ToastAndroid.show(time, ToastAndroid.SHORT);

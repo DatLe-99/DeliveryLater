@@ -21,19 +21,30 @@ import { WINDOW_SIZE } from '../../utils/scale';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { RecyclerListView, DataProvider, LayoutProvider } from 'recyclerlistview';
-import { orderAction, updateAction, addressAction } from '../../redux/action'
+import { orderAction, updateaddressorderAction, addressAction } from '../../redux/action'
 import RNGooglePlaces from 'react-native-google-places';
 import { FlatList } from 'react-native-gesture-handler';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 //2020-01-04T10:14:57+07:00
+function getOrderPriceItem (order){
+    var price = 0
+    var item = 0
+    for(var i =0; i< order.length; i++){
+        price += order[i].price * order[i].count;
+        item += order[i].count;
+    }
+    return {price: price, item: item};
+}
+
 
 function listOrdersendRequest(listorder) {
     var sendData = [];
     for (var i = 0; i < listorder.length; i++) {
             sendData.push({
                 ItemId: listorder[i].ID,
+                name: listorder[i].name,
                 amount: listorder[i].count,
                 price: listorder[i].price,
             })
@@ -69,7 +80,7 @@ function formatYYYYMMDD() {
 }
 
 function formatYYYYMMDDSchedule(time){
-    return time.date + "T" + time.time + "00" + "+07:00"
+    return time.date + "T" + time.time + ":00" + "+07:00"
 }
 class PaymentSchedule extends Component {
     constructor(props) {
@@ -92,15 +103,18 @@ class PaymentSchedule extends Component {
         var ret = []
         var tmp = this.state.listorder;
         for(var i = 0 ; i< tmp.length; i++){
-            ret.push(
-                {
-                AccountId: this.state.account.ID,
-                created: formatYYYYMMDD(),
-                deadline: formatYYYYMMDDSchedule(tmp[i]),
-                address: this.state.address,
-                orderitems: listOrdersendRequest(tmp[i].listorder),
-                }
-            )
+            ret.push({
+              AccountId: this.state.account.ID,
+              StoreId: this.state.restaurant.ID,
+              StoreName: this.state.restaurant.name,
+              ReceiveAddress: this.state.address,
+              TotalItem: getOrderPriceItem(tmp[i].listorder).item,
+              TotalPrice: getOrderPriceItem(tmp[i].listorder).price,
+              created: formatYYYYMMDD(),
+              deadline: formatYYYYMMDDSchedule(tmp[i]),
+              address: this.state.restaurant.store_location.address,
+              orderitems: listOrdersendRequest(tmp[i].listorder),
+            });
         }
         return ret;
     }
@@ -135,36 +149,36 @@ class PaymentSchedule extends Component {
 
     openSearchModal() {
         RNGooglePlaces.openAutocompleteModal()
-            .then(place => {
-                this.setState({
-                    address: place.address,
+          .then(place => {
+            this.setState({
+              address: place.address,
+            });
+            if (!this.state.isLoading) {
+              this.setState({isLoading: true});
+              console.log(place);
+              this.props
+                .updateaddressorderAction({
+                  lat1: place.location.latitude,
+                  lng1: place.location.longitude,
+                  lat2: this.state.restaurant.store_location.Lat,
+                  lng2: this.state.restaurant.store_location.Lng,
                 })
-                if (!this.state.isLoading) {
-                    this.setState({ isLoading: true });
-                    console.log(place);
-                    this.props
-                        .updateAction({
-                            ID: this.state.account.ID,
-                            account_location: {
-                                account_id: this.state.account.ID,
-                                address: this.state.address,
-                                lat: place.location.latitude,
-                                lng: place.location.longitude,
-                            },
-                        })
-                        .then(() => {
-                            this.setState({ isLoading: false });
-                            if (this.props.updatedData.success) {
-                                this.setState({ isLoading: false });
-                                console.log(this.props.updatedData.dataRes);
-                            } else {
-                                this.setState({ isLoading: false });
-                                this.alertMessage(this.props.updatedData.errorMessage);
-                            }
-                        });
-                }
-            })
-            .catch(error => console.log(error.message));
+                .then(() => {
+                  this.setState({isLoading: false});
+                  if (this.props.distanceData.dataRes) {
+                    this.setState({isLoading: false});
+                    this.setState({
+                      distance: this.props.distanceData.dataRes.toFixed(2),
+                    });
+                    console.log(this.props.distanceData.dataRes);
+                  } else {
+                    this.setState({isLoading: false});
+                    this.alertMessage(this.props.distanceData.errorMessage);
+                  }
+                });
+            }
+          })
+          .catch(error => console.log(error.message));
     }
     render() {
         return (
@@ -272,34 +286,6 @@ class PaymentSchedule extends Component {
     }
 }
 
-class OrderedBar extends Component {
-    render() {
-        return (
-            <View
-                style={{
-                    flexDirection: 'row-reverse',
-                    position: 'absolute',
-                    //width: '100%',
-                    //height: WINDOW_SIZE.HEIGHT/25 ,
-                    bottom: 0,
-                    backgroundColor: "#f2f2f2",
-                    borderRadius: 10,
-                }}>
-                <TouchableOpacity
-                    style={{
-                        // flex: 1, 
-                        // alignSelf: 'center', 
-                        // marginLeft: 10
-                    }}>
-                    <Text
-                        style={{
-                            padding: 10,
-                        }}>{this.props.totalitem} phần - {this.props.totalprice}đ</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
-}
 
 class HeaderBar extends Component {
     render() {
@@ -585,14 +571,15 @@ function mapStateToProps(state) {
         orderData: state.OrderReducer,
         accountData: state.UpdateReducer,
         addressData: state.AddressReducer,
+        distanceData: state.UpdateaddressorderReducer,
     };
 }
 
 function dispatchToProps(dispatch) {
     return bindActionCreators({
         orderAction,
-        updateAction,
         addressAction,
+        updateaddressorderAction,
     }, dispatch);
 }
 

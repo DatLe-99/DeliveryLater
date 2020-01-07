@@ -70,6 +70,7 @@ export default class HistoryComponent extends Component {
         this.state = {
           list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
           isPopupShown: false,
+          account: this.props.navigation.getParam("account")
         };
     
         this.layoutProvider = new LayoutProvider((i) => {
@@ -209,37 +210,45 @@ export default class HistoryComponent extends Component {
       }
 
     render(){
-        return(
-            <View
-                style = {{
-                    flex: 1,
-                    flexDirection: 'row',
-                }, styles.container}>
-            
-                <HeaderBar />
+        return (
+          <View
+            style={
+              ({
+                flex: 1,
+                flexDirection: 'row',
+              },
+              styles.container)
+            }>
+            <HeaderBar
+              ViewSchedule={() =>
+                this.props.navigation.navigate('ViewOrderSchedule', {
+                  account : this.state.account,
+                })
+              }
+            />
 
-                <RecyclerListView
-                    //style={{flex: 1}}
-                    rowRenderer={this.rowRenderer}
-                    dataProvider={this.state.list}
-                    layoutProvider={this.layoutProvider}
-                    
-                />
+            <RecyclerListView
+              //style={{flex: 1}}
+              rowRenderer={this.rowRenderer}
+              dataProvider={this.state.list}
+              layoutProvider={this.layoutProvider}
+            />
 
-                <ConfirmCancelOrderPopup 
-                    setIsPopupShown = {() => this.setState({isPopupShown: false})}
-                    isPopupShown = {this.state.isPopupShown}
-                />
+            <ConfirmCancelOrderPopup
+              setIsPopupShown={() => this.setState({isPopupShown: false})}
+              isPopupShown={this.state.isPopupShown}
+            />
 
-                <BottomBarComponent
-                    selectedTab = 'upcomingOrder'
-                    onPressHome = {() => this.props.navigation.navigate('Home')}
-                    onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
-                    onPressHistory = {() => this.props.navigation.navigate('History')}
-                    onPressProfile = {() => this.props.navigation.navigate('Profile')}
-                />
-            </View>
-            
+            <BottomBarComponent
+              selectedTab="upcomingOrder"
+              onPressHome={() => this.props.navigation.navigate('Home')}
+              onPressUpcomingOrder={() =>
+                this.props.navigation.navigate('UpcomingOrder')
+              }
+              onPressHistory={() => this.props.navigation.navigate('History')}
+              onPressProfile={() => this.props.navigation.navigate('Profile')}
+            />
+          </View>
         );
     }
 }
@@ -329,6 +338,7 @@ class HeaderBar extends Component {
                     </Text>
                 
                 <TouchableOpacity
+                    onPress = {this.props.ViewSchedule}
                     style = {{
                         position: 'absolute',
                         right: 0,
