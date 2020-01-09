@@ -148,11 +148,11 @@ class BoxRegister extends Component{
 class BoxUsername extends Component{
     render(){
         return(
-            <View style ={{width: 367, height: 42, backgroundColor: '#21B341', borderRadius: 13}}>
+            <View style ={{width: 367, height: 42, backgroundColor: '#FFFFFF', borderRadius: 13}}>
                 <TextInput 
                 onChangeText={this.props.onChangePhone}
                 placeholder= "Số điện thoại" 
-                style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}/>
+                style={{fontFamily: 'Verdana', fontStyle:"normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#000000'}}/>
             </View>
         );
     }
@@ -161,11 +161,11 @@ class BoxUsername extends Component{
 class BoxName extends Component {
   render() {
     return (
-      <View style={{ width: 367, height: 42, backgroundColor: '#C4C4C4', borderRadius: 13 , marginTop: 20}}>
+      <View style={{ width: 367, height: 42, backgroundColor: '#FFFFFF', borderRadius: 13 , marginTop: 20}}>
         <TextInput
           onChangeText={this.props.onChangeName}
           placeholder="Họ và tên"
-          style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF' }} />
+          style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#000000' }} />
       </View>
     );
   }
@@ -178,7 +178,7 @@ class BoxPassword extends Component{
             style={{
               width: 367,
               height: 42,
-              backgroundColor: '#AA9B15',
+              backgroundColor: '#FFFFFF',
               borderRadius: 13,
               marginTop: 20
             }}>
@@ -186,7 +186,7 @@ class BoxPassword extends Component{
             onChangeText={this.props.onChangePassword}
             placeholder= "Mật khẩu" 
             secureTextEntry={true} 
-              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}></TextInput>
+              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#000000'}}></TextInput>
           </View>
         );
     }
@@ -198,15 +198,15 @@ class BoxConfirmPassword extends Component{
             style={{
               width: 367,
               height: 42,
-              backgroundColor: '#AA9B15',
+              backgroundColor: '#FFFFFF',
               borderRadius: 13,
               marginTop: 20
             }}>
             <TextInput 
             onChangeText={this.props.onChangePasswordConfirm}
-            placeholder= "Xac Nhan Mật khẩu" 
+            placeholder= "Xác Nhận Mật Khẩu" 
             secureTextEntry={true} 
-              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}></TextInput>
+              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#000000'}}></TextInput>
           </View>
         );
     }
@@ -218,14 +218,14 @@ class BoxEmail extends Component{
             style={{
               width: 367,
               height: 42,
-              backgroundColor: '#F1A232',
+              backgroundColor: '#FFFFFF',
               borderRadius: 13,
               marginTop: 20
             }}>
             <TextInput 
             onChangeText={this.props.onChangeEmail}
             placeholder= "Email" 
-              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#FFFFFF'}}></TextInput>
+              style={{ fontFamily: 'Verdana', fontStyle: "normal", fontWeight: "normal", fontSize: 15, lineHeight: 18, display: "flex", alignItems: "center", textAlign: "center", color: '#000000'}}></TextInput>
           </View>
         );
     }

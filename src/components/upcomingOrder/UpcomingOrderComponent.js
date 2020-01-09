@@ -172,7 +172,7 @@ class UpcomingOrderComponent extends Component {
               renderItem={({ item }) =>
                 <OrderItem
                   item = {item}
-                  Cancel={() => this.setState({ isPopupShown: true })}
+                  // Cancel={() => this.setState({ isPopupShown: true })}
                 />
               }
               keyExtractor={item => item.id}
@@ -293,7 +293,7 @@ function OrderItem ({item, Cancel}){
           {item.StoreName}
         </Text>
         <Text
-          
+           numberOfLines={1}
           style={{
             fontSize: SCREEN_WIDTH / 28,
             alignSelf: 'center',
@@ -314,25 +314,6 @@ function OrderItem ({item, Cancel}){
             <AntDesignIcon name='clockcircleo' size={SCREEN_WIDTH / 25} color='#000' />
               <Text> {item.OrderDeadline.substr(11, 5)} {item.OrderDeadline.substr(0, 10)}  </Text>
           </View>
-          <TouchableOpacity
-            onPress={
-              () => Cancel()
-            }
-            style={{
-              borderWidth: 1,
-              borderRadius: 10,
-              borderColor: 'red',
-              backgroundColor: 'red',
-              margin: 10,
-            }}>
-            <Text
-              style={{
-                color: '#fff',
-                marginTop: 0,
-                fontWeight: 'bold',
-                padding: 5
-              }}>Hủy</Text>
-          </TouchableOpacity>
       </View>
       </View>
     </View>

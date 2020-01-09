@@ -11,7 +11,6 @@ export const ORDER = DOMAIN_URL + 'api/orders/new';
 export const UPDATEADDRESSORDER = DOMAIN_URL + 'api/orders/distance'
 export const VIEWSCHEDULE = DOMAIN_URL + 'api/orders/dateOrder'
 export const COMPLETE = DOMAIN_URL + 'api/orders/completedDate'
-export const RECOMMEND = DOMAIN_URL + 'api/stores/highestRateStore';
 export const REVIEWSEND = DOMAIN_URL + 'api/reviews/new';
 export const GETHISTORY = DOMAIN_URL + 'api/orders/completedOrder';
 export const GETREVIEW = DOMAIN_URL + 'api/reviews/search';

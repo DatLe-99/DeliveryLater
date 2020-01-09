@@ -119,7 +119,7 @@ export default class CalendarComponent extends Component {
         tmpitem: 0,
         tmpprice: 0,
       })
-      ToastAndroid.show("Đã lên lịch vào lúc "+this.state.schedual.time + " giờ ngày " + this.state.schedual.date, ToastAndroid.LONG);
+      ToastAndroid.show("Đã lên lịch vào lúc "+this.state.schedual.time + " ngày " + this.state.schedual.date, ToastAndroid.LONG);
       this.state.schedual.time = null
     }
     else

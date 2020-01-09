@@ -189,7 +189,9 @@ class HistoryComponent extends Component {
                 <BottomBarComponent 
                     selectedTab = 'history'
                     onPressHome = {() => this.props.navigation.navigate('Home')}
-                    onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
+                    onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder',{
+                        account: JSON.parse(this.state.loginUserProfile)
+                    })}
                     onPressHistory = {() => this.props.navigation.navigate('History')}
                     onPressProfile = {() => this.props.navigation.navigate('Profile')}
                 />

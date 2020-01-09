@@ -33,22 +33,26 @@ const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
 export default class HistoryComponent extends Component {
-    state = {
-        avtSrc: require('../../media/images/avtDat.jpg'),
-        nameUser: 'Dat Le',
-        addressIcon: require('../../media/images/address.png'),
-        addressText: 'Quản lý địa chỉ',
-        historyIcon: require('../../media/images/history.png'),
-        historyText: 'Lịch sử',
-        profileIcon: require('../../media/images/profileIcon.png'),
-        profileText: 'Chỉnh sửa thông tin cá nhân',
-        aboutIcon: require('../../media/images/aboutUs.png'),
-        aboutText: 'Về Delivery Later',
-        logoutIcon: require('../../media/images/logout.png'),
-        logoutText: 'Đăng xuất',
-        changePasswordIcon: require('../../media/images/password.png'),
-        changePasswordText: 'Đổi mật khẩu',
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+          account: this.props.navigation.getParam('account'),
+          avtSrc: require('../../media/images/avtDat.jpg'),
+          nameUser: 'Dat Le',
+          addressIcon: require('../../media/images/address.png'),
+          addressText: 'Quản lý địa chỉ',
+          historyIcon: require('../../media/images/history.png'),
+          historyText: 'Lịch sử',
+          profileIcon: require('../../media/images/profileIcon.png'),
+          profileText: 'Chỉnh sửa thông tin cá nhân',
+          aboutIcon: require('../../media/images/aboutUs.png'),
+          aboutText: 'Về Delivery Later',
+          logoutIcon: require('../../media/images/logout.png'),
+          logoutText: 'Đăng xuất',
+          changePasswordIcon: require('../../media/images/password.png'),
+          changePasswordText: 'Đổi mật khẩu',
+        };
+    }
     render(){
         return(
             <View
@@ -131,7 +135,9 @@ export default class HistoryComponent extends Component {
                 <BottomBarComponent 
                     selectedTab = 'profile'
                     onPressHome = {() => this.props.navigation.navigate('Home')}
-                    onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
+                    onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder',{
+                        account: this.state.account
+                    })}
                     onPressHistory = {() => this.props.navigation.navigate('History')}
                     onPressProfile = {() => this.props.navigation.navigate('Profile')}
                 />

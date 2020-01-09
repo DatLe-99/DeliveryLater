@@ -9,13 +9,12 @@ import orderAction from './addorder/action'
 import updateaddressorderAction from './updateaddressorder/action'
 import viewscheduleAction from './viewschedule/action'
 import completeAction from './completeorder/action'
-import updateAction from './update/action';
-import recommendAction from './recommend/action';
 import reviewSendAction from './reviewSend/action';
 import getHistoryAction from './getHistory/action';
 import getReviewAction from './getReview/action';
 
 export {signInAction};
+
 export {signUpAction};
 
 export {searchAction};
@@ -35,29 +34,6 @@ export {updateaddressorderAction};
 export {viewscheduleAction};
 
 export {completeAction};
-
-export {
-    signInAction,
-}
-export  {
-    signUpAction,
-}
-
-export {
-    searchAction,
-}
-
-export {
-    addressAction
-}
-
-export {
-    updateAction
-}
-
-export{
-    recommendAction
-}
 
 export{
     reviewSendAction

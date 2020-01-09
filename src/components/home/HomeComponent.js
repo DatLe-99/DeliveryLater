@@ -444,7 +444,9 @@ class HomeComponent extends Component {
             })
           }
           onPressHistory={() => this.props.navigation.navigate('History')}
-          onPressProfile={() => this.props.navigation.navigate('Profile')}
+          onPressProfile={() => this.props.navigation.navigate('Profile', {
+            account: this.state.accountData
+          })}
         />
       </View>
     );
@@ -757,9 +759,10 @@ function RestaurantItem({res}) {
                 ', ' +
                 res.province}
             </Text>
-            <Text
+            <View style = {{flexDirection: 'row', flex: 0.3,}}>
+                 <Text
               style={{
-                flex: 0.3,
+                
                 fontFamily: 'Verdana',
                 fontWeight: 'normal',
                 fontSize: 12,
@@ -768,8 +771,12 @@ function RestaurantItem({res}) {
                 alignContent: 'center',
                 color: '#000000',
               }}>
-              Giá: ~50k
-            </Text>
+              {res.rate.toFixed(1)}
+              </Text>
+              <IconAntDesign style = {{marginLeft: 5}} name="star" size={15} color="#E1CC08"/>
+            </View>
+           
+            
           </View>
         </View>
         <View style={{flex: 0.15}}>
