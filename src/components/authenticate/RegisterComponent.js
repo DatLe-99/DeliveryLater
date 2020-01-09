@@ -12,7 +12,8 @@ import {
     Keyboard,
     BackHandler,
     TextInput,
-    Dimensions
+    Dimensions,
+    ToastAndroid
 } from 'react-native';
 var deviceWidth = Dimensions.get("window").width;
 var deviceHeight = Dimensions.get("window").height;
@@ -38,27 +39,32 @@ class RegisterComponent extends Component {
   }
 
   onSignUp = () => {
-    if (!this.state.isLoading) {
-      this.setState({isLoading: true});
-      this.props
-        .signUpAction({
-          phone: this.state.phone,
-          password: this.state.password,
-          passwordConfirm: this.state.passwordConfirm,
-          email: this.state.email,
-          name: this.state.name,
-        })
-        .then(() => {
-          this.setState({isLoading: false});
-          if (this.props.signUpData.success) {
-            this.setState({isLoading: false});
-            console.log(this.props.signUpData.dataRes.phone);
-            this.props.navigation.navigate('SignIn');
-          } else {
-            this.setState({isLoading: false});
-            this.alertMessage(this.props.signUpData.errorMessage);
-          }
-        });
+    if(this.state.password === this.state.passwordConfirm){
+      if (!this.state.isLoading) {
+        this.setState({ isLoading: true });
+        this.props
+          .signUpAction({
+            phone: this.state.phone,
+            password: this.state.password,
+            passwordConfirm: this.state.passwordConfirm,
+            email: this.state.email,
+            name: this.state.name,
+          })
+          .then(() => {
+            this.setState({ isLoading: false });
+            if (this.props.signUpData.success) {
+              this.setState({ isLoading: false });
+              console.log(this.props.signUpData.dataRes.phone);
+              this.props.navigation.navigate('SignIn');
+            } else {
+              this.setState({ isLoading: false });
+              this.alertMessage(this.props.signUpData.errorMessage);
+            }
+          });
+      }
+    }
+    else{
+      ToastAndroid.show("Xác nhận mật khẩu không trùng khớp", ToastAndroid.SHORT);
     }
   };
 

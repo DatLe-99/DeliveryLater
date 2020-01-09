@@ -82,6 +82,7 @@ class HomeComponent extends Component {
       refreshing: false,
       tabindex: 0, //[Goi y, Gan toi, Vua dat, Moi]
     };
+    console.disableYellowBox = true;
     //this.index = 0
   }
 

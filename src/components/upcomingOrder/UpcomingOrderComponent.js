@@ -110,8 +110,10 @@ class UpcomingOrderComponent extends Component {
                 } else {
                   this.setState({
                     isLoading: false,
+                    refreshing: true,
                   });
-                  return []
+                  this.onRefresh([])
+                  console.log(this.data)
                 }
               });
           }
@@ -141,8 +143,9 @@ class UpcomingOrderComponent extends Component {
                 console.log(this.props.completeData.dataRes)
 
               } else {
-                this.alertMessage(this.props.completeData.errorMessage);
+                // this.alertMessage(this.props.completeData.errorMessage);
                 this.setState({ isLoading: false });
+                ToastAndroid.show("Bạn không có bất kỳ đơn hàng nào được lên lịch", ToastAndroid.SHORT)
               }
             });
     }
@@ -150,7 +153,7 @@ class UpcomingOrderComponent extends Component {
 
   onRefresh = (list) =>{
         this.data = list
-        this.setState({refreshing: false})
+        this.setState({ refreshing: false })
   } 
 
     render(){
@@ -164,24 +167,12 @@ class UpcomingOrderComponent extends Component {
               styles.container)
             }>
             <HeaderBar ViewSchedule={() => this.ViewSchedule()} />
-            <FlatList
-              listKey={(item, index) => 'D' + index.toString()}
-              data={this.data}
-              renderItem={({item}) => (
-                <OrderItem
-                  item={item}
-                  // Cancel={() => this.setState({ isPopupShown: true })}
-                />
-              )}
-              keyExtractor={item => item.id}
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={this.props.onRefresh}
-                />
-              }
+            <FlatListOrder
+              data = {this.data}
+              refreshing= {this.state.refreshing}
+              onRefresh = {this.props.onRefresh}
             />
-
+            
             <ConfirmCancelOrderPopup
               setIsPopupShown={() => this.setState({isPopupShown: false})}
               isPopupShown={this.state.isPopupShown}
@@ -261,6 +252,38 @@ class ConfirmCancelOrderPopup extends Component {
   }
 }
 
+function FlatListOrder({data, refreshing, onRefresh}){
+  //ToastAndroid.show(data, ToastAndroid.SHORT)
+  if(data.length == 0){
+    return(
+      <View style= {{alignSelf: "center", marginTop: 20}}>
+        <Text>Bạn không có bất kì đơn hàng nào vào hôm nay</Text>
+      </View>
+    )
+  }
+  else{
+    return (
+      <FlatList
+        listKey={(item, index) => 'D' + index.toString()}
+        data={data}
+        renderItem={({ item }) => (
+          <OrderItem
+            item={item}
+          // Cancel={() => this.setState({ isPopupShown: true })}
+          />
+        )}
+        keyExtractor={item => item.id}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      />
+    )
+  }
+}
+
 function OrderItem ({item, Cancel}){
   return(
     <View
@@ -317,7 +340,7 @@ function OrderItem ({item, Cancel}){
               flexDirection: 'row',
             }}>
             <AntDesignIcon name='clockcircleo' size={SCREEN_WIDTH / 25} color='#000' />
-              <Text> {item.OrderDeadline.substr(11, 5)} {item.OrderDeadline.substr(0, 10)}  </Text>
+              <Text> {item.deadline.substr(11, 5)} {item.deadline.substr(0, 10)}  </Text>
           </View>
       </View>
       </View>

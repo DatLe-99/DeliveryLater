@@ -273,8 +273,8 @@ function FoodItem({fooditem, onPressItem}) {
         }}>
         <Image
           style={{borderRadius: 10, width: 30, height: 30, margin: 5}}
-          source={require('../../media/images/test.jpg')}
-        />
+          source={{uri: fooditem.url}}
+      />
         <View style={{flexDirection: 'column', flex: 0.9}}>
           <Text
             style={{

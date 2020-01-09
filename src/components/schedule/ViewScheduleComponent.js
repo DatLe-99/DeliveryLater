@@ -225,11 +225,8 @@ class ViewScheduleComponent extends Component {
           onPressArrowRight={addMonth => addMonth()}
         />
         <OrderList date={this.state.schedual.date} />
-        <FlatList
-          data={this.state.orderData}
-          listKey={(item, index) => 'D' + index.toString()}
-          renderItem={({item}) => <ScheduleOrderItem order={item} />}
-          keyExtractor={item => item.id}
+        <FlatListOrder
+          data = {this.state.orderData}
         />
       </View>
     );
@@ -305,6 +302,26 @@ class OrderList extends Component {
   }
 }
 
+function FlatListOrder({data}){
+  if(data.length == 0){
+    return(
+      <View style = {{alignSelf: "center", marginTop: 20}}>
+        <Text>Bạn không có lịch đặt vào hôm nay</Text>
+      </View>
+    )
+  }
+  else{
+    return(
+      <FlatList
+        data={data}
+        listKey={(item, index) => 'D' + index.toString()}
+        renderItem={({ item }) => <ScheduleOrderItem order={item} />}
+        keyExtractor={item => item.id}
+      />
+    )
+  }
+}
+
 function ScheduleOrderItem({order}) {
   return (
     <View
@@ -343,8 +360,8 @@ function ScheduleOrderItem({order}) {
             color: '#000000',
             padding: 5,
           }}>
-          Ngày Đặt: {order.OrderDate.substr(11, 5)} giờ -{' '}
-          {order.OrderDate.substr(0, 10)}
+          Ngày Đặt: {order.created.substr(11, 5)} giờ -{' '}
+          {order.created.substr(0, 10)}
         </Text>
         <Text
           style={{
@@ -357,8 +374,8 @@ function ScheduleOrderItem({order}) {
             color: '#000000',
             padding: 5,
           }}>
-          Ngày Giao: {order.OrderDeadline.substr(11, 5)} giờ -{' '}
-          {order.OrderDeadline.substr(0, 10)}
+          Ngày Giao: {order.deadline.substr(11, 5)} giờ -{' '}
+          {order.deadline.substr(0, 10)}
         </Text>
       </View>
       <View>

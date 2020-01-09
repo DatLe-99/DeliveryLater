@@ -482,7 +482,7 @@ class Total extends Component {
                             borderRadius: 10,
                             marginLeft: 10,
 
-                        }}>Đặt ngay</Text>
+                        }}>Đặt lịch</Text>
 
                 </TouchableOpacity>
             </View>

@@ -77,7 +77,7 @@ function FoodItemInRestaurant({ item }) {
         <View>
             <View style={{ flexDirection: "row", marginTop: 5, borderRadius: 12, backgroundColor: "rgba(196, 196, 196, 0.6)", alignItems: "center", marginLeft: 30, marginRight: 30 }}>
                 <Image style={{ borderRadius: 10, width: 30, height: 30, margin: 5 }}
-                    source={require("../../media/images/test.jpg")}
+                    source={{uri: item.url}}
                 />
                 <View style={{ flexDirection: 'column', flex: 0.9 }}>
                     <Text
