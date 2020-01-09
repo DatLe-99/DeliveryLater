@@ -163,18 +163,16 @@ class UpcomingOrderComponent extends Component {
               },
               styles.container)
             }>
-            <HeaderBar
-              ViewSchedule={() => this.ViewSchedule()}
-            />
+            <HeaderBar ViewSchedule={() => this.ViewSchedule()} />
             <FlatList
               listKey={(item, index) => 'D' + index.toString()}
               data={this.data}
-              renderItem={({ item }) =>
+              renderItem={({item}) => (
                 <OrderItem
-                  item = {item}
+                  item={item}
                   // Cancel={() => this.setState({ isPopupShown: true })}
                 />
-              }
+              )}
               keyExtractor={item => item.id}
               refreshControl={
                 <RefreshControl
@@ -183,7 +181,7 @@ class UpcomingOrderComponent extends Component {
                 />
               }
             />
-            
+
             <ConfirmCancelOrderPopup
               setIsPopupShown={() => this.setState({isPopupShown: false})}
               isPopupShown={this.state.isPopupShown}
@@ -191,12 +189,19 @@ class UpcomingOrderComponent extends Component {
 
             <BottomBarComponent
               selectedTab="upcomingOrder"
-              onPressHome={() => this.props.navigation.navigate('Home')}
-              onPressUpcomingOrder={() =>
-                this.props.navigation.navigate('UpcomingOrder')
+              onPressHome={() =>
+                this.props.navigation.navigate('Home', {
+                  account: this.state.account,
+                })
               }
-              onPressHistory={() => this.props.navigation.navigate('History')}
-              onPressProfile={() => this.props.navigation.navigate('Profile')}
+              onPressHistory={() => this.props.navigation.navigate('History', {
+                account: this.state.account,
+              })}
+              onPressProfile={() =>
+                this.props.navigation.navigate('Profile', {
+                  account: this.state.account,
+                })
+              }
             />
           </View>
         );
@@ -343,7 +348,7 @@ class HeaderBar extends Component {
                 }}>
                 <Text
                     style = {{
-                        color: '#000',
+                        color: '#FFFFFF',
                         alignSelf: 'center',
                         fontWeight: 'bold',
                         fontSize: SCREEN_WIDTH/20,

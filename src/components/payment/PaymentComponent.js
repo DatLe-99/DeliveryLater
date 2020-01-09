@@ -290,15 +290,6 @@ class PaymentComponent extends Component {
                         flexDirection: 'row',
                     }}>
                     
-                    <TouchableOpacity>
-                        <Text
-                            style = {{
-                                backgroundColor: 'rgba(243, 79, 8, 0.8)',
-                                padding: 10,
-                                borderRadius: 10,
-                                marginLeft: 10,
-                            }}>Đặt lịch</Text>
-                    </TouchableOpacity>
 
                     <Text
                         style = {{

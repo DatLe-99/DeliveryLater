@@ -56,7 +56,7 @@ class LoginComponent extends Component {
 
             this.props.navigation.navigate('Home',
             {
-              accountData: this.props.signInData.dataRes
+              account: this.props.signInData.dataRes
             });
           } else {
             this.setState({isLoading: false});

@@ -77,7 +77,7 @@ class HomeComponent extends Component {
       error: null,
 
       address: '',
-      accountData: this.props.navigation.getParam('accountData'),
+      accountData: this.props.navigation.getParam('account'),
       currentData: [],
       refreshing: false,
       tabindex: 0, //[Goi y, Gan toi, Vua dat, Moi]
@@ -437,16 +437,21 @@ class HomeComponent extends Component {
 
         <BottomBarComponent
           selectedTab="home"
-          onPressHome={() => this.props.navigation.navigate('Home')}
           onPressUpcomingOrder={() =>
             this.props.navigation.navigate('UpcomingOrder', {
               account: this.state.accountData,
             })
           }
-          onPressHistory={() => this.props.navigation.navigate('History')}
-          onPressProfile={() => this.props.navigation.navigate('Profile', {
-            account: this.state.accountData
-          })}
+          onPressHistory={() =>
+            this.props.navigation.navigate('History', {
+              account: this.state.accountData,
+            })
+          }
+          onPressProfile={() =>
+            this.props.navigation.navigate('Profile', {
+              account: this.state.accountData,
+            })
+          }
         />
       </View>
     );

@@ -74,6 +74,7 @@ class HistoryComponent extends Component {
           isLoadingUserProfile: true,
           storeId: '',
           isHistoryExist: true,
+          account: this.props.navigation.getParam("account")
         }
 
         AsyncStorage.getItem('loginUserProfile').then(value => {
@@ -193,12 +194,15 @@ class HistoryComponent extends Component {
 
                   <BottomBarComponent 
                     selectedTab = 'history'
-                    onPressHome = {() => this.props.navigation.navigate('Home')}
+                    onPressHome = {() => this.props.navigation.navigate('Home', {
+                        account: JSON.parse(this.state.loginUserProfile)
+                    })}
                     onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder',{
                         account: JSON.parse(this.state.loginUserProfile)
                     })}
-                    onPressHistory = {() => this.props.navigation.navigate('History')}
-                    onPressProfile = {() => this.props.navigation.navigate('Profile')}
+                    onPressProfile = {() => this.props.navigation.navigate('Profile', {
+                        account: JSON.parse(this.state.loginUserProfile)
+                    })}
                 />
 
                 </View>
@@ -233,10 +237,16 @@ class HistoryComponent extends Component {
   
                     <BottomBarComponent 
                       selectedTab = 'history'
-                      onPressHome = {() => this.props.navigation.navigate('Home')}
-                      onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
-                      onPressHistory = {() => this.props.navigation.navigate('History')}
-                      onPressProfile = {() => this.props.navigation.navigate('Profile')}
+                        onPressHome = {() => this.props.navigation.navigate('Home', {
+                            account: JSON.parse(this.state.loginUserProfile)
+                        })}
+                        onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder',{
+                            account: JSON.parse(this.state.loginUserProfile)
+                        })}
+                        onPressProfile = {() => this.props.navigation.navigate('Profile', {
+                            account: JSON.parse(this.state.loginUserProfile)
+                        })}
+                      
                   />
   
                   </View>
