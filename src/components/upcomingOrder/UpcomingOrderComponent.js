@@ -94,7 +94,7 @@ class UpcomingOrderComponent extends Component {
               .viewscheduleAction(
                 {
                   ID: this.state.account.ID,
-                  Date: moment(),
+                  Date: moment().format("YYYY-MM-DD"),
                 }
               )
               .then(() => {
@@ -257,13 +257,14 @@ function FlatListOrder({data, refreshing, onRefresh}){
   if(data.length == 0){
     return(
       <View style= {{alignSelf: "center", marginTop: 20}}>
-        <Text>Bạn không có bất kì đơn hàng nào vào hôm nay</Text>
+        <Text>Bạn không có bất kì đơn hàng nào lên lịch vào hôm nay</Text>
       </View>
     )
   }
   else{
     return (
       <FlatList
+        style = {{marginBottom: WINDOW_SIZE.HEIGHT/20}}
         listKey={(item, index) => 'D' + index.toString()}
         data={data}
         renderItem={({ item }) => (
