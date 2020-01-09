@@ -311,7 +311,7 @@ function OrderItem ({item, Cancel}){
         borderRadius: 7,
       }} source={require('../../media/images/test.jpg')} />
       
-      <View style = {{flexDirection: "column", margin: 5}}>
+      <View style = {{flexDirection: "column", margin: 5, flex: 1}}>
         <Text
           numberOfLines={1}
           style={{
