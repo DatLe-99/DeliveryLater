@@ -8,6 +8,7 @@ import newestAction from './neweststore/action';
 import orderAction from './addorder/action'
 import updateaddressorderAction from './updateaddressorder/action'
 import viewscheduleAction from './viewschedule/action'
+import completeAction from './completeorder/action'
 
 export {signInAction};
 export {signUpAction};
@@ -27,3 +28,5 @@ export {orderAction};
 export {updateaddressorderAction};
 
 export {viewscheduleAction};
+
+export {completeAction};

@@ -151,7 +151,7 @@ export default class RestaurantComponent extends Component{
                 <HeaderRestaurant
                     ResName = {this.state.listData.item.name}
                     ResAddress={this.state.listData.item.store_location.address}
-                    onBack = {() => this.props.navigation.navigate("Search")}
+                    onBack = {() => this.props.navigation.navigate("Home")}
                 />
                 
                 <ListChoosen

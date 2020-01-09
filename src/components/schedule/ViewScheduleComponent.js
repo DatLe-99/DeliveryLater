@@ -46,6 +46,7 @@ class ViewScheduleComponent extends Component {
       orderData: [],
       previousDay: "",
       selectedDate: '',
+      listday: this.props.navigation.getParam("listday"),
     };
   }
   onDaySelect = day => {
@@ -92,16 +93,26 @@ class ViewScheduleComponent extends Component {
                     } else {
                       this.setState({
                         isLoading: false,
-                        orderData: []
+                        orderData: [],
+                        // orderData: [{
+                        //   StoreName: "Bạn không có đơn hàng nào vào ngày này",
+                        //   address: "",
+                        //   OrderDate: "",
+                        //   OrderDeadline: "",
+                        //   TotalItem: "",
+                        //   TotalPrice: "",
+                        // }]
                       });
-                      this.alertMessage(this.props.orderData.errorMessage);
                     }
                 });
         }
   };
 
   componentDidMount(){
-    var dates = ['2020-01-08']
+    var dates = []
+    for(var i=0 ; i< this.state.listday.length; i++){
+      dates.push(this.state.listday[i].Date.substr(0,10))
+    }
     var _markedDates = {
       // [today]: {disabled: true},
     };
@@ -137,7 +148,7 @@ class ViewScheduleComponent extends Component {
     return (
       <View>
         <HeaderCalendar
-          onBack={() => this.props.navigation.navigate('Restaurant')}
+          onBack={() => this.props.navigation.navigate('UpcomingOrder')}
         />
         <View
           style={{

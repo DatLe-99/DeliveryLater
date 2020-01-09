@@ -10,6 +10,7 @@ import NewestReducer from './neweststore/reducer'
 import OrderReducer from './addorder/reducer'
 import UpdateaddressorderReducer from './updateaddressorder/reducer'
 import ViewscheduleReducer from './viewschedule/reducer'
+import CompleteReducer from './completeorder/reducer'
 
 export default combineReducers({
   form: reduxFormReducer,
@@ -23,4 +24,5 @@ export default combineReducers({
   OrderReducer,
   UpdateaddressorderReducer,
   ViewscheduleReducer,
+  CompleteReducer,
 });

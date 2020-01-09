@@ -198,7 +198,9 @@ class PaymentComponent extends Component {
                     isLoading: false,
                   });
                   console.log(this.props.orderData.dataRes);
-                  this.props.navigation.navigate('UpcomingOrder');
+                  this.props.navigation.navigate('UpcomingOrder',{
+                      account: this.state.account,
+                  });
                 } else {
                   this.setState({isLoading: false});
                   this.alertMessage(this.props.orderData.errorMessage);
