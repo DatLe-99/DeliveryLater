@@ -29,5 +29,5 @@ export {
     verticalScale,
     moderateScale,
     WINDOW_SIZE,
-    SPACING_CONSTANTS
+    SPACING_CONSTANTS,
 };

@@ -253,12 +253,12 @@ class ConfirmCancelOrderPopup extends Component {
             height={0.5}
             width={1}
             onSwipeOut={this.props.setIsPopupShow}
-            modalTitle={
-              <ModalTitle
-                title="Bạn muốn hủy đơn hàng này?"
-                hasTitleBar
-              />
-            }
+            // // modalTitle={
+            // //   <ModalTitle
+            // //     // /title="Bạn muốn hủy đơn hàng này?"
+            // //     //hasTitleBar
+            // //   />
+            // }
   
             footer={
               <ModalFooter>
@@ -282,9 +282,10 @@ class ConfirmCancelOrderPopup extends Component {
             }
           >
             <ModalContent
+              
               style={{
                 flex: 1,
-                backgroundColor: 'fff',
+                backgroundColor: '#fff',
               }}
             >
               <Text>
@@ -295,6 +296,7 @@ class ConfirmCancelOrderPopup extends Component {
       );
     }
   }
+
 
 class HeaderBar extends Component {
     render() {

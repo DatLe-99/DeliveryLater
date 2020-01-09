@@ -23,6 +23,7 @@ export default (state = initialState, action) => {
                 error: false,
                 success: action.dataResult.status,
                 dataRes: action.dataResult.account,
+                //loginUserProfile: action.dataResult.account,
                 errorMessage: action.dataResult.message,
             };
         case SIGN_IN_FAILURE:

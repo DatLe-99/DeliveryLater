@@ -296,7 +296,8 @@ class HomeComponent extends Component {
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate("Restaurant",
                   {
-                    listMenu: { item }
+                    listMenu: { item },
+                    storeId: item.ID,
                   })}
               >
                 <RestaurantItem

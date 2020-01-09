@@ -36,12 +36,13 @@ import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 import ReadMore from 'react-native-read-more-text';
 
 import OnLayout from 'react-native-on-layout';
+import {getReviewAction} from '../../redux/action';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 
-export default class RestaurantComponent extends Component{
+class RestaurantComponent extends Component{
     innitialState = []
     constructor(props){
         super(props)
@@ -49,11 +50,14 @@ export default class RestaurantComponent extends Component{
          /**Sai nè nha, trong constructor phải khai báo state, sửa như ở dưới*/
          this.state = {
              listData : this.props.navigation.getParam('listMenu'),
+             storeId: this.props.navigation.getParam('storeId'),
              totalprice: 0,
              totalitem: 0,
              listorder: this.innitialState,
              tabindex: 0, //gian hàng, đánh giá, hình ảnh
          }
+         console.log(this.props.getReviewAction)
+         
     }
     componentDidMount = () => {
         console.log(this.state.listData.item)
@@ -88,6 +92,8 @@ export default class RestaurantComponent extends Component{
           listorder: tmp,
         });
         console.log(tmp)
+        console.log(this.props.getReviewAction())
+        console.log(this.state.storeId);
     }
     MinusItemFood = (item) =>{
         // ToastAndroid.show(item.name,ToastAndroid.SHORT)
@@ -150,7 +156,11 @@ export default class RestaurantComponent extends Component{
                 }
 
                 {this.state.tabindex === 1 && 
-                    <Review />
+                    <Review 
+                        getReviewAction = {this.props.getReviewAction}
+                        getReviewData = {this.props.getReviewData}
+                        storeId = {this.state.storeId}
+                    />
                 }
                 
             </View> 
@@ -162,47 +172,91 @@ export default class RestaurantComponent extends Component{
 class Review extends Component {
     constructor(props) {
         super(props);
-    
+        
+        this.state = {
+            isLoading: false,
+            reviewData: null,
+        }
+        //console.log(this.props.getReviewAction())
+        if (!this.state.isLoading) {
+            this.setState({isLoading: true});
+            this.props
+                .getReviewAction({
+                ID: this.props.storeId
+              })
+              .then(() => {
+                this.setState({isLoading: false});
+                if (this.props.getReviewData.success) {
+                  this.setState({isLoading: false});
+                  this.setState({reviewData: this.props.getReviewData.dataRes});
+
+                } else {
+                  this.setState({isLoading: false});
+                  this.alertMessage(this.props.getReviewData.errorMessage);
+                }
+              });
+        }
+    }
+
+    render() {
+      if (this.state.reviewData !== null)
+            return(
+                <RecyclerViewForReview
+                    reviewData = {this.state.reviewData}
+                />
+            );
+
+        return (
+            <View style={[styles.containerLoading, styles.horizontal]}>
+                <ActivityIndicator size="large" color="#F34F08" />
+            </View>
+       );
+    }
+}
+
+class RecyclerViewForReview extends Component {
+    constructor(props) {
+        super(props);
+
         const fakeData = [];
 
-        for(var i = 0; i < 100; i+= 1) {
-          fakeData.push({
-            type: 'NORMAL',
-            item: {
-              id: i,
-              image: faker.image.avatar(),
-              nameUser: faker.name.firstName(),
-              numStar: faker.random.number(5),
-              description: faker.random.words(20),
-            },
-          });
+        for(var i = 0; i < Object.keys(this.props.reviewData).length; i+= 1) {
+            fakeData.push({
+                type: 'NORMAL',
+                item: {
+                id: i,
+                nameUser: this.props.reviewData[i].name,
+                numStar: this.props.reviewData[i].rate,
+                description: this.props.reviewData[i].content,
+                },
+            });
         }
+
         this.state = {
-          list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
-          
-        };
-    
+            list: new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(fakeData),
+        }
+
         this.layoutProvider = new LayoutProvider((i) => {
-          return this.state.list.getDataForIndex(i).type;
-        }, (type, dim) => {
-          switch (type) {
-            case 'NORMAL': 
-                dim.width = SCREEN_WIDTH;
-                dim.height = SCREEN_HEIGHT/3.5;
-              break;
-            default: 
-              dim.width = 0;
-              dim.height = 0;
-              break;
-              
-          };
+                return this.state.list.getDataForIndex(i).type;
+              }, (type, dim) => {
+                switch (type) {
+                  case 'NORMAL': 
+                      dim.width = SCREEN_WIDTH;
+                      dim.height = SCREEN_HEIGHT/6;
+                    break;
+                  default: 
+                    dim.width = 0;
+                    dim.height = 0;
+                    break;
+                    
+                };
         })
-      }
-    
-      rowRenderer = (type, data) => {
-        const { image, nameUser, description, numStar} = data.item;
+    }
+
+    rowRenderer = (type, data) => {
+        const {nameUser, description, numStar} = data.item;
         return (
-          <View 
+        <View 
             style={{
                 backgroundColor: '#fff',
                 marginTop: 0.026*SCREEN_HEIGHT,
@@ -221,7 +275,7 @@ class Review extends Component {
                 elevation: 2,
                 flexDirection: 'column',
                 borderRadius: 7,
-          }}>
+        }}>
             <View 
                 style = {{
                     flexDirection: 'row',
@@ -232,7 +286,7 @@ class Review extends Component {
                     marginLeft: 0.01*SCREEN_HEIGHT,
                     marginTop: 0.01*SCREEN_HEIGHT,
                     borderRadius: SCREEN_HEIGHT/5,
-                }} source={{ uri: image }} />
+                }} source={require('../../media/images/hacker.jpg')} />
 
                 <Text
                     style = {{
@@ -282,10 +336,10 @@ class Review extends Component {
                 />
             </View>
             
-          </View>
+        </View>
         )
-      }
-    
+    }
+
     render() {
         return(
             <RecyclerListView
@@ -296,7 +350,6 @@ class Review extends Component {
         );
     }
 }
-
 class CommentViewMore extends Component {
     _renderTruncatedFooter = (handlePress) => {
         return (
@@ -431,6 +484,7 @@ class ListChoosen extends Component {
       });
   
       this.props.parentCallbackIndex(index)
+      
       if(index == 0){
         //this.props.NearMe()
         ToastAndroid.show("Gian hàng pressed", ToastAndroid.SHORT)
@@ -622,3 +676,22 @@ function countFoodItem (item, listorder) {
   }
   return 0;
 };
+
+function mapStateToProps(state) {
+    return {
+      getReviewData: state.GetReviewReducer,
+    };
+  }
+  
+  function dispatchToProps(dispatch) {
+    return bindActionCreators(
+      {
+        getReviewAction,
+      },
+      dispatch,
+    );
+  }
+  
+  export default connect(mapStateToProps, dispatchToProps)(RestaurantComponent);
+  
+
