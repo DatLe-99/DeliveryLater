@@ -72,7 +72,8 @@ class HistoryComponent extends Component {
           loginUserProfile: '',
           isReviewSending: false,   
           isLoadingUserProfile: true,
-          storeId: 'a',
+          storeId: '',
+          isHistoryExist: true,
         }
 
         AsyncStorage.getItem('loginUserProfile').then(value => {
@@ -153,13 +154,17 @@ class HistoryComponent extends Component {
                   // ToastAndroid.show(this.props.getHistoryData.dataRes[0].StoreName, ToastAndroid.SHORT);
                 } else {
                   this.setState({isGetHistoryLoading: false});
-                  this.alertMessage(this.props.getHistoryData.errorMessage);
+
+                  if (this.props.getHistoryData.errorMessage === 'Orders doesnt exist')
+                    this.setState({isHistoryExist: false});
+                  else
+                    this.alertMessage(this.props.getHistoryData.errorMessage);
                 }
               });
             }
       }
 
-      if (this.state.historyData !== '')
+      if (this.state.historyData !== '' && this.state.isHistoryExist)
         return(
             <View
                 style = {{
@@ -169,33 +174,73 @@ class HistoryComponent extends Component {
 
                 <HeaderBar />
 
-                <RecyclerView
-                    showPopup = {() => this.setState({isPopupShown: true})}
-                    resetReviewState = {() => this.setState({starNumber: 3, comment: ''})}
-                    style = {{flex: 0.3}}
-                    userID = {JSON.parse(this.state.loginUserProfile).ID}
-                    historyData = {this.state.historyData}
-                    setStoreId = {(id) => this.setState({storeId: id})}
-                />
+                  <RecyclerView
+                      showPopup = {() => this.setState({isPopupShown: true})}
+                      resetReviewState = {() => this.setState({starNumber: 3, comment: ''})}
+                      style = {{flex: 0.3}}
+                      userID = {JSON.parse(this.state.loginUserProfile).ID}
+                      historyData = {this.state.historyData}
+                      setStoreId = {(id) => this.setState({storeId: id})}
+                  />
 
-                <RatingPopup 
-                    hiddenPopup = {() => this.setState({isPopupShown: false})}
-                    isPopupShown = {this.state.isPopupShown}
-                    onChangeNumberStar = {numberStar => this.setState({starNumber: numberStar})}
-                    onChangeCmt = {event => this.setState({comment: event.nativeEvent.text || '' })}
-                    showCommentInfo = {this.onReviewSend}
-                />
+                  <RatingPopup 
+                      hiddenPopup = {() => this.setState({isPopupShown: false})}
+                      isPopupShown = {this.state.isPopupShown}
+                      onChangeNumberStar = {numberStar => this.setState({starNumber: numberStar})}
+                      onChangeCmt = {event => this.setState({comment: event.nativeEvent.text || '' })}
+                      showCommentInfo = {this.onReviewSend}
+                  />
 
-                <BottomBarComponent 
+                  <BottomBarComponent 
                     selectedTab = 'history'
                     onPressHome = {() => this.props.navigation.navigate('Home')}
                     onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
                     onPressHistory = {() => this.props.navigation.navigate('History')}
                     onPressProfile = {() => this.props.navigation.navigate('Profile')}
                 />
-            </View>
-            
+
+                </View>
         );
+
+            if (! this.state.isHistoryExist) {
+                return (
+                  <View
+                  style = {{
+                      flex: 1,
+                      flexDirection: 'row',
+                  }, styles.container}>
+  
+                  <HeaderBar />
+  
+                  <View
+                    style = {{
+                      marginTop: 30,
+                      alignItems: 'center',
+                    }}>
+                  <Text
+                    style = {{
+                      textAlignVertical: 'center',
+                      marginBottom: 10,
+                    }}>Bạn chưa có đơn hàng nào trong lịch sử.</Text>
+                  <Text
+                    style = {{
+                      textAlignVertical: 'center',
+                    }}>Hãy thử Delivery Later ngay !</Text>
+
+                  </View>
+  
+                    <BottomBarComponent 
+                      selectedTab = 'history'
+                      onPressHome = {() => this.props.navigation.navigate('Home')}
+                      onPressUpcomingOrder = {() => this.props.navigation.navigate('UpcomingOrder')}
+                      onPressHistory = {() => this.props.navigation.navigate('History')}
+                      onPressProfile = {() => this.props.navigation.navigate('Profile')}
+                  />
+  
+                  </View>
+                  
+                );
+              }
 
     return(
       <View style={[styles.containerLoading, styles.horizontal]}>

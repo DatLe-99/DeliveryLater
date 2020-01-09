@@ -176,6 +176,7 @@ class Review extends Component {
         this.state = {
             isLoading: false,
             reviewData: null,
+            isReviewExist: true,
         }
         //console.log(this.props.getReviewAction())
         if (!this.state.isLoading) {
@@ -189,28 +190,61 @@ class Review extends Component {
                 if (this.props.getReviewData.success) {
                   this.setState({isLoading: false});
                   this.setState({reviewData: this.props.getReviewData.dataRes});
-
+                  console.log(JSON.stringify(this.props.getReviewData.dataRes));
                 } else {
+                    //this.setState({isLoading: false});
                   this.setState({isLoading: false});
-                  this.alertMessage(this.props.getReviewData.errorMessage);
+                  if (this.props.getReviewData.errorMessage === 'Review doesnt exist')
+                    this.setState({isReviewExist: false});
+                  else 
+                    this.alertMessage(this.props.getReviewData.errorMessage);
                 }
               });
         }
     }
 
+    alertMessage = title => {
+        Alert.alert(
+          '',
+          title,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                return;
+              },
+            },
+          ],
+          {cancelable: false},
+        );
+      };
+
     render() {
-      if (this.state.reviewData !== null)
+      if (this.state.reviewData !== null && this.state.isReviewExist == true) {
             return(
                 <RecyclerViewForReview
                     reviewData = {this.state.reviewData}
                 />
             );
-
-        return (
+      }
+        
+            if (this.state.isReviewExist === true && this.state.reviewData === null) {
+            return (
             <View style={[styles.containerLoading, styles.horizontal]}>
                 <ActivityIndicator size="large" color="#F34F08" />
             </View>
        );
+            }
+
+                return (
+                    <Text
+                        style = {{
+                            textAlignVertical: 'center',
+                            marginTop: 30,
+                            alignSelf: 'center',
+                        }}>Không có review nào.</Text>
+                );
+        
     }
 }
 
@@ -400,6 +434,17 @@ const styles = StyleSheet.create({
     cardText: {
       fontSize: 14,
     },
+
+    containerLoading: {
+        flex: 1,
+        justifyContent: 'center'
+      },
+  
+      horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10
+      }
   });
 
 class GianHang extends Component {
