@@ -22,6 +22,7 @@ import LoginBackground from 'images/LoginBackground.jpg';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {signInAction} from '../../redux/action';
+import AsyncStorage from '@react-native-community/async-storage'
 
 class LoginComponent extends Component {
   constructor(props) {
@@ -45,8 +46,17 @@ class LoginComponent extends Component {
           this.setState({isLoading: false});
           if (this.props.signInData.success) {
             this.setState({isLoading: false});
-            this.props.navigation.navigate('Home', {
-              accountData: this.props.signInData.dataRes,
+
+            try {
+              AsyncStorage.setItem('loginUserProfile', JSON.stringify(this.props.signInData.dataRes));
+             // ToastAndroid.show(JSON.stringify(this.props.signInData.dataRes), ToastAndroid.SHORT);
+            } catch (e) {
+              this.alertMessage('Error when storing login user data');
+            }
+
+            this.props.navigation.navigate('Home',
+            {
+              accountData: this.props.signInData.dataRes
             });
           } else {
             this.setState({isLoading: false});
@@ -311,6 +321,8 @@ class NotHaveAccount extends Component {
     );
   }
 }
+
+
 
 const styles = StyleSheet.create({
   header: {

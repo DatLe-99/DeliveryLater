@@ -241,9 +241,10 @@ class ConfirmCancelOrderPopup extends Component {
             }
           >
             <ModalContent
+              
               style={{
                 flex: 1,
-                backgroundColor: 'fff',
+                backgroundColor: '#fff',
               }}
             >
               <Text>
@@ -337,6 +338,7 @@ function OrderItem ({item, Cancel}){
     </View>
   )
 }
+
 
 
 

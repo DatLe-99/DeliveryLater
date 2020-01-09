@@ -419,6 +419,7 @@ class HomeComponent extends Component {
                     account: this.state.accountData,
                     address: this.state.address,
                     restaurant: item,
+                    storeId: item.ID,
                   })
                 }>
                 <RestaurantItem res={item} />
